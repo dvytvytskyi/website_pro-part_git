@@ -10,7 +10,7 @@ import styles from './BrokerDashboard.module.css';
 
 export default function BrokerDashboard() {
   const pathname = usePathname();
-  const [activeView, setActiveView] = useState<'knowledge-base'>('knowledge-base');
+  const [activeView, setActiveView] = useState<string>('knowledge-base');
   const [courseId, setCourseId] = useState<string | null>(null);
 
   useEffect(() => {

@@ -18,39 +18,47 @@ function convertPropertyToMapFormat(property: ApiProperty, locale: string): any 
       return {
         area: parts[0] || '',
         areaRu: parts[0] || '',
-        city: parts[1] || property.city.nameEn,
-        cityRu: parts[1] || property.city.nameRu,
+        city: parts[1] || (property.city?.nameEn || ''),
+        cityRu: parts[1] || (property.city?.nameRu || ''),
       };
-    } else {
+    } else if (property.area) {
       // Secondary: area is an object
       return {
         area: property.area.nameEn,
         areaRu: property.area.nameRu,
-        city: property.city.nameEn,
-        cityRu: property.city.nameRu,
+        city: property.city?.nameEn || '',
+        cityRu: property.city?.nameRu || '',
+      };
+    } else {
+      // Area is null
+      return {
+        area: '',
+        areaRu: '',
+        city: property.city?.nameEn || '',
+        cityRu: property.city?.nameRu || '',
       };
     }
   };
 
   const location = getLocation();
 
-  // Get price
+  // Get price - always use AED, return 0 if price is null or 0
   const getPrice = () => {
     if (property.propertyType === 'off-plan') {
-      const priceUSD = property.priceFrom || 0;
-      const priceAED = property.priceFromAED || 0;
+      const priceAED = (property.priceFromAED && property.priceFromAED > 0) ? property.priceFromAED : 0;
+      const priceUSD = (property.priceFrom && property.priceFrom > 0) ? property.priceFrom : 0;
       return {
         usd: priceUSD,
         aed: priceAED,
-        eur: Math.round(priceUSD * 0.92), // Approximate EUR conversion
+        eur: priceUSD > 0 ? Math.round(priceUSD * 0.92) : 0, // Approximate EUR conversion
       };
     } else {
-      const priceUSD = property.price || 0;
-      const priceAED = property.priceAED || 0;
+      const priceAED = (property.priceAED && property.priceAED > 0) ? property.priceAED : 0;
+      const priceUSD = (property.price && property.price > 0) ? property.price : 0;
       return {
         usd: priceUSD,
         aed: priceAED,
-        eur: Math.round(priceUSD * 0.92),
+        eur: priceUSD > 0 ? Math.round(priceUSD * 0.92) : 0,
       };
     }
   };
@@ -65,7 +73,8 @@ function convertPropertyToMapFormat(property: ApiProperty, locale: string): any 
 
   const getBathrooms = () => {
     if (property.propertyType === 'off-plan') {
-      return property.bathroomsFrom || 0;
+      // For off-plan properties, bathroomsFrom/To are always null
+      return 0;
     }
     return property.bathrooms || 0;
   };
@@ -75,12 +84,12 @@ function convertPropertyToMapFormat(property: ApiProperty, locale: string): any 
     if (property.propertyType === 'off-plan') {
       return {
         sqm: property.sizeFrom || 0,
-        sqft: property.sizeFromSqft || 0,
+        sqft: property.sizeFromSqft || (property.sizeFrom ? property.sizeFrom * 10.764 : 0),
       };
     } else {
       return {
         sqm: property.size || 0,
-        sqft: property.sizeSqft || 0,
+        sqft: property.sizeSqft || (property.size ? property.size * 10.764 : 0),
       };
     }
   };
@@ -90,13 +99,13 @@ function convertPropertyToMapFormat(property: ApiProperty, locale: string): any 
     if (property.propertyType === 'off-plan' && property.units) {
       return property.units.map(unit => ({
         bedrooms: property.bedroomsFrom || 0,
-        bathrooms: property.bathroomsFrom || 0,
+        bathrooms: 0, // For off-plan, bathrooms are always null
         size: {
           sqm: unit.totalSize,
-          sqft: unit.totalSizeSqft,
+          sqft: unit.totalSizeSqft || (unit.totalSize * 10.764), // Convert if not provided
         },
         price: {
-          aed: unit.priceAED,
+          aed: unit.priceAED || (unit.price * 3.673), // Convert if not provided
         },
       }));
     }

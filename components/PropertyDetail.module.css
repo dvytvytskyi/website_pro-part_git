@@ -4,6 +4,12 @@
   padding-top: 80px;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding-top: 60px;
+  }
+}
+
 /* Breadcrumb Navigation */
 .breadcrumb {
   max-width: 1200px;
@@ -14,6 +20,12 @@
   gap: 8px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .breadcrumb {
+    display: none !important;
+  }
 }
 
 .breadcrumbLink {
@@ -63,6 +75,39 @@
   max-height: 800px;
   overflow: hidden;
   padding: 0 24px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    height: 40vh;
+    min-height: 300px;
+    border-radius: 0 !important;
+  }
+  
+  .imageContainer {
+    border-radius: 0 !important;
+    touch-action: pan-x pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+  }
+  
+  .imageWrapper {
+    touch-action: pan-x pan-y;
+    pointer-events: auto;
+    border-radius: 0 !important;
+  }
+  
+  .heroImage {
+    pointer-events: none;
+    border-radius: 0 !important;
+  }
 }
 
 .imageContainer {
@@ -73,10 +118,17 @@
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+  .imageContainer {
+    border-radius: 0 !important;
+  }
+}
+
 .imageWrapper {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .heroImage {
@@ -88,8 +140,34 @@
   object-fit: cover;
 }
 
+.heroImageSkeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e0e0e0 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: heroImageShimmer 1.5s infinite;
+  z-index: 0;
+}
+
+@keyframes heroImageShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 .currentImage {
-  z-index: 1;
+  z-index: 2;
 }
 
 .prevImage {
@@ -269,6 +347,8 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .contentWrapper {
@@ -299,6 +379,45 @@
   overflow: visible;
 }
 
+@media (max-width: 968px) {
+  .contentWrapper {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .leftColumn {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .rightColumn {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    max-width: 100%;
+    padding: 24px 16px;
+    margin: 0;
+    width: 100%;
+  }
+  
+  .contentWrapper {
+    gap: 24px;
+  }
+  
+  .leftColumn,
+  .rightColumn {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 /* Main Info */
 .mainInfo {
   margin-bottom: 40px;
@@ -318,6 +437,16 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 20px;
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+  }
 }
 
 .location {
@@ -345,6 +474,14 @@
   font-weight: 600;
   color: #EBA44E;
   margin-bottom: 8px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+  .price {
+    font-size: 20px;
+  }
 }
 
 .paymentPlan {
@@ -360,6 +497,17 @@
   margin-bottom: 24px;
   padding-bottom: 24px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .details {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+  }
 }
 
 .detailItem {
@@ -383,6 +531,11 @@
   gap: 8px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .developerLabel {
@@ -448,14 +601,6 @@
   background: #f5f5f5;
 }
 
-@media (max-width: 768px) {
-  .areaImagesGrid,
-  .developerImagesGrid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
-  }
-}
-
 .sectionTitle {
   font-family: 'Inter', sans-serif;
   font-size: 20px;
@@ -481,6 +626,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .facilityItem {
@@ -588,6 +735,33 @@
   width: 100%;
   height: 200px;
   background: #f5f5f5;
+  overflow: hidden;
+}
+
+.unitPlanImageSkeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0%,
+    #e0e0e0 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: unitImageShimmer 1.5s infinite;
+  z-index: 1;
+}
+
+@keyframes unitImageShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .unitDetails {
@@ -627,6 +801,23 @@
   overflow: hidden;
   background: #f5f5f5;
   position: relative;
+}
+
+@media (max-width: 768px) {
+  .mapContainer {
+    touch-action: pan-y pinch-zoom;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  .mapContainer :global(.mapboxgl-canvas-container) {
+    touch-action: pan-y pinch-zoom;
+  }
+  
+  .mapContainer :global(.mapboxgl-canvas) {
+    touch-action: pan-y pinch-zoom;
+  }
 }
 
 .mapContainer :global(.mapboxgl-map) {
@@ -844,71 +1035,213 @@
   height: 20px;
 }
 
-/* Responsive */
-@media (max-width: 968px) {
-  .contentWrapper {
-    flex-direction: column;
-  }
-
-  .leftColumn {
-    flex: 1 1 100%;
-  }
-
-  .rightColumn {
-    flex: 1 1 100%;
-    position: static;
-  }
-}
-
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .heroSection {
-    height: 40vh;
-    min-height: 300px;
-    padding: 0 16px;
-  }
-
-  .title {
-    font-size: 20px;
-  }
-
-  .price {
-    font-size: 20px;
-  }
-
-  .content {
-    padding: 24px 16px;
-  }
-
-  .details {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .unitsList {
-    grid-template-columns: 1fr;
-  }
-
   .imageNav {
     width: 40px;
     height: 40px;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .imageNav.prev {
-    left: 16px;
+    left: 12px;
   }
 
   .imageNav.next {
-    right: 16px;
+    right: 12px;
   }
 
   .badgesContainer {
-    top: 16px;
-    left: 16px;
-    right: 16px;
+    top: 12px;
+    left: 12px;
+    right: 12px;
   }
-
-  .contentWrapper {
-    gap: 24px;
+  
+  .typeBadge {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  
+  .favoriteButton {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .imageIndicator {
+    bottom: 12px;
+    right: 12px;
+    font-size: 12px;
+    padding: 6px 12px;
+    opacity: 1;
+  }
+  
+  .mainInfo {
+    margin-bottom: 24px;
+  }
+  
+  .header {
+    margin-bottom: 16px;
+  }
+  
+  .priceSection {
+    margin-bottom: 16px;
+  }
+  
+  .descriptionSection,
+  .facilitiesSection,
+  .unitsSection,
+  .mapSection,
+  .areaImagesSection,
+  .developerImagesSection {
+    margin-bottom: 24px;
+  }
+  
+  .sectionTitle {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  .description {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .facilitiesList {
+    gap: 8px;
+  }
+  
+  .facilityItem {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+  
+  .unitsHeader {
+    margin-bottom: 12px;
+  }
+  
+  .unitCard {
+    flex: 0 0 280px;
+    min-width: 280px;
+    max-width: 280px;
+  }
+  
+  .unitHeader {
+    padding: 12px;
+  }
+  
+  .unitDetails {
+    padding: 12px;
+  }
+  
+  .unitPrice {
+    font-size: 16px;
+  }
+  
+  .unitSize {
+    font-size: 12px;
+  }
+  
+  .mapContainer {
+    height: 300px;
+    border-radius: 8px;
+  }
+  
+  .contactForm {
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .contactTitle {
+    font-size: 18px;
+  }
+  
+  .contactDescription {
+    font-size: 13px;
+  }
+  
+  .agentAvatar {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .avatarPlaceholder {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .agentName {
+    font-size: 14px;
+  }
+  
+  .agentRole {
+    font-size: 12px;
+  }
+  
+  .form {
+    gap: 12px;
+  }
+  
+  .input {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .textarea {
+    min-height: 80px;
+  }
+  
+  .submitButton {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .contactMethods {
+    margin-top: 16px;
+    padding-top: 16px;
+    gap: 10px;
+  }
+  
+  .contactMethod {
+    font-size: 13px;
+  }
+  
+  .contactMethod svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .areaImagesGrid,
+  .developerImagesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .areaImageWrapper,
+  .developerImageWrapper {
+    border-radius: 6px;
+  }
+  
+  .developerLogoWrapper {
+    margin-bottom: 12px;
+  }
+  
+  .paymentPlan {
+    font-size: 13px;
+  }
+  
+  .developer {
+    font-size: 13px;
+  }
+  
+  .detailItem {
+    font-size: 13px;
+  }
+  
+  .detailItem svg {
+    width: 18px;
+    height: 18px;
   }
 }
 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { getPublicData } from '@/lib/api';
+import { getPublicData, getAreas } from '@/lib/api';
 import styles from './PropertyFilters.module.css';
 
 interface Filters {
@@ -22,6 +22,7 @@ interface Filters {
 interface PropertyFiltersProps {
   filters: Filters;
   onFilterChange: (filters: Filters) => void;
+  isModal?: boolean;
 }
 
 interface Area {
@@ -30,6 +31,11 @@ interface Area {
   nameRu: string;
   nameAr: string;
   cityId: string;
+  projectsCount?: {
+    total: number;
+    offPlan: number;
+    secondary: number;
+  };
 }
 
 interface Developer {
@@ -46,7 +52,7 @@ const sortOptions = [
   { value: 'newest', label: 'Newest First', labelRu: 'Сначала новые' },
 ];
 
-export default function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProps) {
+export default function PropertyFilters({ filters, onFilterChange, isModal = false }: PropertyFiltersProps) {
   const t = useTranslations('filters');
   const locale = useLocale();
   const [localFilters, setLocalFilters] = useState<Filters>(filters);
@@ -70,17 +76,59 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
   const priceRef = useRef<HTMLDivElement>(null);
   const sortRef = useRef<HTMLDivElement>(null);
   const developerRef = useRef<HTMLDivElement>(null);
+  
+  // State for dropdown direction (openUp/openDown)
+  const [dropdownDirections, setDropdownDirections] = useState<Record<string, boolean>>({});
 
   // Load public data from API
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await getPublicData();
-        setAreas(data.areas);
-        setDevelopers(data.developers);
+        setLoadingData(true);
+        
+        // Load areas with projectsCount from /public/areas endpoint
+        // This ensures we get areas with project counts and can filter by projectsCount > 0
+        const areasData = await getAreas(undefined, true);
+        
+        // Filter areas to only show those with projects (projectsCount > 0)
+        const areasWithProjects = areasData
+          .filter(area => {
+            const projectsCount = area.projectsCount?.total || 0;
+            return projectsCount > 0;
+          })
+          .sort((a, b) => {
+            // Sort by nameEn (alphabetically, always use English for consistent sorting)
+            return a.nameEn.localeCompare(b.nameEn);
+          });
+        
+        // Load developers from public data
+        const publicData = await getPublicData();
+        
+        // Sort developers alphabetically by name
+        const sortedDevelopers = [...(publicData.developers || [])].sort((a, b) => 
+          a.name.localeCompare(b.name)
+        );
+        
+        setAreas(areasWithProjects);
+        setDevelopers(sortedDevelopers);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`✅ PropertyFilters: Loaded ${areasWithProjects.length} areas with projects (filtered from ${areasData.length} total)`);
+          console.log(`✅ PropertyFilters: Sample areas:`, areasWithProjects.slice(0, 5).map(a => ({
+            id: a.id,
+            nameEn: a.nameEn,
+            projectsCount: a.projectsCount?.total || 0
+          })));
+          console.log(`✅ PropertyFilters: Loaded ${sortedDevelopers.length} developers`);
+          console.log(`✅ PropertyFilters: Sample developers:`, sortedDevelopers.slice(0, 5).map(d => ({
+            id: d.id,
+            name: d.name
+          })));
+        }
+        
         setLoadingData(false);
       } catch (error) {
-        console.error('Error loading public data:', error);
+        console.error('Error loading filter data:', error);
         setLoadingData(false);
       }
     };
@@ -100,6 +148,81 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
   // Функція для парсингу числа (прибирає коми)
   const parseNumber = (value: string): string => {
     return value.replace(/\D/g, '');
+  };
+
+  // Function to check if dropdown should open upward
+  const checkDropdownDirection = (ref: React.RefObject<HTMLDivElement>, dropdownId: string) => {
+    if (!ref.current) return false;
+    
+    const rect = ref.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const estimatedDropdownHeight = 320; // Approximate height of dropdown with padding
+    
+    // In modal mode, check relative to modal container or modal body
+    if (isModal) {
+      // Find modal container - look for modal backdrop or dialog
+      let modalContainer = ref.current.closest('[role="dialog"]');
+      if (!modalContainer) {
+        // Try to find modal body by traversing up
+        let parent = ref.current.parentElement;
+        while (parent && parent !== document.body) {
+          if (parent.classList && (
+            parent.classList.toString().includes('modal') ||
+            parent.classList.toString().includes('Modal')
+          )) {
+            modalContainer = parent;
+            break;
+          }
+          parent = parent.parentElement;
+        }
+      }
+      
+      if (modalContainer) {
+        const modalRect = modalContainer.getBoundingClientRect();
+        const spaceBelowInModal = modalRect.bottom - rect.bottom;
+        const spaceAboveInModal = rect.top - modalRect.top;
+        
+        // Add some padding for better UX
+        const padding = 20;
+        
+        // Open upward if not enough space below in modal but enough space above
+        const shouldOpenUp = (spaceBelowInModal < estimatedDropdownHeight + padding) && (spaceAboveInModal > estimatedDropdownHeight + padding);
+        
+        setDropdownDirections(prev => ({
+          ...prev,
+          [dropdownId]: shouldOpenUp
+        }));
+        
+        return shouldOpenUp;
+      }
+    }
+    
+    // For non-modal or if modal container not found, use viewport
+    // Open upward if not enough space below but enough space above
+    const shouldOpenUp = spaceBelow < estimatedDropdownHeight && spaceAbove > estimatedDropdownHeight;
+    
+    setDropdownDirections(prev => ({
+      ...prev,
+      [dropdownId]: shouldOpenUp
+    }));
+    
+    return shouldOpenUp;
+  };
+
+  // Handle dropdown toggle with direction check
+  const handleDropdownToggle = (dropdownId: string, ref: React.RefObject<HTMLDivElement>, isOpen: boolean, setIsOpen: (value: boolean) => void) => {
+    const newIsOpen = !isOpen;
+    setIsOpen(newIsOpen);
+    
+    // Check direction after state update
+    if (newIsOpen) {
+      // Use setTimeout to ensure DOM is updated
+      setTimeout(() => {
+        checkDropdownDirection(ref, dropdownId);
+      }, 0);
+    }
   };
 
   useEffect(() => {
@@ -210,8 +333,8 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
   };
 
   return (
-    <div className={styles.filters}>
-      <div className={styles.filtersRow}>
+    <div className={`${styles.filters} ${isModal ? styles.filtersModal : ''}`}>
+      <div className={`${styles.filtersRow} ${isModal ? styles.filtersRowModal : ''}`}>
         {/* Off Plan / Secondary Toggle */}
         <div className={styles.typeToggle}>
           <button
@@ -240,20 +363,28 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
         </div>
 
         {/* Location Dropdown */}
-        <div className={`${styles.dropdownWrapper} ${styles.locationDropdown}`} ref={locationRef}>
+        <div 
+          className={`${styles.dropdownWrapper} ${styles.locationDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
+          ref={locationRef}
+          data-dropdown-open={isLocationOpen ? 'true' : 'false'}
+        >
           <button
             className={styles.dropdownButton}
-            onClick={() => setIsLocationOpen(!isLocationOpen)}
-            disabled={loadingData}
+            onClick={() => handleDropdownToggle('location', locationRef, isLocationOpen, setIsLocationOpen)}
           >
             <span>{getLocationLabel()}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isLocationOpen ? styles.rotated : ''}>
               <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          {isLocationOpen && !loadingData && (
-            <div className={styles.dropdownMenu}>
-              {areas.map((area) => (
+          {isLocationOpen && (
+            <div className={`${styles.dropdownMenu} ${dropdownDirections.location ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
+              {loadingData ? (
+                <div className={styles.dropdownItem}>Loading...</div>
+              ) : areas.length === 0 ? (
+                <div className={styles.dropdownItem}>No areas available</div>
+              ) : (
+                areas.map((area) => (
                   <label key={area.id} className={styles.checkboxItem}>
                     <input
                       type="checkbox"
@@ -262,55 +393,71 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
                     />
                     <span>{locale === 'ru' ? area.nameRu : area.nameEn}</span>
                   </label>
-                ))}
+                ))
+              )}
             </div>
           )}
         </div>
 
         {/* Developer Dropdown */}
-        <div className={`${styles.dropdownWrapper} ${styles.locationDropdown}`} ref={developerRef}>
+        <div 
+          className={`${styles.dropdownWrapper} ${styles.locationDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
+          ref={developerRef}
+          data-dropdown-open={isDeveloperOpen ? 'true' : 'false'}
+        >
           <button
             className={styles.dropdownButton}
-            onClick={() => setIsDeveloperOpen(!isDeveloperOpen)}
-            disabled={loadingData}
+            onClick={() => handleDropdownToggle('developer', developerRef, isDeveloperOpen, setIsDeveloperOpen)}
           >
             <span>{getDeveloperLabel()}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isDeveloperOpen ? styles.rotated : ''}>
               <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          {isDeveloperOpen && !loadingData && (
-            <div className={styles.dropdownMenu}>
-              <button
-                className={`${styles.dropdownItem} ${!localFilters.developerId ? styles.active : ''}`}
-                onClick={() => {
-                  handleDeveloperToggle('');
-                  setIsDeveloperOpen(false);
-                }}
-              >
-                {t('developer.all') || 'All Developers'}
-              </button>
-              {developers.map((developer) => (
-                <button
-                  key={developer.id}
-                  className={`${styles.dropdownItem} ${localFilters.developerId === developer.id ? styles.active : ''}`}
-                  onClick={() => {
-                    handleDeveloperToggle(developer.id);
-                    setIsDeveloperOpen(false);
-                  }}
-                >
-                  {developer.name}
-                </button>
-              ))}
+          {isDeveloperOpen && (
+            <div className={`${styles.dropdownMenu} ${dropdownDirections.developer ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
+              {loadingData ? (
+                <div className={styles.dropdownItem}>Loading...</div>
+              ) : developers.length === 0 ? (
+                <div className={styles.dropdownItem}>No developers available</div>
+              ) : (
+                <>
+                  <button
+                    className={`${styles.dropdownItem} ${!localFilters.developerId ? styles.active : ''}`}
+                    onClick={() => {
+                      handleDeveloperToggle('');
+                      setIsDeveloperOpen(false);
+                    }}
+                  >
+                    {t('developer.all') || 'All Developers'}
+                  </button>
+                  {developers.map((developer) => (
+                    <button
+                      key={developer.id}
+                      className={`${styles.dropdownItem} ${localFilters.developerId === developer.id ? styles.active : ''}`}
+                      onClick={() => {
+                        handleDeveloperToggle(developer.id);
+                        setIsDeveloperOpen(false);
+                      }}
+                    >
+                      {developer.name}
+                    </button>
+                  ))}
+                </>
+              )}
             </div>
           )}
         </div>
 
         {/* Bedrooms Dropdown */}
-        <div className={`${styles.dropdownWrapper} ${styles.bedroomsDropdown}`} ref={bedroomsRef}>
+        <div 
+          className={`${styles.dropdownWrapper} ${styles.bedroomsDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
+          ref={bedroomsRef}
+          data-dropdown-open={isBedroomsOpen ? 'true' : 'false'}
+        >
           <button
             className={styles.dropdownButton}
-            onClick={() => setIsBedroomsOpen(!isBedroomsOpen)}
+            onClick={() => handleDropdownToggle('bedrooms', bedroomsRef, isBedroomsOpen, setIsBedroomsOpen)}
           >
             <span>{getBedroomsLabel()}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isBedroomsOpen ? styles.rotated : ''}>
@@ -318,7 +465,7 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
             </svg>
           </button>
           {isBedroomsOpen && (
-            <div className={styles.dropdownMenu}>
+            <div className={`${styles.dropdownMenu} ${dropdownDirections.bedrooms ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
               {[1, 2, 3, 4, 5, 6].map((num) => (
                 <label key={num} className={styles.checkboxItem}>
                   <input
@@ -334,10 +481,14 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
         </div>
 
         {/* Size Dropdown */}
-        <div className={`${styles.dropdownWrapper} ${styles.sizeDropdown}`} ref={sizeRef}>
+        <div 
+          className={`${styles.dropdownWrapper} ${styles.sizeDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
+          ref={sizeRef}
+          data-dropdown-open={isSizeOpen ? 'true' : 'false'}
+        >
           <button
             className={styles.dropdownButton}
-            onClick={() => setIsSizeOpen(!isSizeOpen)}
+            onClick={() => handleDropdownToggle('size', sizeRef, isSizeOpen, setIsSizeOpen)}
           >
             <span>{getSizeLabel()}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isSizeOpen ? styles.rotated : ''}>
@@ -345,7 +496,7 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
             </svg>
           </button>
           {isSizeOpen && (
-            <div className={styles.dropdownMenu}>
+            <div className={`${styles.dropdownMenu} ${dropdownDirections.size ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
               <div className={styles.rangeInputs}>
                 <input
                   type="text"
@@ -371,10 +522,14 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
         </div>
 
         {/* Price Dropdown */}
-        <div className={`${styles.dropdownWrapper} ${styles.priceDropdown}`} ref={priceRef}>
+        <div 
+          className={`${styles.dropdownWrapper} ${styles.priceDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
+          ref={priceRef}
+          data-dropdown-open={isPriceOpen ? 'true' : 'false'}
+        >
           <button
             className={styles.dropdownButton}
-            onClick={() => setIsPriceOpen(!isPriceOpen)}
+            onClick={() => handleDropdownToggle('price', priceRef, isPriceOpen, setIsPriceOpen)}
           >
             <span>{getPriceLabel()}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isPriceOpen ? styles.rotated : ''}>
@@ -382,7 +537,7 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
             </svg>
           </button>
           {isPriceOpen && (
-            <div className={styles.dropdownMenu}>
+            <div className={`${styles.dropdownMenu} ${dropdownDirections.price ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
               <div className={styles.rangeInputs}>
                 <input
                   type="text"
@@ -408,10 +563,14 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
         </div>
 
         {/* Sort Dropdown */}
-        <div className={`${styles.dropdownWrapper} ${styles.sortDropdown}`} ref={sortRef}>
+        <div 
+          className={`${styles.dropdownWrapper} ${styles.sortDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
+          ref={sortRef}
+          data-dropdown-open={isSortOpen ? 'true' : 'false'}
+        >
           <button
             className={styles.dropdownButton}
-            onClick={() => setIsSortOpen(!isSortOpen)}
+            onClick={() => handleDropdownToggle('sort', sortRef, isSortOpen, setIsSortOpen)}
           >
             <span>{getSortLabel()}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isSortOpen ? styles.rotated : ''}>
@@ -419,7 +578,7 @@ export default function PropertyFilters({ filters, onFilterChange }: PropertyFil
             </svg>
           </button>
           {isSortOpen && (
-            <div className={styles.dropdownMenu}>
+            <div className={`${styles.dropdownMenu} ${dropdownDirections.sort ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
               {sortOptions.map((option) => (
                 <button
                   key={option.value}

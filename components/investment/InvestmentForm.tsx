@@ -19,22 +19,27 @@ interface InvestmentFormProps {
   propertyType: 'off-plan' | 'secondary';
 }
 
-// Schema for registered users
-const investmentSchemaRegistered = z.object({
+// Unified schema - all fields, but user fields are optional for authenticated users
+const investmentSchema = z.object({
   amount: z.number().min(1, 'Amount must be greater than 0'),
   date: z.string().min(1, 'Date is required'),
   notes: z.string().optional(),
+  userEmail: z.string().email('Invalid email address').optional(),
+  userPhone: z.string().min(10, 'Phone number must be at least 10 characters').optional(),
+  userFirstName: z.string().min(1, 'First name is required').optional(),
+  userLastName: z.string().min(1, 'Last name is required').optional(),
+}).refine((data) => {
+  // For non-authenticated users, require user fields
+  const authenticated = typeof window !== 'undefined' && localStorage.getItem('token');
+  if (!authenticated) {
+    return data.userEmail && data.userPhone && data.userFirstName && data.userLastName;
+  }
+  return true;
+}, {
+  message: 'All user fields are required for non-authenticated users',
 });
 
-// Schema for non-registered users
-const investmentSchemaPublic = investmentSchemaRegistered.extend({
-  userEmail: z.string().email('Invalid email address'),
-  userPhone: z.string().min(10, 'Phone number must be at least 10 characters'),
-  userFirstName: z.string().min(1, 'First name is required'),
-  userLastName: z.string().min(1, 'Last name is required'),
-});
-
-type InvestmentFormData = z.infer<typeof investmentSchemaRegistered> | z.infer<typeof investmentSchemaPublic>;
+type InvestmentFormData = z.infer<typeof investmentSchema>;
 
 export default function InvestmentForm({ 
   propertyId, 
@@ -51,7 +56,7 @@ export default function InvestmentForm({
   const [formattedAmount, setFormattedAmount] = useState<string>('');
   const authenticated = isAuthenticated();
 
-  const schema = authenticated ? investmentSchemaRegistered : investmentSchemaPublic;
+  const schema = investmentSchema;
   const defaultAmount = propertyPriceFrom || propertyPrice || 0;
   const {
     register,
@@ -87,10 +92,10 @@ export default function InvestmentForm({
         date: new Date(data.date).toISOString(),
         notes: data.notes || undefined,
         ...(authenticated ? {} : {
-          userEmail: (data as any).userEmail,
-          userPhone: (data as any).userPhone,
-          userFirstName: (data as any).userFirstName,
-          userLastName: (data as any).userLastName,
+          userEmail: data.userEmail!,
+          userPhone: data.userPhone!,
+          userFirstName: data.userFirstName!,
+          userLastName: data.userLastName!,
         }),
       };
 

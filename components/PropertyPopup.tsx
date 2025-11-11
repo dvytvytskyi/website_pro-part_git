@@ -124,6 +124,7 @@ export default function PropertyPopup({ property, onClose }: PropertyPopupProps)
                   style={{ objectFit: 'cover' }}
                   sizes="560px"
                   className={`${styles.cardImage} ${styles.prevImage} ${direction === 'right' ? styles.slideOutLeft : styles.slideOutRight}`}
+                  unoptimized
                 />
               )}
               {/* Current image - sliding in */}
@@ -135,6 +136,7 @@ export default function PropertyPopup({ property, onClose }: PropertyPopupProps)
                 style={{ objectFit: 'cover' }}
                 sizes="560px"
                 className={`${styles.cardImage} ${styles.currentImage} ${isTransitioning && direction === 'right' ? styles.slideInRight : isTransitioning && direction === 'left' ? styles.slideInLeft : ''}`}
+                unoptimized
               />
             </div>
           )}
@@ -227,7 +229,11 @@ export default function PropertyPopup({ property, onClose }: PropertyPopupProps)
                     <span>{unit.bedrooms} beds</span>
                     <span>{unit.bathrooms} baths</span>
                     <span>{formatPrice(unit.size.sqft)} sq.ft</span>
-                    <span className={styles.unitPrice}>{formatPrice(unit.price.aed)} AED</span>
+                    <span className={styles.unitPrice}>
+                      {unit.price.aed && unit.price.aed > 0 
+                        ? `${formatPrice(unit.price.aed)} AED` 
+                        : 'On request'}
+                    </span>
                   </div>
                 ))}
               </div>

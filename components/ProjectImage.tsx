@@ -54,7 +54,8 @@ export default function ProjectImage() {
           fill
           style={{ objectFit: 'cover' }}
           sizes="100vw"
-          priority
+          loading="lazy"
+          unoptimized
         />
         <div className={styles.overlay}></div>
       </div>

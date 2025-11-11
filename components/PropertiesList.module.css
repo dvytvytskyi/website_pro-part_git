@@ -20,9 +20,89 @@
   line-height: 1.2;
 }
 
+/* Desktop Filters - Always visible on desktop */
+.desktopFilters {
+  display: block;
+  margin-bottom: 40px;
+}
+
+/* Mobile Filter Button - Hidden on desktop, visible on mobile */
+.mobileFilterButton {
+  display: none;
+}
+
+.filterButtonWrapper {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid rgba(0, 48, 119, 0.2);
+  background: #ffffff;
+  color: #003077;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* Hide icon on mobile */
+.mobileFilterButton .filterButton svg {
+  display: none;
+}
+
+.filterButton:hover {
+  background: rgba(0, 48, 119, 0.05);
+  border-color: rgba(0, 48, 119, 0.3);
+}
+
+.filterButton:active {
+  background: rgba(0, 48, 119, 0.1);
+}
+
+.filterButton svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: #003077;
+  color: #ffffff;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
 .results {
   margin-top: 40px;
   min-height: 60vh;
+}
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .resultsCount {
@@ -30,8 +110,9 @@
   font-size: 14px;
   font-weight: 400;
   color: #003077;
-  margin-bottom: 24px;
   opacity: 0.8;
+  flex: 1;
+  min-width: 0;
 }
 
 .grid {
@@ -142,7 +223,7 @@
 
 @media (max-width: 900px) {
   .propertiesList {
-    padding: 40px 0 60px 0;
+    padding: 100px 0 60px 0;
   }
 
   .container {
@@ -154,6 +235,30 @@
     margin-bottom: 32px;
   }
 
+  /* Hide desktop filters on mobile */
+  .desktopFilters {
+    display: none;
+  }
+
+  /* Show mobile filter button on mobile */
+  .mobileFilterButton {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Results header layout on mobile */
+  .resultsHeader {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .resultsCount {
+    margin-bottom: 0;
+    font-size: 14px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
@@ -161,6 +266,10 @@
 }
 
 @media (max-width: 600px) {
+  .propertiesList {
+    padding: 100px 0 60px 0;
+  }
+  
   .title {
     font-size: 32px;
   }

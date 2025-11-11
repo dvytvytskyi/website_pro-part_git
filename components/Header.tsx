@@ -12,6 +12,7 @@ export default function Header() {
   const locale = useLocale();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Перевіряємо чи ми на головній сторінці
   const isHomePage = pathname === `/${locale}` || pathname === '/';
@@ -30,6 +31,60 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isHomePage]);
+
+  // Закривати mobile menu при зміні сторінки
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Блокувати скрол під час відкритого mobile menu та зберігати scroll position
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      // Зберігаємо поточну позицію скролу
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+    } else {
+      // Відновлюємо скрол
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
+    }
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  // Закривати меню при натисканні ESC
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      window.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMobileMenuOpen]);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const navItems = [
     { key: 'home', path: '/' },
@@ -59,7 +114,7 @@ export default function Header() {
             <Link
               key={item.key}
               href={getLocalizedPath(item.path)}
-              className={styles.navLink}
+              className={`${styles.navLink} ${item.key === 'developers' ? styles.hideOnMobile : ''}`}
             >
               {t(`nav.${item.key}`)}
             </Link>
@@ -70,6 +125,79 @@ export default function Header() {
           <Link href={getLocalizedPath('/login')} className={styles.glassButton}>{t('signIn')}</Link>
           <Link href={getLocalizedPath('/register')} className={`${styles.glassButton} ${styles.register}`}>{t('register')}</Link>
         </nav>
+
+        {/* Hamburger menu button for mobile */}
+        <button 
+          className={`${styles.hamburger} ${isMobileMenuOpen ? styles.hamburgerOpen : ''}`}
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+      {/* Mobile menu backdrop */}
+      {isMobileMenuOpen && (
+        <div 
+          className={styles.mobileMenuBackdrop}
+          onClick={toggleMobileMenu}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile menu */}
+      <div className={`${styles.mobileMenu} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
+        {/* Close button */}
+        <button 
+          className={styles.mobileMenuClose}
+          onClick={toggleMobileMenu}
+          aria-label="Close menu"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path 
+              d="M18 6L6 18M6 6L18 18" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        
+        <nav className={styles.mobileNav}>
+          {navItems
+            .filter((item) => item.key !== 'developers') // Приховати developers в mobile menu
+            .map((item) => (
+              <Link
+                key={item.key}
+                href={getLocalizedPath(item.path)}
+                className={styles.mobileNavLink}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {t(`nav.${item.key}`)}
+              </Link>
+            ))}
+        </nav>
+        
+        <div className={styles.mobileAuth}>
+          <Link 
+            href={getLocalizedPath('/login')} 
+            className={styles.mobileAuthButton}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('signIn')}
+          </Link>
+          <Link 
+            href={getLocalizedPath('/register')} 
+            className={`${styles.mobileAuthButton} ${styles.mobileAuthButtonRegister}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('register')}
+          </Link>
+        </div>
       </div>
     </header>
   );

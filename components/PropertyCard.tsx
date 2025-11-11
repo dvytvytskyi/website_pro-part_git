@@ -71,27 +71,36 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
 
   const getPrice = () => {
     if (property.propertyType === 'off-plan') {
-      return property.priceFromAED || 0;
+      return property.priceFromAED && property.priceFromAED > 0 ? property.priceFromAED : null;
     } else {
-      return property.priceAED || 0;
+      return property.priceAED && property.priceAED > 0 ? property.priceAED : null;
     }
   };
 
   const getBedrooms = () => {
     if (property.propertyType === 'off-plan') {
-      return property.bedroomsFrom && property.bedroomsTo
-        ? `${property.bedroomsFrom}-${property.bedroomsTo}`
-        : property.bedroomsFrom || '';
+      // For off-plan: use bedroomsFrom/bedroomsTo
+      if (property.bedroomsFrom !== null && property.bedroomsFrom !== undefined) {
+        if (property.bedroomsTo !== null && property.bedroomsTo !== undefined && property.bedroomsTo !== property.bedroomsFrom) {
+          return `${property.bedroomsFrom}-${property.bedroomsTo}`;
+        } else if (property.bedroomsFrom > 0) {
+          return `${property.bedroomsFrom}`;
+        }
+      }
+      return '';
     } else {
-      return property.bedrooms || '';
+      // For secondary: use bedrooms
+      if (property.bedrooms !== null && property.bedrooms !== undefined && property.bedrooms > 0) {
+        return `${property.bedrooms}`;
+      }
+      return '';
     }
   };
 
   const getBathrooms = () => {
     if (property.propertyType === 'off-plan') {
-      return property.bathroomsFrom && property.bathroomsTo
-        ? `${property.bathroomsFrom}-${property.bathroomsTo}`
-        : property.bathroomsFrom || '';
+      // For off-plan properties, bathroomsFrom/To are always null
+      return '';
     } else {
       return property.bathrooms || '';
     }
@@ -99,43 +108,80 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
 
   const getSize = () => {
     if (property.propertyType === 'off-plan') {
-      if (property.sizeFrom && property.sizeTo) {
-        let from: number;
-        let to: number;
-        if (locale === 'ru') {
-          from = property.sizeFrom || 0;
-          to = property.sizeTo || 0;
+      // For off-plan: use sizeFrom/sizeTo
+      const sizeFrom = property.sizeFrom;
+      const sizeTo = property.sizeTo;
+      const sizeFromSqft = property.sizeFromSqft;
+      const sizeToSqft = property.sizeToSqft;
+      
+      // Check if we have valid size data
+      if (sizeFrom !== null && sizeFrom !== undefined && sizeFrom > 0) {
+        if (sizeTo !== null && sizeTo !== undefined && sizeTo > 0 && sizeTo !== sizeFrom) {
+          // Range: from - to
+          let from: number;
+          let to: number;
+          if (locale === 'ru') {
+            from = sizeFrom;
+            to = sizeTo;
+          } else {
+            from = sizeFromSqft !== null && sizeFromSqft !== undefined && sizeFromSqft > 0 
+              ? sizeFromSqft 
+              : Math.round(sizeFrom * 10.764);
+            to = sizeToSqft !== null && sizeToSqft !== undefined && sizeToSqft > 0
+              ? sizeToSqft
+              : Math.round(sizeTo * 10.764);
+          }
+          const unit = locale === 'ru' ? 'м²' : 'sq.ft';
+          return `${formatNumber(from)} - ${formatNumber(to)} ${unit}`;
         } else {
-          from = property.sizeFromSqft || (property.sizeFrom ? Math.round(property.sizeFrom * 10.764) : 0);
-          to = property.sizeToSqft || (property.sizeTo ? Math.round(property.sizeTo * 10.764) : 0);
+          // Single value: from
+          let size: number;
+          if (locale === 'ru') {
+            size = sizeFrom;
+          } else {
+            size = sizeFromSqft !== null && sizeFromSqft !== undefined && sizeFromSqft > 0
+              ? sizeFromSqft
+              : Math.round(sizeFrom * 10.764);
+          }
+          const unit = locale === 'ru' ? 'м²' : 'sq.ft';
+          return `${formatNumber(size)} ${unit}`;
+        }
+      }
+      // No valid size data
+      return '';
+    } else {
+      // For secondary: use size/sizeSqft
+      const size = property.size;
+      const sizeSqft = property.sizeSqft;
+      
+      if (size !== null && size !== undefined && size > 0) {
+        let displaySize: number;
+        if (locale === 'ru') {
+          displaySize = size;
+        } else {
+          displaySize = sizeSqft !== null && sizeSqft !== undefined && sizeSqft > 0
+            ? sizeSqft
+            : Math.round(size * 10.764);
         }
         const unit = locale === 'ru' ? 'м²' : 'sq.ft';
-        return `${formatNumber(from)} - ${formatNumber(to)} ${unit}`;
+        return `${formatNumber(displaySize)} ${unit}`;
       }
-      let size: number;
-      if (locale === 'ru') {
-        size = property.sizeFrom || 0;
-      } else {
-        size = property.sizeFromSqft || (property.sizeFrom ? Math.round(property.sizeFrom * 10.764) : 0);
-      }
-      const unit = locale === 'ru' ? 'м²' : 'sq.ft';
-      return `${formatNumber(size)} ${unit}`;
-    } else {
-      let size: number;
-      if (locale === 'ru') {
-        size = property.size || 0;
-      } else {
-        size = property.sizeSqft || (property.size ? Math.round(property.size * 10.764) : 0);
-      }
-      const unit = locale === 'ru' ? 'м²' : 'sq.ft';
-      return `${formatNumber(size)} ${unit}`;
+      // No valid size data
+      return '';
     }
   };
 
   const getPricePerSqm = () => {
-    const price = getPrice();
+    // Get price directly from property, not from getPrice() which returns null
+    let price: number | null = null;
+    if (property.propertyType === 'off-plan') {
+      price = (property.priceFromAED && property.priceFromAED > 0) ? property.priceFromAED : null;
+    } else {
+      price = (property.priceAED && property.priceAED > 0) ? property.priceAED : null;
+    }
+    
     if (!price || price === 0) {
-      return '0';
+      return 'N/A';
     }
     
     let size: number;
@@ -149,6 +195,7 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
       return 'N/A';
     }
     
+    // Calculate price per sqm in AED (price is already in AED)
     const pricePerSqm = price / size;
     if (isNaN(pricePerSqm) || !isFinite(pricePerSqm)) {
       return 'N/A';
@@ -224,7 +271,7 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
                 style={{ objectFit: 'cover' }}
                 sizes="(max-width: 1200px) 50vw, (max-width: 900px) 100vw, 33vw"
                 className={`${styles.cardImage} ${styles.prevImage} ${direction === 'right' ? styles.slideOutLeft : styles.slideOutRight}`}
-                unoptimized={property.photos[prevImageIndex]?.startsWith('http://') || property.photos[prevImageIndex]?.startsWith('https://')}
+                unoptimized
               />
             )}
             {/* Current image - sliding in */}
@@ -237,7 +284,7 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
                 style={{ objectFit: 'cover' }}
                 sizes="(max-width: 1200px) 50vw, (max-width: 900px) 100vw, 33vw"
                 className={`${styles.cardImage} ${styles.currentImage} ${isTransitioning && direction === 'right' ? styles.slideInRight : isTransitioning && direction === 'left' ? styles.slideInLeft : ''}`}
-                unoptimized={property.photos[currentImageIndex]?.startsWith('http://') || property.photos[currentImageIndex]?.startsWith('https://')}
+                unoptimized
                 onLoad={() => {
                   setImageLoading(false);
                   if (process.env.NODE_ENV === 'development') {
@@ -345,45 +392,66 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
         <h3 className={styles.title}>{getName()}</h3>
 
         <div className={styles.details}>
-          <div className={styles.detailItem}>
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 6V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V6C17 5.44772 16.5523 5 16 5H4C3.44772 5 3 5.44772 3 6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M7 5V3C7 2.44772 7.44772 2 8 2H12C12.5523 2 13 2.44772 13 3V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M6 10H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M6 13H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>{getBedrooms()} {locale === 'ru' ? 'спалень' : 'beds'}</span>
-          </div>
-          <div className={styles.detailItem}>
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 6C4 5.44772 4.44772 5 5 5H15C15.5523 5 16 5.44772 16 6V14C16 14.5523 15.5523 15 15 15H5C4.44772 15 4 14.5523 4 14V6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M4 8H16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="7.5" cy="11" r="0.8" fill="currentColor"/>
-              <circle cx="12.5" cy="11" r="0.8" fill="currentColor"/>
-              <path d="M10 8V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>{getBathrooms()} {locale === 'ru' ? 'ванн' : 'baths'}</span>
-          </div>
-          <div className={styles.detailItem}>
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="5" width="14" height="12" rx="1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M3 9H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>{getSize()}</span>
-          </div>
+          {getBedrooms() && (
+            <div className={styles.detailItem}>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6V16C3 16.5523 3.44772 17 4 17H16C16.5523 17 17 16.5523 17 16V6C17 5.44772 16.5523 5 16 5H4C3.44772 5 3 5.44772 3 6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M7 5V3C7 2.44772 7.44772 2 8 2H12C12.5523 2 13 2.44772 13 3V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6 10H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M6 13H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>{getBedrooms()} {locale === 'ru' ? 'спалень' : 'beds'}</span>
+            </div>
+          )}
+          {getBathrooms() && (
+            <div className={styles.detailItem}>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 6C4 5.44772 4.44772 5 5 5H15C15.5523 5 16 5.44772 16 6V14C16 14.5523 15.5523 15 15 15H5C4.44772 15 4 14.5523 4 14V6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M4 8H16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="7.5" cy="11" r="0.8" fill="currentColor"/>
+                <circle cx="12.5" cy="11" r="0.8" fill="currentColor"/>
+                <path d="M10 8V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>{getBathrooms()} {locale === 'ru' ? 'ванн' : 'baths'}</span>
+            </div>
+          )}
+          {getSize() && (
+            <div className={styles.detailItem}>
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="5" width="14" height="12" rx="1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M3 9H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>{getSize()}</span>
+            </div>
+          )}
         </div>
 
         <div className={styles.footer}>
           <div className={styles.price}>
             <span className={styles.priceAmount}>
-              {property.propertyType === 'off-plan' && property.priceFromAED
-                ? `From ${formatNumber(property.priceFromAED)} AED`
-                : `${formatNumber(getPrice())} AED`}
+              {(() => {
+                const price = getPrice();
+                if (!price || price === 0) {
+                  return t('priceOnRequest');
+                }
+                if (property.propertyType === 'off-plan') {
+                  return `From ${formatNumber(price)} AED`;
+                }
+                return `${formatNumber(price)} AED`;
+              })()}
             </span>
           </div>
-          <div className={styles.pricePerSqm}>
-            {getPricePerSqm()} AED/sq.m
-          </div>
+          {(() => {
+            const pricePerSqm = getPricePerSqm();
+            if (pricePerSqm !== 'N/A') {
+              return (
+                <div className={styles.pricePerSqm}>
+                  {pricePerSqm} AED/sq.m
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
     </Link>

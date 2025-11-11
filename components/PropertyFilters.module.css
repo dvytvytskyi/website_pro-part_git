@@ -4,6 +4,15 @@
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 40px;
+  position: relative;
+  z-index: auto;
+}
+
+.filtersModal {
+  border: none;
+  padding: 0;
+  margin-bottom: 0;
+  background: transparent;
 }
 
 .filtersRow {
@@ -11,6 +20,12 @@
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.filtersRowModal {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
 }
 
 .typeToggle {
@@ -78,6 +93,18 @@
 .dropdownWrapper {
   position: relative;
   flex-shrink: 0;
+  z-index: 1;
+}
+
+/* When dropdown is open, increase z-index to be above header (1000) and property cards */
+.dropdownWrapper:has(.dropdownMenu) {
+  z-index: 1100;
+  position: relative;
+}
+
+.dropdownWrapper[data-dropdown-open="true"] {
+  z-index: 1100;
+  position: relative;
 }
 
 /* Location Dropdown - ширший для довгих назв */
@@ -90,8 +117,8 @@
 }
 
 .locationDropdown .dropdownMenu {
-  min-width: 220px;
-  max-width: 300px;
+  min-width: 320px;
+  max-width: 450px;
 }
 
 /* Bedrooms Dropdown - вужчий */
@@ -146,8 +173,8 @@
 }
 
 .sortDropdown .dropdownMenu {
-  width: 100%;
-  min-width: 140px;
+  min-width: 180px;
+  max-width: 220px;
 }
 
 .dropdownButton {
@@ -199,12 +226,38 @@
   border: 1px solid rgba(0, 48, 119, 0.2);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  z-index: 1100; /* Higher than header (1000) to appear above it and property cards */
   max-height: 300px;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px;
 }
+
+/* Dropdown opens downward (default) */
+.dropdownMenuDown {
+  top: calc(100% + 8px);
+  bottom: auto;
+}
+
+/* Dropdown opens upward */
+.dropdownMenuUp {
+  top: auto;
+  bottom: calc(100% + 8px);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal mode styles */
+.dropdownMenuModal {
+  z-index: 2100 !important; /* Higher than modal (2001) and backdrop (2000) */
+  width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  position: absolute !important;
+}
+
+/* Note: Modal dropdown wrapper styles are defined below in .filtersRowModal section */
 
 .dropdownItem {
   width: 100%;
@@ -234,14 +287,16 @@
 
 .checkboxItem {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   padding: 10px 12px;
   cursor: pointer;
   border-radius: 6px;
   transition: background 0.2s ease;
-  white-space: nowrap;
-  overflow: visible;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  width: 100%;
 }
 
 .checkboxItem:hover {
@@ -254,6 +309,7 @@
   cursor: pointer;
   accent-color: #003077;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .checkboxItem span {
@@ -263,7 +319,10 @@
   color: #003077;
   flex: 1;
   min-width: 0;
-  overflow: visible;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
 }
 
 .rangeInputs {
@@ -333,6 +392,11 @@
     min-width: 160px;
   }
 
+  .locationDropdown .dropdownMenu {
+    min-width: 300px;
+    max-width: 420px;
+  }
+
   .bedroomsDropdown {
     min-width: 130px;
   }
@@ -376,6 +440,11 @@
     min-width: 150px;
   }
 
+  .locationDropdown .dropdownMenu {
+    min-width: 280px;
+    max-width: 400px;
+  }
+
   .bedroomsDropdown {
     min-width: 120px;
   }
@@ -396,6 +465,94 @@
     min-width: 120px;
     font-size: 12px;
     padding: 10px 14px;
+  }
+}
+
+.filtersRowModal .typeToggle {
+  width: 100%;
+}
+
+.filtersRowModal .typeButton {
+  flex: 1;
+}
+
+.filtersRowModal .searchWrapper {
+  width: 100%;
+  min-width: 100%;
+}
+
+.filtersRowModal .dropdownWrapper {
+  width: 100%;
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
+}
+
+/* When dropdown is open in modal, increase z-index using data attribute */
+.filtersRowModal .dropdownWrapper[data-dropdown-open="true"] {
+  z-index: 2100;
+  position: relative;
+}
+
+/* Fallback for browsers that support :has() */
+.filtersRowModal .dropdownWrapper:has(.dropdownMenu) {
+  z-index: 2100;
+  position: relative;
+}
+
+.filtersRowModal .dropdownButton {
+  width: 100%;
+  min-width: 100%;
+}
+
+.filtersRowModal .dropdownMenu {
+  right: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  position: absolute !important;
+  box-sizing: border-box;
+}
+
+.filtersRowModal .rangeInputs {
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.filtersRowModal .rangeInput {
+  flex: 1;
+  min-width: 100px;
+  max-width: none;
+}
+
+.filtersRowModal .checkboxItem {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.filtersRowModal .checkboxItem span {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Desktop: Ensure dropdowns are above header (1000) and property cards */
+@media (min-width: 901px) {
+  /* Ensure filters container doesn't create stacking issues */
+  .filters {
+    position: relative;
+    z-index: auto;
+  }
+
+  /* Desktop filters row should not interfere with dropdown z-index */
+  .filtersRow {
+    position: relative;
+    z-index: auto;
+  }
+
+  /* Ensure dropdown menu is above everything on desktop */
+  .dropdownMenu {
+    z-index: 1100 !important;
   }
 }
 

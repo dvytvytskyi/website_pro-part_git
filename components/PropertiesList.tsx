@@ -8,8 +8,9 @@ import { getProperties, Property, PropertyFilters as ApiPropertyFilters } from '
 import { restoreScrollState } from '@/lib/scrollRestoration';
 import styles from './PropertiesList.module.css';
 import PropertyCard from './PropertyCard';
-import PropertyFilters from './PropertyFilters';
 import PropertyCardSkeleton from './PropertyCardSkeleton';
+import FilterModal from './FilterModal';
+import PropertyFilters from './PropertyFilters';
 
 interface Filters {
   type: 'new' | 'secondary';
@@ -196,6 +197,7 @@ export default function PropertiesList() {
   const initialPage = searchParams.get('page') ? parseInt(searchParams.get('page') || '1', 10) : 1;
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [scrollRestored, setScrollRestored] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   // Sync page with URL when URL changes (e.g., browser back/forward)
   // Use a ref to track if we're updating URL ourselves to avoid loops
@@ -251,7 +253,20 @@ export default function PropertiesList() {
       }
       
       // Request only the current page from API (36 items)
-      const result = await getProperties(apiFilters);
+      // Use cache by default, but allow bypassing it via URL parameter ?refresh=true
+      const refreshCache = searchParams.get('refresh') === 'true';
+      
+      // Always clear cache if refresh parameter is present
+      if (refreshCache) {
+        const { clearPropertiesCache, clearPublicDataCache } = await import('@/lib/api');
+        clearPropertiesCache();
+        clearPublicDataCache();
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔄 Cache cleared due to ?refresh=true parameter');
+        }
+      }
+      
+      const result = await getProperties(apiFilters, !refreshCache);
       const loadedProperties = Array.isArray(result.properties) ? result.properties : [];
       
       // Use total from API - this is the total count of ALL properties matching filters
@@ -352,11 +367,51 @@ export default function PropertiesList() {
     }
   }, [loading, scrollRestored, currentPage, filters, updateUrl]);
 
-  const handleFilterChange = (newFilters: Filters) => {
+  // Handle filter changes (for desktop inline filters)
+  const handleFilterChange = useCallback((newFilters: Filters) => {
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filters change
     setScrollRestored(false); // Reset scroll restoration flag when filters change
     updateUrl(newFilters, 1); // Update URL (reset page to 1)
+  }, [updateUrl]);
+
+  // Apply filters (called from modal when user clicks "Apply" - mobile only)
+  const handleApplyFilters = useCallback((newFilters: Filters) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
+    setScrollRestored(false); // Reset scroll restoration flag when filters change
+    updateUrl(newFilters, 1); // Update URL (reset page to 1)
+  }, [updateUrl]);
+
+  // Reset filters (called from modal when user clicks "Reset")
+  const handleResetFilters = () => {
+    const defaultFilters: Filters = {
+      type: 'new',
+      search: '',
+      location: [],
+      bedrooms: [],
+      sizeFrom: '',
+      sizeTo: '',
+      priceFrom: '',
+      priceTo: '',
+      sort: 'newest',
+      developerId: undefined,
+      cityId: undefined,
+    };
+    handleApplyFilters(defaultFilters);
+  };
+
+  // Count active filters for button badge
+  const getActiveFiltersCount = (): number => {
+    let count = 0;
+    if (filters.search) count++;
+    if (filters.location.length > 0) count++;
+    if (filters.bedrooms.length > 0) count++;
+    if (filters.sizeFrom || filters.sizeTo) count++;
+    if (filters.priceFrom || filters.priceTo) count++;
+    if (filters.developerId) count++;
+    if (filters.sort && filters.sort !== 'newest') count++;
+    return count;
   };
 
   // Calculate pagination based on total from API
@@ -407,7 +462,23 @@ export default function PropertiesList() {
     return (
       <div className={styles.propertiesList}>
         <div className={styles.container}>
-          <PropertyFilters filters={filters} onFilterChange={handleFilterChange} />
+          {/* Desktop Filters - Always visible */}
+          <div className={styles.desktopFilters}>
+            <PropertyFilters
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              isModal={false}
+            />
+          </div>
+
+          {/* Filter Modal - Only for mobile */}
+          <FilterModal
+            isOpen={isFilterModalOpen}
+            onClose={() => setIsFilterModalOpen(false)}
+            filters={filters}
+            onApply={handleApplyFilters}
+            onReset={handleResetFilters}
+          />
           <div className={styles.error}>
             <p>{error}</p>
             <button onClick={() => loadProperties()}>{t('retry') || 'Retry'}</button>
@@ -420,12 +491,30 @@ export default function PropertiesList() {
   return (
     <div className={styles.propertiesList}>
       <div className={styles.container}>
-        <PropertyFilters filters={filters} onFilterChange={handleFilterChange} />
+        {/* Desktop Filters - Always visible */}
+        <div className={styles.desktopFilters}>
+          <PropertyFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            isModal={false}
+          />
+        </div>
+
+        {/* Filter Modal - Only for mobile */}
+        <FilterModal
+          isOpen={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
+          filters={filters}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+        />
         
         {loading ? (
           <>
-            <div className={styles.resultsCount}>
-              <div className={styles.skeletonText}></div>
+            <div className={styles.resultsHeader}>
+              <div className={styles.resultsCount}>
+                <div className={styles.skeletonText}></div>
+              </div>
             </div>
             <div className={styles.grid}>
               {Array.from({ length: 12 }).map((_, index) => (
@@ -439,12 +528,30 @@ export default function PropertiesList() {
           </div>
         ) : (
           <>
-            <div className={styles.resultsCount}>
-              {t('showing', { count: totalProperties }) || `${totalProperties} ${totalProperties === 1 ? 'property' : 'properties'}`}
+            <div className={styles.resultsHeader}>
+              <div className={styles.resultsCount}>
+                {t('showing', { count: totalProperties }) || `${totalProperties} ${totalProperties === 1 ? 'property' : 'properties'}`}
+              </div>
+              {/* Mobile Filter Button - Only visible on mobile, next to results count */}
+              <div className={styles.mobileFilterButton}>
+                <button
+                  className={styles.filterButton}
+                  onClick={() => setIsFilterModalOpen(true)}
+                >
+                  Filters
+                  {getActiveFiltersCount() > 0 && (
+                    <span className={styles.filterBadge}>{getActiveFiltersCount()}</span>
+                  )}
+                </button>
+              </div>
             </div>
             <div className={styles.grid}>
               {propertiesArray.map((property) => (
-                <PropertyCard key={property.id} property={property} currentPage={validPage} />
+                <PropertyCard 
+                  key={property.id} 
+                  property={property} 
+                  currentPage={validPage}
+                />
               ))}
             </div>
             {/* Pagination */}

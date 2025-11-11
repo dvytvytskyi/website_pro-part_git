@@ -44,6 +44,7 @@ export default function Areas() {
   const [isVisible, setIsVisible] = useState(false);
   const [areas, setAreas] = useState<Area[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set()); // Track failed image loads
 
   const getLocalizedPath = (path: string) => {
     return locale === 'en' ? path : `/${locale}${path}`;
@@ -53,22 +54,64 @@ export default function Areas() {
     return locale === 'ru' ? area.nameRu : area.name;
   };
 
-  // Load areas from API
+  // Load areas from API - оптимізовано: використовуємо кеш, фільтруємо тільки потрібні areas
   useEffect(() => {
     const loadAreas = async () => {
       setLoading(true);
       try {
-        const apiAreas = await getAreas();
+        const apiAreas = await getAreas(undefined, true); // Використовуємо кеш
         
-        // Filter only target areas by ID and convert to component format
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`📦 Areas component: Loaded ${apiAreas.length} areas from API/cache, filtering ${TARGET_AREA_IDS.length} target areas`);
+        }
+        
+        // Filter only target areas by ID, exclude areas without real images or with placeholders, and convert to component format
         const filteredAreas: Area[] = apiAreas
-          .filter((apiArea: ApiArea) => TARGET_AREA_IDS.includes(apiArea.id))
-          .map((apiArea: ApiArea) => {
-            // Get image - use first image from images array or fallback
-            let imageUrl = 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop';
-            if (apiArea.images && apiArea.images.length > 0) {
-              imageUrl = apiArea.images[0];
+          .filter((apiArea: ApiArea) => {
+            // Filter by target IDs
+            const isTargetArea = TARGET_AREA_IDS.includes(apiArea.id);
+            if (!isTargetArea) {
+              return false;
             }
+            
+            // Check if area has real images (not placeholders)
+            const hasImages = apiArea.images && Array.isArray(apiArea.images) && apiArea.images.length > 0;
+            if (!hasImages) {
+              return false; // No images at all
+            }
+            
+            // Get first image URL
+            const firstImage = apiArea.images && apiArea.images.length > 0 ? apiArea.images[0] : null;
+            if (!firstImage || typeof firstImage !== 'string' || firstImage.trim() === '') {
+              return false; // Empty or invalid image URL
+            }
+            
+            // Check if image URL is a placeholder (unsplash.com or other placeholder services)
+            const isPlaceholder = firstImage.includes('unsplash.com') ||
+              firstImage.includes('placeholder') ||
+              firstImage.includes('via.placeholder.com') ||
+              firstImage.includes('dummyimage.com') ||
+              firstImage.includes('placehold.it') ||
+              firstImage.includes('fakeimg.pl');
+            
+            if (isPlaceholder) {
+              return false;
+            }
+            
+            // Check if URL looks valid (starts with http:// or https://)
+            const isValidUrl = firstImage.startsWith('http://') || firstImage.startsWith('https://');
+            if (!isValidUrl) {
+              return false;
+            }
+            
+            // Area passed all checks
+            return true;
+          })
+          .map((apiArea: ApiArea) => {
+            // Get image - should always have real images at this point due to filter
+            const imageUrl = apiArea.images && apiArea.images.length > 0 
+              ? apiArea.images[0] 
+              : '';
             
             // Generate slug from nameEn
             const slug = (apiArea.nameEn || '')
@@ -182,36 +225,58 @@ export default function Areas() {
               ) : areas.length === 0 ? (
                 <div className={styles.noAreas}>No areas found</div>
               ) : (
-                areas.map((area) => (
-                <Link
-                  key={area.id}
-                  href={getLocalizedPath(`/areas/${area.id}`)}
-                  className={styles.card}
-                >
-                  <div className={styles.cardImage}>
-                    <Image
-                      src={area.image}
-                      alt={getAreaName(area)}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                      sizes="(max-width: 1200px) 33vw, (max-width: 900px) 50vw, 25vw"
-                    />
-                    <div className={styles.cardOverlay}></div>
-                    <div className={styles.cardContent}>
-                      <h3 className={styles.cardTitle}>{getAreaName(area)}</h3>
-                      <div className={styles.cardInfo}>
-                        <span className={styles.projectsCount}>{area.projectsCount}</span>
-                        <span className={styles.projectsLabel}>{t('projects')}</span>
-                      </div>
-                    </div>
-                    <div className={styles.cardArrow}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 5L16 12L9 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-                ))
+                areas
+                  .filter(area => !failedImages.has(area.id)) // Hide areas with failed images
+                  .map((area) => {
+                    // Don't render if image has failed
+                    if (failedImages.has(area.id)) {
+                      return null;
+                    }
+                    
+                    return (
+                      <Link
+                        key={area.id}
+                        href={getLocalizedPath(`/areas/${area.id}`)}
+                        className={styles.card}
+                      >
+                        <div className={styles.cardImage}>
+                          <Image
+                            src={area.image}
+                            alt={getAreaName(area)}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            sizes="(max-width: 1200px) 33vw, (max-width: 900px) 50vw, 25vw"
+                            loading="lazy"
+                            unoptimized
+                            onError={() => {
+                              // If image fails to load, mark it as failed and hide the area card
+                              if (process.env.NODE_ENV === 'development') {
+                                console.error(`❌ Failed to load image for area "${area.name}" (${area.id}):`, area.image);
+                              }
+                              setFailedImages(prev => {
+                                const next = new Set(prev);
+                                next.add(area.id);
+                                return next;
+                              });
+                            }}
+                          />
+                          <div className={styles.cardOverlay}></div>
+                          <div className={styles.cardContent}>
+                            <h3 className={styles.cardTitle}>{getAreaName(area)}</h3>
+                            <div className={styles.cardInfo}>
+                              <span className={styles.projectsCount}>{area.projectsCount}</span>
+                              <span className={styles.projectsLabel}>{t('projects')}</span>
+                            </div>
+                          </div>
+                          <div className={styles.cardArrow}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M9 5L16 12L9 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })
               )}
             </div>
           </div>

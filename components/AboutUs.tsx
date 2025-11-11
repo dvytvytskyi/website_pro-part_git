@@ -85,6 +85,8 @@ export default function AboutUs() {
                       fill
                       style={{ objectFit: 'cover' }}
                       sizes="(max-width: 768px) 50vw, 25vw"
+                      loading="lazy"
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -102,6 +104,8 @@ export default function AboutUs() {
                       fill
                       style={{ objectFit: 'cover' }}
                       sizes="(max-width: 768px) 50vw, 25vw"
+                      loading="lazy"
+                      unoptimized
                     />
                   </div>
                 </div>

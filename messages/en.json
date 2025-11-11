@@ -262,7 +262,8 @@
       "offPlan": "Off Plan",
       "secondary": "Secondary"
     },
-    "developer": "Developer"
+    "developer": "Developer",
+    "priceOnRequest": "On request"
   },
   "filters": {
     "city": {

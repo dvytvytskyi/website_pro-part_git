@@ -190,7 +190,8 @@ export default function AboutHero() {
             fill
             style={{ objectFit: 'cover' }}
             sizes="100vw"
-            priority
+            loading="lazy"
+            unoptimized
           />
         </div>
       </div>
@@ -338,6 +339,8 @@ export function TeamSection({ t }: { t: any }) {
                 fill
                 style={{ objectFit: 'cover' }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                loading="lazy"
+                unoptimized
               />
             </div>
             <div className={styles.teamInfo}>
@@ -353,6 +356,8 @@ export function TeamSection({ t }: { t: any }) {
                 fill
                 style={{ objectFit: 'cover' }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                loading="lazy"
+                unoptimized
               />
             </div>
             <div className={styles.teamInfo}>
@@ -368,6 +373,8 @@ export function TeamSection({ t }: { t: any }) {
                 fill
                 style={{ objectFit: 'cover' }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                loading="lazy"
+                unoptimized
               />
             </div>
             <div className={styles.teamInfo}>
@@ -383,6 +390,8 @@ export function TeamSection({ t }: { t: any }) {
                 fill
                 style={{ objectFit: 'cover' }}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                loading="lazy"
+                unoptimized
               />
             </div>
             <div className={styles.teamInfo}>
@@ -407,49 +416,82 @@ export function OfficeSection({ t }: { t: any }) {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
 
+  // Lazy load Mapbox only when map container becomes visible (оптимізація: не завантажуємо Mapbox до появи в viewport)
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
-    const loadMapbox = async () => {
-      const mapboxgl = (await import('mapbox-gl')).default;
-      // CSS is imported globally in app/globals.css
-      
-      const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+    // Use Intersection Observer to load Mapbox only when visible
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !mapRef.current) {
+            // Map container is visible, load Mapbox
+            const loadMapbox = async () => {
+              if (process.env.NODE_ENV === 'development') {
+                console.log('🗺️ Loading Mapbox (map container is now visible)');
+              }
+              
+              const mapboxgl = (await import('mapbox-gl')).default;
+              // CSS is imported globally in app/globals.css
+              
+              const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
 
-      if (!token) {
-        console.warn('Mapbox token is not set');
-        return;
-      }
+              if (!token) {
+                console.warn('Mapbox token is not set');
+                return;
+              }
 
-      mapboxgl.accessToken = token;
+              mapboxgl.accessToken = token;
 
-      const map = new mapboxgl.Map({
-        container: mapContainerRef.current!,
-        style: 'mapbox://styles/abiespana/cmcxiep98004r01quhxspf3w9',
-        center: [55.2708, 25.2048], // Dubai office coordinates
-        zoom: 15,
-        interactive: true,
-      });
+              const map = new mapboxgl.Map({
+                container: mapContainerRef.current!,
+                style: 'mapbox://styles/abiespana/cmcxiep98004r01quhxspf3w9',
+                center: [55.2708, 25.2048], // Dubai office coordinates
+                zoom: 15,
+                interactive: true,
+                // Optimize Mapbox loading - обмежуємо область та zoom для зменшення кількості тайлів
+                maxZoom: 18,
+                minZoom: 10,
+                maxBounds: [
+                  [54.0, 24.0], // Southwest coordinates (Dubai area)
+                  [56.0, 26.0], // Northeast coordinates (Dubai area)
+                ],
+              });
 
-      map.on('load', () => {
-        map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+              map.on('load', () => {
+                map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-        // Add office marker
-        const marker = new mapboxgl.Marker({
-          color: '#003077',
-        })
-          .setLngLat([55.2708, 25.2048])
-          .addTo(map);
+                // Add office marker
+                const marker = new mapboxgl.Marker({
+                  color: '#003077',
+                })
+                  .setLngLat([55.2708, 25.2048])
+                  .addTo(map);
 
-        markerRef.current = marker;
-      });
+                markerRef.current = marker;
+                
+                if (process.env.NODE_ENV === 'development') {
+                  console.log('✅ Mapbox loaded successfully');
+                }
+              });
 
-      mapRef.current = map;
-    };
+              mapRef.current = map;
+            };
 
-    loadMapbox();
+            loadMapbox();
+            
+            // Unobserve after loading to avoid reloading
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 } // Load when 10% of map container is visible
+    );
+
+    observer.observe(mapContainerRef.current);
 
     return () => {
+      observer.disconnect();
       if (markerRef.current) {
         markerRef.current.remove();
       }
@@ -716,6 +758,8 @@ function LeaderCard({ name, description, photo, isExpanded, onToggle }: Leader &
           fill
           style={{ objectFit: 'cover', filter: 'grayscale(100%)' }}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          loading="lazy"
+          unoptimized
         />
       </div>
       <div className={styles.leaderContent}>

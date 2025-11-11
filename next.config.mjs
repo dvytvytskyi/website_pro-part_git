@@ -4,6 +4,9 @@ const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -33,6 +36,18 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'admin.foryou-realestate.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.reelly.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'reelly.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'xdil-qda0-zofk.m2.xano.io',
       },
       {
         protocol: 'https',

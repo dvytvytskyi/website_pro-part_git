@@ -7,7 +7,7 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getAreas, Area as ApiArea } from '@/lib/api';
 import styles from './AreasList.module.css';
-import AreaCardSkeleton from './AreaCardSkeleton';
+import AreaCardSkeleton from '@/components/AreaCardSkeleton';
 
 interface Area {
   id: string;
@@ -32,6 +32,7 @@ export default function AreasList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imagesLoading, setImagesLoading] = useState<Set<string>>(new Set());
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set()); // Track failed image loads
   
   // Initialize all images as loading
   useEffect(() => {
@@ -57,35 +58,134 @@ export default function AreasList() {
       try {
         const apiAreas = await getAreas();
         
-        // Convert API areas to component format
-        const convertedAreas: Area[] = apiAreas.map(area => {
-          const hasImages = area.images && area.images.length > 0;
-          const imageUrl = hasImages 
-            ? area.images[0] 
-            : 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop';
-          
-          if (process.env.NODE_ENV === 'development' && !hasImages) {
-            console.warn(`⚠️ Area ${area.nameEn} (${area.id}) has no images`);
-          }
-          
-          return {
-            id: area.id,
-            name: area.nameEn,
-            nameRu: area.nameRu,
-            projectsCount: area.projectsCount.total,
-            image: imageUrl,
-            city: area.city.nameEn,
-            cityRu: area.city.nameRu,
-          };
-        });
+        // Convert API areas to component format and filter out areas with placeholder images
+        const convertedAreas: Area[] = apiAreas
+          .filter(area => {
+            // Filter out areas with 0 projects
+            const projectsCount = area.projectsCount?.total || 0;
+            if (projectsCount === 0) {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: 0 projects`);
+              }
+              return false;
+            }
+            
+            // Filter out areas that don't have real images (have placeholder)
+            const hasImages = area.images && Array.isArray(area.images) && area.images.length > 0;
+            if (!hasImages) {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: no images`);
+              }
+              return false; // No images at all
+            }
+            
+            // Get first image URL
+            const firstImage = area.images && area.images.length > 0 ? area.images[0] : null;
+            if (!firstImage || typeof firstImage !== 'string' || firstImage.trim() === '') {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: empty image URL`);
+              }
+              return false; // Empty or invalid image URL
+            }
+            
+            // Check if image URL is a placeholder (unsplash.com or other placeholder services)
+            const isPlaceholder = firstImage.includes('unsplash.com') ||
+              firstImage.includes('placeholder') ||
+              firstImage.includes('via.placeholder.com') ||
+              firstImage.includes('dummyimage.com') ||
+              firstImage.includes('placehold.it') ||
+              firstImage.includes('fakeimg.pl');
+            
+            if (isPlaceholder) {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: placeholder image URL: ${firstImage.substring(0, 100)}`);
+              }
+              return false;
+            }
+            
+            // Check if URL looks valid (starts with http:// or https://)
+            const isValidUrl = firstImage.startsWith('http://') || firstImage.startsWith('https://');
+            if (!isValidUrl) {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: invalid URL format: ${firstImage.substring(0, 100)}`);
+              }
+              return false;
+            }
+            
+            // Check if URL is from known valid image domains (optional - can be removed if too restrictive)
+            // This helps filter out obviously invalid URLs
+            const validImageDomains = [
+              'reelly.io',
+              'xano.io',
+              'alnair.ae',
+              'foryou-realestate.com',
+              'cdn',
+              'cloudinary.com',
+              'amazonaws.com',
+              's3.amazonaws.com',
+              'imgur.com',
+              'i.imgur.com',
+            ];
+            
+            const hasValidDomain = validImageDomains.some(domain => firstImage.includes(domain));
+            // Don't filter out based on domain alone, as there might be other valid domains
+            // But log it for debugging
+            if (process.env.NODE_ENV === 'development' && !hasValidDomain) {
+              console.log(`⚠️ Area "${area.nameEn}" (${area.id}) has image from unknown domain: ${new URL(firstImage).hostname}`);
+            }
+            
+            // Area passed all checks
+            return true;
+          })
+          .map(area => {
+            // At this point, we know area has valid real images
+            const imageUrl = area.images && area.images.length > 0 
+              ? area.images[0] 
+              : '';
+            
+            return {
+              id: area.id,
+              name: area.nameEn,
+              nameRu: area.nameRu,
+              projectsCount: area.projectsCount.total,
+              image: imageUrl,
+              city: area.city.nameEn,
+              cityRu: area.city.nameRu,
+            };
+          });
         
         setAllAreas(convertedAreas);
         
         if (process.env.NODE_ENV === 'development') {
-          const areasWithImages = convertedAreas.filter(a => 
-            !a.image.includes('unsplash.com')
-          ).length;
-          console.log(`Loaded ${convertedAreas.length} areas, ${areasWithImages} with real images`);
+          const filteredOut = apiAreas.length - convertedAreas.length;
+          const areasWithZeroProjects = apiAreas.filter(area => (area.projectsCount?.total || 0) === 0).length;
+          const areasWithoutImages = apiAreas.filter(area => {
+            const hasImages = area.images && Array.isArray(area.images) && area.images.length > 0;
+            if (!hasImages) return true;
+            const firstImage = area.images && area.images.length > 0 ? area.images[0] : null;
+            if (!firstImage || typeof firstImage !== 'string' || firstImage.trim() === '') return true;
+            const isPlaceholder = firstImage.includes('unsplash.com') ||
+              firstImage.includes('placeholder') ||
+              firstImage.includes('via.placeholder.com') ||
+              firstImage.includes('dummyimage.com');
+            const isValidUrl = firstImage.startsWith('http://') || firstImage.startsWith('https://');
+            return isPlaceholder || !isValidUrl;
+          }).length;
+          
+          console.log(`✅ Loaded ${convertedAreas.length} areas with projects and valid images`);
+          console.log(`   Filtered out:`);
+          console.log(`   - ${areasWithZeroProjects} areas with 0 projects`);
+          console.log(`   - ${areasWithoutImages} areas with no images/invalid images`);
+          console.log(`   Total filtered: ${filteredOut} areas`);
+          
+          // Log some examples of filtered areas with 0 projects
+          if (areasWithZeroProjects > 0) {
+            const zeroProjectAreas = apiAreas.filter(area => (area.projectsCount?.total || 0) === 0).slice(0, 10);
+            console.log(`📋 Examples of areas with 0 projects (filtered out):`, zeroProjectAreas.map(a => ({
+              name: a.nameEn,
+              projectsCount: a.projectsCount?.total || 0
+            })));
+          }
         }
       } catch (err: any) {
         console.error('Failed to fetch areas:', err);
@@ -207,8 +307,17 @@ export default function AreasList() {
         {areas.length > 0 ? (
           <>
             <div className={styles.grid}>
-              {areas.map((area) => {
+              {areas
+                .filter(area => !failedImages.has(area.id)) // Hide areas with failed images
+                .map((area) => {
                 const isImageLoading = imagesLoading.has(area.id);
+                const hasFailed = failedImages.has(area.id);
+                
+                // Don't render if image has failed
+                if (hasFailed) {
+                  return null;
+                }
+                
                 return (
                   <Link
                     key={area.id}
@@ -225,6 +334,7 @@ export default function AreasList() {
                         fill
                         style={{ objectFit: 'cover', opacity: isImageLoading ? 0 : 1, transition: 'opacity 0.3s ease' }}
                         sizes="(max-width: 1200px) 50vw, (max-width: 900px) 100vw, 33vw"
+                        unoptimized
                         onLoad={() => {
                           setImagesLoading(prev => {
                             const next = new Set(prev);
@@ -232,7 +342,16 @@ export default function AreasList() {
                             return next;
                           });
                         }}
-                        onError={() => {
+                        onError={(e) => {
+                          // If image fails to load, mark it as failed and hide the area card
+                          if (process.env.NODE_ENV === 'development') {
+                            console.error(`❌ Failed to load image for area "${area.name}" (${area.id}):`, area.image);
+                          }
+                          setFailedImages(prev => {
+                            const next = new Set(prev);
+                            next.add(area.id);
+                            return next;
+                          });
                           setImagesLoading(prev => {
                             const next = new Set(prev);
                             next.delete(area.id);

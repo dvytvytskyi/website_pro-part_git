@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { getPublicData } from '@/lib/api';
+import { getAreas } from '@/lib/api';
 import styles from './Hero.module.css';
 
 interface Area {
@@ -29,13 +29,16 @@ export default function Hero() {
 
   const bedroomsOptions = ['all', '1', '2', '3', '4', '5+'];
 
-  // Load areas from API
+  // Load areas from API - оптимізовано: завантажуємо тільки areas, а не всі дані
   useEffect(() => {
     const loadAreas = async () => {
       try {
-        const publicData = await getPublicData();
-        if (publicData.areas && Array.isArray(publicData.areas)) {
-          setAreas(publicData.areas);
+        const apiAreas = await getAreas();
+        if (apiAreas && Array.isArray(apiAreas)) {
+          setAreas(apiAreas);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`✅ Hero: Loaded ${apiAreas.length} areas (optimized - only areas, not all public data)`);
+          }
         }
       } catch (error) {
         console.error('Error loading areas:', error);

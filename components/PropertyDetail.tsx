@@ -31,10 +31,14 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [unitImagesLoading, setUnitImagesLoading] = useState<Set<string>>(new Set());
+  const [heroImageLoading, setHeroImageLoading] = useState(true);
   const unitsScrollRef = useRef<HTMLDivElement>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchEndRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -43,6 +47,19 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
         setError(null);
         const data = await getProperty(propertyId);
         setProperty(data);
+        
+        // Initialize hero image as loading
+        if (data.photos && data.photos.length > 0) {
+          setHeroImageLoading(true);
+        }
+        
+        // Initialize unit images as loading
+        if (data.units && data.units.length > 0) {
+          const unitsWithImages = data.units
+            .filter(unit => unit.planImage)
+            .map(unit => unit.id);
+          setUnitImagesLoading(new Set(unitsWithImages));
+        }
       } catch (err: any) {
         console.error('Error fetching property:', err);
         setError(err.message || t('notFound') || 'Property not found');
@@ -53,6 +70,87 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
 
     fetchProperty();
   }, [propertyId, t]);
+  
+  // Reset hero image loading when image index changes
+  // Note: If image was prefetched, it should load quickly from cache
+  useEffect(() => {
+    if (property && property.photos.length > 0) {
+      // Show skeleton briefly, but prefetched images will load very quickly
+      setHeroImageLoading(true);
+    }
+  }, [currentImageIndex, property]);
+  
+  // Preload first image and prefetch next images
+  useEffect(() => {
+    if (!property || !property.photos || property.photos.length === 0) return;
+    
+    // Create and add preload link for first image in head
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = property.photos[0];
+    link.setAttribute('fetchpriority', 'high');
+    document.head.appendChild(link);
+    
+    // Also preload using Image object for immediate cache
+    const firstImage = new window.Image();
+    firstImage.src = property.photos[0];
+    
+    // Check if first image is already cached
+    firstImage.onload = () => {
+      // Image is cached or loaded quickly, hide skeleton immediately
+      setHeroImageLoading(false);
+    };
+    
+    // If image fails to load quickly, let the Image component handle it
+    firstImage.onerror = () => {
+      // If preload fails, still let the Image component try
+    };
+    
+    // Prefetch next 2-3 images in background using Image objects
+    const imagesToPrefetch = Math.min(3, property.photos.length - 1);
+    for (let i = 1; i <= imagesToPrefetch; i++) {
+      const img = new window.Image();
+      img.src = property.photos[i];
+    }
+    
+    // Cleanup: remove preload link when component unmounts
+    return () => {
+      if (link && link.parentNode) {
+        link.parentNode.removeChild(link);
+      }
+    };
+  }, [property]);
+  
+  // Prefetch adjacent images when current image changes
+  useEffect(() => {
+    if (!property || !property.photos || property.photos.length <= 1) return;
+    
+    // Prefetch next image (for smooth navigation)
+    const nextIndex = (currentImageIndex + 1) % property.photos.length;
+    if (nextIndex !== currentImageIndex) {
+      const img = new window.Image();
+      img.src = property.photos[nextIndex];
+    }
+    
+    // Prefetch previous image (for smooth navigation)
+    const prevIndex = currentImageIndex === 0 
+      ? property.photos.length - 1 
+      : currentImageIndex - 1;
+    if (prevIndex !== currentImageIndex) {
+      const img = new window.Image();
+      img.src = property.photos[prevIndex];
+    }
+    
+    // Also prefetch one more image ahead for even smoother experience
+    if (property.photos.length > 2) {
+      const nextNextIndex = (currentImageIndex + 2) % property.photos.length;
+      if (nextNextIndex !== currentImageIndex && nextNextIndex !== nextIndex) {
+        const img = new window.Image();
+        img.src = property.photos[nextNextIndex];
+      }
+    }
+  }, [currentImageIndex, property]);
 
   // Initialize map when property is loaded
   useEffect(() => {
@@ -68,13 +166,56 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
     if (map.current) return; // Map already initialized
 
     try {
+      // Check if mobile device based on screen width
+      const checkIsMobile = () => {
+        if (typeof window === 'undefined') return false;
+        return window.innerWidth <= 768;
+      };
+      
+      const isMobile = checkIsMobile();
+      
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/abiespana/cmcxiep98004r01quhxspf3w9',
         center: [property.longitude, property.latitude],
         zoom: 14,
         accessToken: token,
+        // Disable drag pan on mobile (one finger drag)
+        // Allow touch zoom/rotate (two finger gestures)
+        interactive: true,
+        dragPan: !isMobile, // Disable one-finger drag on mobile
+        touchZoomRotate: true, // Allow two-finger zoom/rotate
+        touchPitch: true, // Allow two-finger pitch
+        boxZoom: false,
+        doubleClickZoom: true,
+        keyboard: false,
+        scrollZoom: true,
       });
+
+      // On mobile, ensure dragPan is disabled
+      if (isMobile) {
+        map.current.dragPan.disable();
+        
+        // Also disable on 'load' event to ensure it stays disabled
+        map.current.once('load', () => {
+          if (map.current) {
+            map.current.dragPan.disable();
+          }
+        });
+      }
+      
+      // Handle window resize to update dragPan setting
+      const handleResize = () => {
+        if (!map.current) return;
+        const nowMobile = checkIsMobile();
+        if (nowMobile) {
+          map.current.dragPan.disable();
+        } else {
+          map.current.dragPan.enable();
+        }
+      };
+      
+      window.addEventListener('resize', handleResize);
 
       // Add navigation controls
       map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -129,21 +270,24 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
         .setLngLat([property.longitude, property.latitude])
         .addTo(map.current);
 
+      // Cleanup function
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        if (markerRef.current) {
+          markerRef.current.remove();
+          markerRef.current = null;
+        }
+        if (map.current) {
+          map.current.remove();
+          map.current = null;
+        }
+      };
+
     } catch (error) {
       console.error('Error initializing map:', error);
+      // Return empty cleanup function if initialization failed
+      return () => {};
     }
-
-    // Cleanup
-    return () => {
-      if (markerRef.current) {
-        markerRef.current.remove();
-        markerRef.current = null;
-      }
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
-    };
   }, [property]);
 
   if (loading) {
@@ -221,49 +365,202 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
     }, 500);
   };
 
-  const getPriceDisplay = () => {
-    if (property.propertyType === 'off-plan' && property.priceFromAED) {
-      return `${t('from')} ${formatPrice(property.priceFromAED)} AED`;
-    } else if (property.propertyType === 'secondary' && property.priceAED) {
-      return `${formatPrice(property.priceAED)} AED`;
+  // Swipe handlers for mobile
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    const touch = e.targetTouches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    touchEndRef.current = null;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    const touch = e.targetTouches[0];
+    touchEndRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+    
+    const deltaX = touchStartRef.current.x - touchEndRef.current.x;
+    const deltaY = touchStartRef.current.y - touchEndRef.current.y;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+    
+    // Only handle swipe if horizontal movement is greater than vertical (horizontal swipe)
+    // and the distance is greater than minimum swipe distance
+    if (absDeltaX > minSwipeDistance && absDeltaX > absDeltaY) {
+      if (deltaX > 0) {
+        // Swipe left - next image
+        handleImageChange('next');
+      } else {
+        // Swipe right - previous image
+        handleImageChange('prev');
+      }
     }
-    return t('priceOnRequest');
+    
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  };
+
+  const getPriceDisplay = () => {
+    if (property.propertyType === 'off-plan') {
+      // For off-plan: use priceFromAED
+      const priceFromAED = property.priceFromAED;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 PropertyDetail - Off-plan price check:', {
+          priceFromAED,
+          priceFromAEDType: typeof priceFromAED,
+          priceFrom: property.priceFrom,
+          priceFromType: typeof property.priceFrom,
+          isPriceFromAEDValid: priceFromAED !== null && priceFromAED !== undefined && Number(priceFromAED) > 0,
+        });
+      }
+      
+      // Check if priceFromAED exists and is valid
+      if (priceFromAED !== null && priceFromAED !== undefined) {
+        const priceValue = typeof priceFromAED === 'string' ? parseFloat(priceFromAED) : Number(priceFromAED);
+        if (!isNaN(priceValue) && priceValue > 0) {
+          return `${t('from')} ${formatPrice(priceValue)} AED`;
+        }
+      }
+      
+      // Fallback: check if priceFrom exists and calculate priceFromAED
+      if (property.priceFrom !== null && property.priceFrom !== undefined) {
+        const priceFrom = typeof property.priceFrom === 'string' ? parseFloat(property.priceFrom) : Number(property.priceFrom);
+        if (!isNaN(priceFrom) && priceFrom > 0) {
+          const calculatedPriceFromAED = Math.round(priceFrom * 3.673);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`💱 PropertyDetail - Calculated priceFromAED from priceFrom: ${priceFrom} USD * 3.673 = ${calculatedPriceFromAED} AED`);
+          }
+          return `${t('from')} ${formatPrice(calculatedPriceFromAED)} AED`;
+        }
+      }
+    } else {
+      // For secondary: use priceAED
+      const priceAED = property.priceAED;
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 PropertyDetail - Secondary price check:', {
+          priceAED,
+          priceAEDType: typeof priceAED,
+          price: property.price,
+          priceType: typeof property.price,
+          isPriceAEDValid: priceAED !== null && priceAED !== undefined && Number(priceAED) > 0,
+        });
+      }
+      
+      // Check if priceAED exists and is valid
+      if (priceAED !== null && priceAED !== undefined) {
+        const priceValue = typeof priceAED === 'string' ? parseFloat(priceAED) : Number(priceAED);
+        if (!isNaN(priceValue) && priceValue > 0) {
+          return `${formatPrice(priceValue)} AED`;
+        }
+      }
+      
+      // Fallback: check if price exists and calculate priceAED
+      if (property.price !== null && property.price !== undefined) {
+        const price = typeof property.price === 'string' ? parseFloat(property.price) : Number(property.price);
+        if (!isNaN(price) && price > 0) {
+          const calculatedPriceAED = Math.round(price * 3.673);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`💱 PropertyDetail - Calculated priceAED from price: ${price} USD * 3.673 = ${calculatedPriceAED} AED`);
+          }
+          return `${formatPrice(calculatedPriceAED)} AED`;
+        }
+      }
+    }
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️ PropertyDetail - No valid price found, showing "On request"', {
+        propertyType: property.propertyType,
+        priceFromAED: property.priceFromAED,
+        priceFrom: property.priceFrom,
+        priceAED: property.priceAED,
+        price: property.price,
+      });
+    }
+    
+    return t('priceOnRequest') || 'On request';
   };
 
   const getSizeDisplay = () => {
-    if (property.sizeFromSqft && property.sizeToSqft) {
-      return `${formatSize(property.sizeFromSqft)} - ${formatSize(property.sizeToSqft)} ${t('sqft')}`;
-    } else if (property.sizeSqft) {
-      return `${formatSize(property.sizeSqft)} ${t('sqft')}`;
+    if (property.propertyType === 'off-plan') {
+      // For off-plan: use sizeFrom/sizeTo
+      if (property.sizeFromSqft && property.sizeToSqft) {
+        return `${formatSize(property.sizeFromSqft)} - ${formatSize(property.sizeToSqft)} ${t('sqft')}`;
+      } else if (property.sizeFromSqft) {
+        return `${formatSize(property.sizeFromSqft)} ${t('sqft')}`;
+      }
+      // Try m² if sqft not available
+      if (property.sizeFrom && property.sizeTo) {
+        const unit = locale === 'ru' ? 'м²' : 'sq.ft';
+        if (locale === 'ru') {
+          return `${formatSize(property.sizeFrom)} - ${formatSize(property.sizeTo)} ${unit}`;
+        } else {
+          // Convert to sqft
+          const fromSqft = property.sizeFrom * 10.764;
+          const toSqft = property.sizeTo * 10.764;
+          return `${formatSize(fromSqft)} - ${formatSize(toSqft)} ${unit}`;
+        }
+      } else if (property.sizeFrom) {
+        const unit = locale === 'ru' ? 'м²' : 'sq.ft';
+        if (locale === 'ru') {
+          return `${formatSize(property.sizeFrom)} ${unit}`;
+        } else {
+          const fromSqft = property.sizeFrom * 10.764;
+          return `${formatSize(fromSqft)} ${unit}`;
+        }
+      }
+    } else {
+      // For secondary: use size/sizeSqft
+      if (property.sizeSqft) {
+        return `${formatSize(property.sizeSqft)} ${t('sqft')}`;
+      } else if (property.size) {
+        const unit = locale === 'ru' ? 'м²' : 'sq.ft';
+        if (locale === 'ru') {
+          return `${formatSize(property.size)} ${unit}`;
+        } else {
+          const sizeSqft = property.size * 10.764;
+          return `${formatSize(sizeSqft)} ${unit}`;
+        }
+      }
     }
     return t('sizeOnRequest');
   };
 
   const getBedroomsDisplay = () => {
-    if (property.bedroomsFrom && property.bedroomsTo) {
-      return property.bedroomsFrom === property.bedroomsTo 
-        ? `${property.bedroomsFrom} ${t('beds')}`
-        : `${property.bedroomsFrom} - ${property.bedroomsTo} ${t('beds')}`;
-    } else if (property.bedrooms) {
-      return `${property.bedrooms} ${t('beds')}`;
+    if (property.propertyType === 'off-plan') {
+      if (property.bedroomsFrom && property.bedroomsTo) {
+        return property.bedroomsFrom === property.bedroomsTo 
+          ? `${property.bedroomsFrom} ${t('beds')}`
+          : `${property.bedroomsFrom} - ${property.bedroomsTo} ${t('beds')}`;
+      } else if (property.bedroomsFrom) {
+        return `${property.bedroomsFrom} ${t('beds')}`;
+      }
+    } else {
+      if (property.bedrooms) {
+        return `${property.bedrooms} ${t('beds')}`;
+      }
     }
     return '';
   };
 
   const getBathroomsDisplay = () => {
-    if (property.bathroomsFrom && property.bathroomsTo) {
-      return property.bathroomsFrom === property.bathroomsTo 
-        ? `${property.bathroomsFrom} ${t('baths')}`
-        : `${property.bathroomsFrom} - ${property.bathroomsTo} ${t('baths')}`;
-    } else if (property.bathrooms) {
-      return `${property.bathrooms} ${t('baths')}`;
+    if (property.propertyType === 'off-plan') {
+      // For off-plan properties, bathroomsFrom/To are always null
+      return '';
+    } else {
+      // For secondary properties
+      if (property.bathrooms) {
+        return `${property.bathrooms} ${t('baths')}`;
+      }
     }
     return '';
   };
 
   return (
     <div className={styles.container}>
-      {/* Breadcrumb Navigation */}
+      {/* Breadcrumb Navigation - Hidden on mobile */}
       {property && (
         <div className={styles.breadcrumb}>
           <Link href={`/${locale}/properties`} className={styles.breadcrumbLink}>
@@ -283,10 +580,19 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
 
       {/* Hero Image Section */}
       <div className={styles.heroSection}>
-        <div className={styles.imageContainer}>
+        <div 
+          className={styles.imageContainer}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           {property.photos.length > 0 && (
             <>
               <div className={styles.imageWrapper}>
+                {/* Skeleton while loading */}
+                {heroImageLoading && (
+                  <div className={styles.heroImageSkeleton}></div>
+                )}
                 {/* Previous image - sliding out */}
                 {isTransitioning && prevImageIndex !== currentImageIndex && (
                   <Image
@@ -297,6 +603,7 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
                     style={{ objectFit: 'cover' }}
                     sizes="100vw"
                     className={`${styles.heroImage} ${styles.prevImage} ${direction === 'right' ? styles.slideOutLeft : styles.slideOutRight}`}
+                    unoptimized
                   />
                 )}
                 {/* Current image - sliding in */}
@@ -305,10 +612,26 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
                   src={property.photos[currentImageIndex]}
                   alt={getName()}
                   fill
-                  style={{ objectFit: 'cover' }}
+                  priority={currentImageIndex === 0}
+                  style={{ 
+                    objectFit: 'cover',
+                    opacity: heroImageLoading ? 0 : 1,
+                    transition: 'opacity 0.3s ease'
+                  }}
                   sizes="100vw"
                   className={`${styles.heroImage} ${styles.currentImage} ${direction === 'right' ? styles.slideInRight : direction === 'left' ? styles.slideInLeft : ''}`}
+                  unoptimized
+                  onLoad={() => {
+                    setHeroImageLoading(false);
+                  }}
+                  onError={() => {
+                    setHeroImageLoading(false);
+                  }}
+                  onLoadingComplete={() => {
+                    setHeroImageLoading(false);
+                  }}
                 />
+                
               </div>
 
               {/* Navigation arrows */}
@@ -548,36 +871,95 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </div>
             </div>
             <div className={styles.unitsList} ref={unitsScrollRef}>
-              {property.units.map((unit) => (
-                <div key={unit.id} className={styles.unitCard}>
-                  <div className={styles.unitHeader}>
-                    <div className={styles.unitId}>{unit.unitId}</div>
-                    <div className={styles.unitType}>{unit.type}</div>
-                  </div>
-                  {unit.planImage && (
-                    <div className={styles.unitPlanImage}>
-                      <Image
-                        src={unit.planImage}
-                        alt={`Plan for ${unit.unitId}`}
-                        width={400}
-                        height={300}
-                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                      />
+              {property.units.map((unit) => {
+                const isImageLoading = unit.planImage && unitImagesLoading.has(unit.id);
+                
+                return (
+                  <div key={unit.id} className={styles.unitCard}>
+                    <div className={styles.unitHeader}>
+                      <div className={styles.unitId}>{unit.unitId}</div>
+                      <div className={styles.unitType}>{unit.type}</div>
                     </div>
-                  )}
+                    {unit.planImage && (
+                      <div className={styles.unitPlanImage}>
+                        {isImageLoading && (
+                          <div className={styles.unitPlanImageSkeleton}></div>
+                        )}
+                        <Image
+                          src={unit.planImage}
+                          alt={`Plan for ${unit.unitId}`}
+                          fill
+                          style={{ 
+                            objectFit: 'cover',
+                            opacity: isImageLoading ? 0 : 1,
+                            transition: 'opacity 0.3s ease',
+                            position: 'absolute',
+                            zIndex: isImageLoading ? 0 : 2
+                          }}
+                          sizes="(max-width: 768px) 100vw, 300px"
+                          unoptimized
+                          onLoad={() => {
+                            setUnitImagesLoading(prev => {
+                              const next = new Set(prev);
+                              next.delete(unit.id);
+                              return next;
+                            });
+                          }}
+                          onError={() => {
+                            setUnitImagesLoading(prev => {
+                              const next = new Set(prev);
+                              next.delete(unit.id);
+                              return next;
+                            });
+                          }}
+                          onLoadingComplete={() => {
+                            setUnitImagesLoading(prev => {
+                              const next = new Set(prev);
+                              next.delete(unit.id);
+                              return next;
+                            });
+                          }}
+                        />
+                      </div>
+                    )}
                   <div className={styles.unitDetails}>
-                    <div className={styles.unitPrice}>{formatPrice(unit.priceAED)} AED</div>
-                    <div className={styles.unitSize}>
-                      {formatSize(unit.totalSize)} {t('sqm')} ({formatSize(unit.totalSizeSqft)} {t('sqft')})
-                      {unit.balconySize > 0 && (
-                        <span className={styles.balconySize}>
-                          + {formatSize(unit.balconySize)} {t('sqm')} ({formatSize(unit.balconySizeSqft)} {t('sqft')}) {t('balcony')}
-                        </span>
-                      )}
+                    <div className={styles.unitPrice}>
+                      {unit.priceAED && unit.priceAED > 0 
+                        ? `${formatPrice(unit.priceAED)} AED` 
+                        : (t('priceOnRequest') || 'On request')}
+                    </div>
+                      <div className={styles.unitSize}>
+                        {locale === 'ru' ? (
+                          <>
+                            {formatSize(unit.totalSize)} {t('sqm')}
+                            {unit.totalSizeSqft && ` (${formatSize(unit.totalSizeSqft)} ${t('sqft')})`}
+                          </>
+                        ) : (
+                          <>
+                            {unit.totalSizeSqft ? `${formatSize(unit.totalSizeSqft)} ${t('sqft')}` : `${formatSize(unit.totalSize * 10.764)} ${t('sqft')}`}
+                            {` (${formatSize(unit.totalSize)} ${t('sqm')})`}
+                          </>
+                        )}
+                        {unit.balconySize && unit.balconySize > 0 && (
+                          <span className={styles.balconySize}>
+                            {' '}+ {locale === 'ru' ? (
+                              <>
+                                {formatSize(unit.balconySize)} {t('sqm')}
+                                {unit.balconySizeSqft && ` (${formatSize(unit.balconySizeSqft)} ${t('sqft')})`}
+                              </>
+                            ) : (
+                              <>
+                                {unit.balconySizeSqft ? formatSize(unit.balconySizeSqft) : formatSize(unit.balconySize * 10.764)} {t('sqft')}
+                                {` (${formatSize(unit.balconySize)} ${t('sqm')})`}
+                              </>
+                            )} {t('balcony')}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

@@ -262,7 +262,8 @@
       "offPlan": "Офф план",
       "secondary": "Вторичка"
     },
-    "developer": "Застройщик"
+    "developer": "Застройщик",
+    "priceOnRequest": "Цена по запросу"
   },
   "filters": {
     "city": {
