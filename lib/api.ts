@@ -1,9 +1,184 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.foryou-realestate.com/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://admin.pro-part.online/api';
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'fyr_8f968d115244e76d209a26f5177c5c998aca0e8dbce4a6e9071b2bc43b78f6d2';
 const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET || '5c8335f9c7e476cbe77454fd32532cc68f57baf86f7f96e6bafcf682f98b275bc579d73484cf5bada7f4cd7d071b122778b71f414fb96b741c5fe60394d1795f';
+
+// Cloudinary Configuration
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || 'dgv0rxd60';
+
+/**
+ * Generate Cloudinary URL from public_id
+ */
+export function generateCloudinaryUrl(publicId: string, options?: {
+  width?: number;
+  height?: number;
+  quality?: 'auto' | number;
+  format?: 'auto' | 'webp' | 'jpg' | 'png';
+  resourceType?: 'image' | 'video' | 'raw';
+}): string {
+  if (!publicId || typeof publicId !== 'string' || publicId.trim() === '') {
+    return '';
+  }
+
+  const resourceType = options?.resourceType || 'image';
+  const transformations: string[] = [];
+  
+  if (options?.width || options?.height) {
+    const w = options.width ? `w_${options.width}` : '';
+    const h = options.height ? `h_${options.height}` : '';
+    const crop = 'c_fill';
+    if (w && h) {
+      transformations.push(`${w},${h},${crop}`);
+    } else if (w) {
+      transformations.push(`${w},${crop}`);
+    } else if (h) {
+      transformations.push(`${h},${crop}`);
+    } else {
+      transformations.push(crop);
+    }
+  }
+  
+  if (options?.quality) {
+    transformations.push(`q_${options.quality === 'auto' ? 'auto' : options.quality}`);
+  }
+  
+  if (options?.format && options.format !== 'auto') {
+    transformations.push(`f_${options.format}`);
+  } else {
+    transformations.push('f_auto');
+  }
+  
+  const transformationString = transformations.length > 0 ? `${transformations.join(',')}/` : '';
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload/${transformationString}${publicId}`;
+}
+
+/**
+ * Normalize image URL - ensure Cloudinary URLs are properly formatted
+ * and add optimizations if needed
+ * Also handles public_id strings that need to be converted to Cloudinary URLs
+ */
+export function normalizeImageUrl(url: string | null | undefined, options?: {
+  width?: number;
+  height?: number;
+  quality?: 'auto' | number;
+  format?: 'auto' | 'webp' | 'jpg' | 'png';
+}): string {
+  if (!url || typeof url !== 'string' || url.trim() === '') {
+    return '';
+  }
+
+  const trimmedUrl = url.trim();
+  
+  // If it's already a full URL (including reely URLs), return as is - don't modify it
+  if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+    // Check if it's a reely URL - return as is without any modifications
+    if (trimmedUrl.includes('reely') || trimmedUrl.includes('alnair')) {
+      return trimmedUrl;
+    }
+    // For other full URLs, continue processing (might be Cloudinary)
+  }
+  
+  // Check if it's a public_id (doesn't start with http and doesn't contain slashes that indicate a path)
+  // Public IDs are usually simple strings without http:// or https://
+  if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://') && !trimmedUrl.startsWith('/')) {
+    // Might be a public_id - try to generate Cloudinary URL
+    // But only if it doesn't look like a data URL or other format
+    if (!trimmedUrl.startsWith('data:') && !trimmedUrl.includes('://')) {
+      return generateCloudinaryUrl(trimmedUrl, options);
+    }
+  }
+
+  // If it's already a Cloudinary URL, ensure it's properly formatted
+  if (trimmedUrl.includes('res.cloudinary.com') || trimmedUrl.includes('cloudinary.com')) {
+    // Check if URL already has transformations (look for transformation parameters after /upload/)
+    const uploadIndex = trimmedUrl.indexOf('/upload/');
+    const hasTransformations = uploadIndex !== -1 && 
+      (trimmedUrl.includes('/v') || trimmedUrl.includes('/c_') || trimmedUrl.includes('/w_') || trimmedUrl.includes('/h_'));
+    
+    if (!hasTransformations && options && uploadIndex !== -1) {
+      // Add Cloudinary transformations for optimization
+      const transformations: string[] = [];
+      
+      if (options.width || options.height) {
+        const w = options.width ? `w_${options.width}` : '';
+        const h = options.height ? `h_${options.height}` : '';
+        const crop = 'c_fill';
+        if (w && h) {
+          transformations.push(`${w},${h},${crop}`);
+        } else if (w) {
+          transformations.push(`${w},${crop}`);
+        } else if (h) {
+          transformations.push(`${h},${crop}`);
+        } else {
+          transformations.push(crop);
+        }
+      }
+      
+      if (options.quality) {
+        transformations.push(`q_${options.quality === 'auto' ? 'auto' : options.quality}`);
+      }
+      
+      if (options.format && options.format !== 'auto') {
+        transformations.push(`f_${options.format}`);
+      } else {
+        transformations.push('f_auto');
+      }
+      
+      // Insert transformations into URL
+      // Format: https://res.cloudinary.com/{cloud_name}/{resource_type}/upload/{transformations}/{version}/{public_id}.{format}
+      const urlParts = trimmedUrl.split('/upload/');
+      if (urlParts.length === 2) {
+        const transformationString = transformations.join(',');
+        // Check if there's a version in the path
+        const afterUpload = urlParts[1];
+        const versionMatch = afterUpload.match(/^(v\d+\/)/);
+        
+        if (versionMatch) {
+          // Insert transformations after version
+          return `${urlParts[0]}/upload/${versionMatch[1]}${transformationString}/${afterUpload.substring(versionMatch[1].length)}`;
+        } else {
+          // No version, insert transformations directly
+          return `${urlParts[0]}/upload/${transformationString}/${afterUpload}`;
+        }
+      }
+    }
+    
+    return trimmedUrl;
+  }
+
+  // If it's a relative URL, make it absolute (assuming it's from API)
+  if (trimmedUrl.startsWith('/')) {
+    // Check if it looks like a Cloudinary path
+    if (trimmedUrl.includes('cloudinary') || trimmedUrl.match(/^\/v\d+\//)) {
+      return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload${trimmedUrl}`;
+    }
+    // Otherwise, assume it's from the API domain
+    return `${API_BASE_URL.replace('/api', '')}${trimmedUrl}`;
+  }
+
+  // Default: return as is (might be a data URL or other format)
+  return trimmedUrl;
+}
+
+/**
+ * Normalize array of image URLs
+ */
+export function normalizeImageUrls(urls: (string | null | undefined)[] | null | undefined, options?: {
+  width?: number;
+  height?: number;
+  quality?: 'auto' | number;
+  format?: 'auto' | 'webp' | 'jpg' | 'png';
+}): string[] {
+  if (!urls || !Array.isArray(urls)) {
+    return [];
+  }
+
+  return urls
+    .map(url => normalizeImageUrl(url, options))
+    .filter(url => url && url.trim().length > 0);
+}
 
 // Log API configuration on startup (in development)
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
@@ -650,6 +825,7 @@ export async function getProperties(filters?: PropertyFilters, useCache: boolean
         const propertyWithoutPhotos = data.find((p: any) => !p.photos || !Array.isArray(p.photos) || p.photos.length === 0);
         
         if (propertyWithPhotos) {
+          const firstPhoto = Array.isArray(propertyWithPhotos.photos) && propertyWithPhotos.photos.length > 0 ? propertyWithPhotos.photos[0] : null;
           console.log(`🔍 RAW property WITH photos from API (BEFORE normalization):`, {
             propertyId: propertyWithPhotos.id,
             propertyName: propertyWithPhotos.name,
@@ -657,7 +833,11 @@ export async function getProperties(filters?: PropertyFilters, useCache: boolean
             photosIsArray: Array.isArray(propertyWithPhotos.photos),
             photosValue: propertyWithPhotos.photos,
             photosLength: Array.isArray(propertyWithPhotos.photos) ? propertyWithPhotos.photos.length : 'N/A',
-            firstPhoto: Array.isArray(propertyWithPhotos.photos) && propertyWithPhotos.photos.length > 0 ? propertyWithPhotos.photos[0] : 'N/A',
+            firstPhoto: firstPhoto,
+            firstPhotoType: firstPhoto ? typeof firstPhoto : 'N/A',
+            firstPhotoIsObject: firstPhoto ? (typeof firstPhoto === 'object' && firstPhoto !== null) : false,
+            firstPhotoKeys: firstPhoto && typeof firstPhoto === 'object' && firstPhoto !== null ? Object.keys(firstPhoto) : 'N/A',
+            firstPhotoStringified: firstPhoto ? JSON.stringify(firstPhoto) : 'N/A',
           });
         }
         
@@ -685,49 +865,99 @@ export async function getProperties(filters?: PropertyFilters, useCache: boolean
       }
       
       // Normalize photos array for each property
-      // API returns photos as string[] (array of URLs) or [] (empty array if no photos)
+      // API can return photos in various formats: string[], object[], object, string
       // Ensure photos is always an array of strings
       data = data.map((property: any) => {
-        // If photos is already a valid array, use it directly
-        if (Array.isArray(property.photos)) {
-          // Filter out empty strings, null, or undefined from photos array
-          property.photos = property.photos.filter((photo: any) => {
-            return photo && typeof photo === 'string' && photo.trim().length > 0;
-          });
-          // Return early - photos is already properly formatted
-          return property;
-        }
-        
-        // If photos is missing or not an array, try to normalize it
-        if (!property.photos) {
-          // Check for alternative photo fields
-          if (property.image && typeof property.image === 'string' && property.image.trim().length > 0) {
-            property.photos = [property.image];
-          } else if (property.imageUrl && typeof property.imageUrl === 'string' && property.imageUrl.trim().length > 0) {
-            property.photos = [property.imageUrl];
-          } else if (property.gallery && Array.isArray(property.gallery) && property.gallery.length > 0) {
-            property.photos = property.gallery.filter((photo: any) => photo && typeof photo === 'string' && photo.trim().length > 0);
-          } else if (property.images && Array.isArray(property.images) && property.images.length > 0) {
-            property.photos = property.images.filter((photo: any) => photo && typeof photo === 'string' && photo.trim().length > 0);
-          } else {
-            property.photos = [];
+        // Helper function to extract URL from various formats
+        const extractUrl = (item: any): string | null => {
+          if (!item) return null;
+          
+          // If it's already a string, return it
+          if (typeof item === 'string' && item.trim().length > 0) {
+            return item.trim();
           }
+          
+          // If it's an object, try to extract URL from common fields
+          if (typeof item === 'object' && item !== null) {
+            // Check common URL fields in order of preference
+            const urlFields = ['url', 'src', 'imageUrl', 'image', 'photo'];
+            for (const field of urlFields) {
+              if (item[field] && typeof item[field] === 'string' && item[field].trim().length > 0) {
+                return item[field].trim();
+              }
+            }
+            
+            // If no URL field found, try Object.values to find string values
+            const values = Object.values(item);
+            for (const value of values) {
+              if (typeof value === 'string' && value.trim().length > 0) {
+                return value.trim();
+              }
+            }
+          }
+          
+          return null;
+        };
+        
+        // Normalize photos
+        if (!property.photos) {
+          // Check alternative fields
+          const altUrl = extractUrl(property.image) ||
+                        extractUrl(property.imageUrl) ||
+                        null;
+          property.photos = altUrl ? [altUrl] : [];
+        } else if (Array.isArray(property.photos)) {
+          // Array: can be string[] or object[]
+          const extractedUrls: string[] = [];
+          
+          for (const item of property.photos) {
+            const url = extractUrl(item);
+            if (url) {
+              extractedUrls.push(url);
+            }
+          }
+          
+          property.photos = extractedUrls;
         } else if (typeof property.photos === 'string') {
-          // If it's a string, try to parse it as JSON or use it as single photo
+          // String: try to parse as JSON or use as single URL
           try {
             const parsed = JSON.parse(property.photos);
-            property.photos = Array.isArray(parsed) ? parsed : [property.photos];
+            if (Array.isArray(parsed)) {
+              const extractedUrls: string[] = [];
+              for (const item of parsed) {
+                const url = extractUrl(item);
+                if (url) extractedUrls.push(url);
+              }
+              property.photos = extractedUrls;
+            } else {
+              const url = extractUrl(parsed);
+              property.photos = url ? [url] : [];
+            }
           } catch {
-            property.photos = [property.photos];
+            // Not JSON, use as single URL
+            const url = extractUrl(property.photos);
+            property.photos = url ? [url] : [];
           }
-          // Filter out empty strings
-          property.photos = property.photos.filter((photo: any) => {
-            return photo && typeof photo === 'string' && photo.trim().length > 0;
-          });
+        } else if (typeof property.photos === 'object' && property.photos !== null) {
+          // Object: extract values
+          const values = Object.values(property.photos);
+          const extractedUrls: string[] = [];
+          
+          for (const value of values) {
+            const url = extractUrl(value);
+            if (url) extractedUrls.push(url);
+          }
+          
+          property.photos = extractedUrls;
         } else {
-          // Unknown format, set to empty array
+          // Unknown format
           property.photos = [];
         }
+        
+        // Final validation: ensure all elements are strings
+        property.photos = property.photos.filter((photo: any): photo is string => {
+          return typeof photo === 'string' && photo.trim().length > 0;
+        });
         
         // Normalize numeric fields - ensure they are numbers, not strings
         // This is important because API might return strings
@@ -1292,22 +1522,73 @@ function normalizeProperty(property: any): Property {
     }
   }
   
+  // Helper function to extract URL (same as in getProperties)
+  const extractUrl = (item: any): string | null => {
+    if (!item) return null;
+    if (typeof item === 'string' && item.trim().length > 0) {
+      return item.trim();
+    }
+    if (typeof item === 'object' && item !== null) {
+      const urlFields = ['url', 'src', 'imageUrl', 'image', 'photo'];
+      for (const field of urlFields) {
+        if (item[field] && typeof item[field] === 'string' && item[field].trim().length > 0) {
+          return item[field].trim();
+        }
+      }
+      const values = Object.values(item);
+      for (const value of values) {
+        if (typeof value === 'string' && value.trim().length > 0) {
+          return value.trim();
+        }
+      }
+    }
+    return null;
+  };
+  
   // Normalize photos array
   if (!property.photos) {
     property.photos = [];
+  } else if (Array.isArray(property.photos)) {
+    const extractedUrls: string[] = [];
+    for (const item of property.photos) {
+      const url = extractUrl(item);
+      if (url) extractedUrls.push(url);
+    }
+    property.photos = extractedUrls;
   } else if (typeof property.photos === 'string') {
     try {
       const parsed = JSON.parse(property.photos);
-      property.photos = Array.isArray(parsed) ? parsed : [property.photos];
+      if (Array.isArray(parsed)) {
+        const extractedUrls: string[] = [];
+        for (const item of parsed) {
+          const url = extractUrl(item);
+          if (url) extractedUrls.push(url);
+        }
+        property.photos = extractedUrls;
+      } else {
+        const url = extractUrl(parsed);
+        property.photos = url ? [url] : [];
+      }
     } catch {
-      property.photos = [property.photos];
+      const url = extractUrl(property.photos);
+      property.photos = url ? [url] : [];
     }
-    property.photos = property.photos.filter((photo: any) => {
-      return photo && typeof photo === 'string' && photo.trim().length > 0;
-    });
-  } else if (!Array.isArray(property.photos)) {
+  } else if (typeof property.photos === 'object' && property.photos !== null) {
+    const values = Object.values(property.photos);
+    const extractedUrls: string[] = [];
+    for (const value of values) {
+      const url = extractUrl(value);
+      if (url) extractedUrls.push(url);
+    }
+    property.photos = extractedUrls;
+  } else {
     property.photos = [];
   }
+  
+  // Final validation
+  property.photos = property.photos.filter((photo: any): photo is string => {
+    return typeof photo === 'string' && photo.trim().length > 0;
+  });
   
   // Normalize units if they exist
   if (property.units && Array.isArray(property.units)) {
@@ -1586,6 +1867,292 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
     const response = await apiClient.get<ApiResponse<Area[]>>(url, { params });
     let areas = response.data.data;
     
+    // Debug: Log first area structure to see what fields API returns
+    if (process.env.NODE_ENV === 'development' && areas.length > 0) {
+      const firstArea = areas[0];
+      console.log('🔍 First area structure from API (BEFORE normalization):', {
+        id: firstArea.id,
+        nameEn: firstArea.nameEn,
+        allKeys: Object.keys(firstArea),
+        hasImages: 'images' in firstArea,
+        hasImageUrl: 'imageUrl' in firstArea,
+        hasImage: 'image' in firstArea,
+        hasPhoto: 'photo' in firstArea,
+        hasCloudinaryId: 'cloudinaryId' in firstArea,
+        hasPublicId: 'publicId' in firstArea,
+        imagesValue: (firstArea as any).images,
+        imagesType: typeof (firstArea as any).images,
+        imagesIsArray: Array.isArray((firstArea as any).images),
+        imagesLength: Array.isArray((firstArea as any).images) ? (firstArea as any).images.length : 'N/A',
+        firstImageValue: Array.isArray((firstArea as any).images) && (firstArea as any).images.length > 0 ? (firstArea as any).images[0] : 'N/A',
+        firstImageType: Array.isArray((firstArea as any).images) && (firstArea as any).images.length > 0 ? typeof (firstArea as any).images[0] : 'N/A',
+        firstImageKeys: Array.isArray((firstArea as any).images) && (firstArea as any).images.length > 0 && typeof (firstArea as any).images[0] === 'object' ? Object.keys((firstArea as any).images[0]) : 'N/A',
+        firstImageStringified: Array.isArray((firstArea as any).images) && (firstArea as any).images.length > 0 ? JSON.stringify((firstArea as any).images[0], null, 2) : 'N/A',
+        imageUrlValue: (firstArea as any).imageUrl,
+        imageValue: (firstArea as any).image,
+        photoValue: (firstArea as any).photo,
+        cloudinaryIdValue: (firstArea as any).cloudinaryId,
+        publicIdValue: (firstArea as any).publicId,
+        // Log full object to see all fields
+        fullObject: JSON.stringify(firstArea, null, 2).substring(0, 1000),
+      });
+      
+      // Log a few more areas to see patterns
+      if (areas.length > 1) {
+        const sampleAreas = areas.slice(0, 5);
+        console.log('🔍 Sample areas image data (first 5):', sampleAreas.map((a: any) => ({
+          nameEn: a.nameEn,
+          id: a.id,
+          images: a.images,
+          imagesType: typeof a.images,
+          imagesIsArray: Array.isArray(a.images),
+          imagesLength: Array.isArray(a.images) ? a.images.length : 'N/A',
+          firstImage: Array.isArray(a.images) && a.images.length > 0 ? a.images[0] : 'N/A',
+          firstImageType: Array.isArray(a.images) && a.images.length > 0 ? typeof a.images[0] : 'N/A',
+          firstImageKeys: Array.isArray(a.images) && a.images.length > 0 && typeof a.images[0] === 'object' ? Object.keys(a.images[0]) : 'N/A',
+          firstImageStringified: Array.isArray(a.images) && a.images.length > 0 ? JSON.stringify(a.images[0]) : 'N/A',
+          imageUrl: a.imageUrl,
+          image: a.image,
+          photo: a.photo,
+          cloudinaryId: a.cloudinaryId,
+          publicId: a.publicId,
+          // Check all string fields that might contain image data
+          allStringFields: Object.keys(a).filter(key => typeof a[key] === 'string' && (a[key].includes('cloudinary') || a[key].includes('image') || a[key].includes('photo'))),
+        })));
+      }
+      
+      // Count areas with different image field types
+      const areasWithImages = areas.filter((a: any) => a.images && Array.isArray(a.images) && a.images.length > 0).length;
+      const areasWithImageUrl = areas.filter((a: any) => a.imageUrl && typeof a.imageUrl === 'string').length;
+      const areasWithImage = areas.filter((a: any) => a.image && typeof a.image === 'string').length;
+      const areasWithPhoto = areas.filter((a: any) => a.photo && typeof a.photo === 'string').length;
+      const areasWithCloudinaryId = areas.filter((a: any) => a.cloudinaryId && typeof a.cloudinaryId === 'string').length;
+      const areasWithPublicId = areas.filter((a: any) => a.publicId && typeof a.publicId === 'string').length;
+      
+      console.log('📊 Areas image fields statistics:', {
+        total: areas.length,
+        withImages: areasWithImages,
+        withImageUrl: areasWithImageUrl,
+        withImage: areasWithImage,
+        withPhoto: areasWithPhoto,
+        withCloudinaryId: areasWithCloudinaryId,
+        withPublicId: areasWithPublicId,
+      });
+    }
+    
+    // Normalize image URLs for all areas
+    // Also check for alternative image fields (imageUrl, image, photo, etc.)
+    areas = areas.map((area: any, index: number) => {
+      let imageUrls: string[] = [];
+      let foundInField = '';
+      
+      // Helper function to extract URL from various formats (same as for properties)
+      const extractUrl = (item: any): string | null => {
+        if (!item) return null;
+        
+        // If it's already a string, return it
+        if (typeof item === 'string' && item.trim().length > 0) {
+          return item.trim();
+        }
+        
+        // If it's an object, try to extract URL from common fields
+        if (typeof item === 'object' && item !== null) {
+          const urlFields = ['url', 'src', 'imageUrl', 'image', 'photo'];
+          for (const field of urlFields) {
+            if (item[field] && typeof item[field] === 'string' && item[field].trim().length > 0) {
+              return item[field].trim();
+            }
+          }
+          
+          // If no URL field found, try Object.values to find string values
+          const values = Object.values(item);
+          for (const value of values) {
+            if (typeof value === 'string' && value.trim().length > 0) {
+              return value.trim();
+            }
+          }
+        }
+        
+        return null;
+      };
+      
+      // Check multiple possible fields for images
+      if (area.images && Array.isArray(area.images) && area.images.length > 0) {
+        // Log BEFORE processing for first few areas
+        if (process.env.NODE_ENV === 'development' && index < 3) {
+          console.log(`🔍 Area "${area.nameEn}" BEFORE processing images:`, {
+            imagesArray: area.images,
+            imagesLength: area.images.length,
+            firstItem: area.images[0],
+            firstItemType: typeof area.images[0],
+            firstItemStringified: JSON.stringify(area.images[0], null, 2),
+          });
+        }
+        
+        // Extract URLs from array - can be string[] or object[]
+        const extractedUrls: string[] = [];
+        for (let i = 0; i < area.images.length; i++) {
+          const item = area.images[i];
+          
+          // Log item structure for debugging (only for first item of first 3 areas)
+          if (process.env.NODE_ENV === 'development' && index < 3 && i === 0) {
+            console.log(`🔍 Area "${area.nameEn}" images[${i}] structure:`, {
+              item: item,
+              itemType: typeof item,
+              itemIsObject: typeof item === 'object' && item !== null,
+              itemIsNull: item === null,
+              itemIsUndefined: item === undefined,
+              itemKeys: typeof item === 'object' && item !== null ? Object.keys(item) : 'N/A',
+              itemStringified: JSON.stringify(item, null, 2),
+            });
+          }
+          
+          const url = extractUrl(item);
+          if (url) {
+            extractedUrls.push(url);
+            if (process.env.NODE_ENV === 'development' && index < 3 && extractedUrls.length === 1) {
+              console.log(`✅ Extracted URL from area "${area.nameEn}":`, url.substring(0, 100));
+            }
+          } else {
+            // Log why extraction failed (only for first item of first 3 areas)
+            if (process.env.NODE_ENV === 'development' && index < 3 && i === 0) {
+              console.warn(`⚠️ Could not extract URL from area "${area.nameEn}" images[${i}]:`, {
+                item: item,
+                itemType: typeof item,
+                itemIsNull: item === null,
+                itemIsUndefined: item === undefined,
+                itemKeys: typeof item === 'object' && item !== null ? Object.keys(item) : 'N/A',
+                itemStringified: JSON.stringify(item, null, 2),
+                extractUrlResult: extractUrl(item),
+              });
+            }
+          }
+        }
+        
+        if (process.env.NODE_ENV === 'development' && index < 3) {
+          console.log(`📊 Area "${area.nameEn}" AFTER extraction:`, {
+            originalCount: area.images.length,
+            extractedCount: extractedUrls.length,
+            extractedUrls: extractedUrls,
+          });
+        }
+        
+        imageUrls = extractedUrls;
+        foundInField = 'images';
+      } else if (area.imageUrl && typeof area.imageUrl === 'string') {
+        const url = extractUrl(area.imageUrl);
+        if (url) imageUrls = [url];
+        foundInField = 'imageUrl';
+      } else if (area.image && typeof area.image === 'string') {
+        const url = extractUrl(area.image);
+        if (url) imageUrls = [url];
+        foundInField = 'image';
+      } else if (area.photo && typeof area.photo === 'string') {
+        const url = extractUrl(area.photo);
+        if (url) imageUrls = [url];
+        foundInField = 'photo';
+      } else if (area.cloudinaryId && typeof area.cloudinaryId === 'string') {
+        // If API returns cloudinaryId/public_id, generate URL
+        const generatedUrl = generateCloudinaryUrl(area.cloudinaryId, {
+          width: 800,
+          height: 600,
+          quality: 'auto',
+          format: 'auto'
+        });
+        if (generatedUrl) {
+          imageUrls = [generatedUrl];
+          foundInField = 'cloudinaryId';
+        }
+      } else if (area.publicId && typeof area.publicId === 'string') {
+        // If API returns publicId, generate URL
+        const generatedUrl = generateCloudinaryUrl(area.publicId, {
+          width: 800,
+          height: 600,
+          quality: 'auto',
+          format: 'auto'
+        });
+        if (generatedUrl) {
+          imageUrls = [generatedUrl];
+          foundInField = 'publicId';
+        }
+      }
+      
+      // Process image URLs - keep reely/alnair URLs as is, normalize others
+      if (imageUrls.length > 0) {
+        const processedUrls: string[] = [];
+        
+        for (const url of imageUrls) {
+          if (!url || typeof url !== 'string' || url.trim().length === 0) {
+            continue;
+          }
+          
+          const trimmedUrl = url.trim();
+          
+          // If it's already a full URL (reely, alnair, etc.), use it as is
+          if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
+            // Check if it's a placeholder
+            const isPlaceholder = trimmedUrl.includes('unsplash.com') ||
+              trimmedUrl.includes('placeholder') ||
+              trimmedUrl.includes('via.placeholder.com') ||
+              trimmedUrl.includes('dummyimage.com') ||
+              trimmedUrl.includes('placehold.it') ||
+              trimmedUrl.includes('fakeimg.pl');
+            
+            if (!isPlaceholder) {
+              processedUrls.push(trimmedUrl);
+            }
+          } else {
+            // If it's not a full URL, use normalizeImageUrl for Cloudinary/public_id
+            const normalized = normalizeImageUrl(trimmedUrl, {
+              width: 800,
+              height: 600,
+              quality: 'auto',
+              format: 'auto'
+            });
+            
+            if (normalized && normalized.trim().length > 0) {
+              processedUrls.push(normalized);
+            }
+          }
+        }
+        
+        if (processedUrls.length > 0) {
+          area.images = processedUrls;
+          
+          // Debug logging for first few areas
+          if (process.env.NODE_ENV === 'development' && index < 5) {
+            console.log(`🖼️ Area "${area.nameEn}" (${area.id}) image processing:`, {
+              foundIn: foundInField,
+              originalCount: imageUrls.length,
+              processedCount: processedUrls.length,
+              firstImage: processedUrls[0]?.substring(0, 120),
+              isReely: processedUrls[0]?.includes('reely') || processedUrls[0]?.includes('alnair'),
+              isCloudinary: processedUrls[0]?.includes('cloudinary.com'),
+            });
+          }
+        } else {
+          // All URLs were filtered out (placeholders or invalid)
+          area.images = [];
+          
+          if (process.env.NODE_ENV === 'development' && index < 5) {
+            console.warn(`⚠️ Area "${area.nameEn}" all images were filtered out (placeholders or invalid):`, {
+              foundIn: foundInField,
+              originalUrls: imageUrls,
+            });
+          }
+        }
+      } else {
+        // No images found - set empty array
+        area.images = [];
+        
+        if (process.env.NODE_ENV === 'development' && index < 5) {
+          console.warn(`⚠️ Area "${area.nameEn}" (${area.id}) has no images in any field`);
+        }
+      }
+      
+      return area;
+    });
+    
     if (process.env.NODE_ENV === 'development') {
       const areasWithImages = areas.filter(a => a.images && Array.isArray(a.images) && a.images.length > 0).length;
       const areasWithDescription = areas.filter(a => a.description).length;
@@ -1846,14 +2413,25 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
           // Priority 1: Use images from /public/data if available
           const areaImagesFromData = (area as any).images;
           if (areaImagesFromData && Array.isArray(areaImagesFromData) && areaImagesFromData.length > 0) {
-            areaImages = areaImagesFromData;
+            areaImages = normalizeImageUrls(areaImagesFromData, {
+              width: 800,
+              height: 600,
+              quality: 'auto',
+              format: 'auto'
+            });
             if (process.env.NODE_ENV === 'development') {
               console.log(`✅ Fallback: Using images from /public/data for area: ${area.nameEn} (${areaImages.length} images)`);
             }
           } 
           // Priority 2: Use images from properties (areaImagesMap)
           else if (areaImagesMap.has(area.id)) {
-            areaImages = [areaImagesMap.get(area.id)!];
+            const imageUrl = normalizeImageUrl(areaImagesMap.get(area.id)!, {
+              width: 800,
+              height: 600,
+              quality: 'auto',
+              format: 'auto'
+            });
+            areaImages = [imageUrl];
             if (process.env.NODE_ENV === 'development') {
               console.log(`✅ Fallback: Using image from properties for area: ${area.nameEn}`);
             }
@@ -1862,7 +2440,13 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
           else if (areaProperties.length > 0) {
             const propertyWithPhoto = areaProperties.find(p => p.photos && p.photos.length > 0);
             if (propertyWithPhoto && propertyWithPhoto.photos) {
-              areaImages = [propertyWithPhoto.photos[0]];
+              const imageUrl = normalizeImageUrl(propertyWithPhoto.photos[0], {
+                width: 800,
+                height: 600,
+                quality: 'auto',
+                format: 'auto'
+              });
+              areaImages = [imageUrl];
               if (process.env.NODE_ENV === 'development') {
                 console.log(`✅ Fallback: Found image from area properties for: ${area.nameEn}`);
               }

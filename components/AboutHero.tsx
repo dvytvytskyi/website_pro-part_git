@@ -5,11 +5,6 @@ import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import styles from './AboutHero.module.css';
 
-interface Leader {
-  name: string;
-  description: string;
-  photo: string;
-}
 
 export default function AboutHero() {
   const t = useTranslations('aboutUs');
@@ -181,21 +176,6 @@ export default function AboutHero() {
         </div>
       </div>
 
-      {/* Image Section */}
-      <div className={styles.imageSectionWrapper}>
-        <div className={styles.imageSection}>
-          <Image
-            src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1400&h=800&fit=crop"
-            alt={t('heroImageAlt')}
-            fill
-            style={{ objectFit: 'cover' }}
-            sizes="100vw"
-            loading="lazy"
-            unoptimized
-          />
-        </div>
-      </div>
-
       {/* Statistics Section */}
       <div className={styles.statsSection} ref={statsRef}>
         <div className={styles.statItem}>
@@ -222,54 +202,76 @@ export default function AboutHero() {
         ref={milestonesRef}
       >
         <div className={styles.milestonesContainer}>
-          <h2 className={styles.milestonesTitle}>{t('milestonesTitle')}</h2>
-          <p className={styles.milestonesDescription}>{t('milestonesDescription')}</p>
+          <div className={styles.milestonesHeader}>
+            <h2 className={styles.milestonesTitle}>{t('milestonesTitle')}</h2>
+            <p className={styles.milestonesDescription}>{t('milestonesDescription')}</p>
+          </div>
           
-          <div className={styles.timeline}>
-            <div className={styles.timelineLine}></div>
-            
-            <div className={styles.milestoneItem}>
-              <div className={styles.milestoneMarker}>
-                <div className={styles.milestoneCircle}></div>
+          <div className={styles.milestonesGrid}>
+            <div className={styles.milestoneCard}>
+              <div className={styles.milestoneCardHeader}>
+                <div className={styles.milestoneIcon}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                  </svg>
+                </div>
                 <div className={styles.milestoneYear}>{t('milestone2022.year')}</div>
               </div>
-              <div className={styles.milestoneContent}>
+              <div className={styles.milestoneCardContent}>
                 <div className={styles.milestoneShortTitle}>{t('milestone2022.shortTitle')}</div>
                 <div className={styles.milestoneBoldTitle}>{t('milestone2022.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2022.description')}</div>
               </div>
             </div>
 
-            <div className={styles.milestoneItem}>
-              <div className={styles.milestoneMarker}>
-                <div className={styles.milestoneCircle}></div>
+            <div className={styles.milestoneCard}>
+              <div className={styles.milestoneCardHeader}>
+                <div className={styles.milestoneIcon}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
                 <div className={styles.milestoneYear}>{t('milestone2023.year')}</div>
               </div>
-              <div className={styles.milestoneContent}>
+              <div className={styles.milestoneCardContent}>
                 <div className={styles.milestoneShortTitle}>{t('milestone2023.shortTitle')}</div>
                 <div className={styles.milestoneBoldTitle}>{t('milestone2023.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2023.description')}</div>
               </div>
             </div>
 
-            <div className={styles.milestoneItem}>
-              <div className={styles.milestoneMarker}>
-                <div className={styles.milestoneCircle}></div>
+            <div className={styles.milestoneCard}>
+              <div className={styles.milestoneCardHeader}>
+                <div className={styles.milestoneIcon}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </div>
                 <div className={styles.milestoneYear}>{t('milestone2024.year')}</div>
               </div>
-              <div className={styles.milestoneContent}>
+              <div className={styles.milestoneCardContent}>
                 <div className={styles.milestoneShortTitle}>{t('milestone2024.shortTitle')}</div>
                 <div className={styles.milestoneBoldTitle}>{t('milestone2024.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2024.description')}</div>
               </div>
             </div>
 
-            <div className={styles.milestoneItem}>
-              <div className={styles.milestoneMarker}>
-                <div className={styles.milestoneCircle}></div>
+            <div className={styles.milestoneCard}>
+              <div className={styles.milestoneCardHeader}>
+                <div className={styles.milestoneIcon}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
+                </div>
                 <div className={styles.milestoneYear}>{t('milestone2025.year')}</div>
               </div>
-              <div className={styles.milestoneContent}>
+              <div className={styles.milestoneCardContent}>
                 <div className={styles.milestoneShortTitle}>{t('milestone2025.shortTitle')}</div>
                 <div className={styles.milestoneBoldTitle}>{t('milestone2025.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2025.description')}</div>
@@ -328,20 +330,24 @@ export function TeamSection({ t }: { t: any }) {
   return (
     <div className={styles.teamSection}>
       <div className={styles.teamContainer}>
-        <h2 className={styles.teamTitle}>{t('teamTitle')}</h2>
-        <p className={styles.teamDescription}>{t('teamDescription')}</p>
+        <div className={styles.teamHeader}>
+          <h2 className={styles.teamTitle}>{t('teamTitle')}</h2>
+          <p className={styles.teamDescription}>{t('teamDescription')}</p>
+        </div>
         <div className={styles.teamGrid}>
           <div className={styles.teamMember}>
-            <div className={styles.teamPhoto}>
-              <Image
-                src="/IMG_9273.JPG"
-                alt={t('teamMembers.daniil')}
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                loading="lazy"
-                unoptimized
-              />
+            <div className={styles.teamPhotoWrapper}>
+              <div className={styles.teamPhoto}>
+                <Image
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop"
+                  alt={t('teamMembers.daniil')}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  loading="lazy"
+                />
+              </div>
+              <div className={styles.teamOverlay}></div>
             </div>
             <div className={styles.teamInfo}>
               <div className={styles.teamName}>{t('teamMembers.daniil')}</div>
@@ -349,16 +355,18 @@ export function TeamSection({ t }: { t: any }) {
             </div>
           </div>
           <div className={styles.teamMember}>
-            <div className={styles.teamPhoto}>
-              <Image
-                src="/IMG_9331.JPG"
-                alt={t('teamMembers.angelina')}
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                loading="lazy"
-                unoptimized
-              />
+            <div className={styles.teamPhotoWrapper}>
+              <div className={styles.teamPhoto}>
+                <Image
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop"
+                  alt={t('teamMembers.angelina')}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  loading="lazy"
+                />
+              </div>
+              <div className={styles.teamOverlay}></div>
             </div>
             <div className={styles.teamInfo}>
               <div className={styles.teamName}>{t('teamMembers.angelina')}</div>
@@ -366,16 +374,18 @@ export function TeamSection({ t }: { t: any }) {
             </div>
           </div>
           <div className={styles.teamMember}>
-            <div className={styles.teamPhoto}>
-              <Image
-                src="/IMG_9341.JPG"
-                alt={t('teamMembers.kamila')}
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                loading="lazy"
-                unoptimized
-              />
+            <div className={styles.teamPhotoWrapper}>
+              <div className={styles.teamPhoto}>
+                <Image
+                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=800&fit=crop"
+                  alt={t('teamMembers.kamila')}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  loading="lazy"
+                />
+              </div>
+              <div className={styles.teamOverlay}></div>
             </div>
             <div className={styles.teamInfo}>
               <div className={styles.teamName}>{t('teamMembers.kamila')}</div>
@@ -383,16 +393,18 @@ export function TeamSection({ t }: { t: any }) {
             </div>
           </div>
           <div className={styles.teamMember}>
-            <div className={styles.teamPhoto}>
-              <Image
-                src="/IMG_9345.JPG"
-                alt={t('teamMembers.ekaterina')}
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                loading="lazy"
-                unoptimized
-              />
+            <div className={styles.teamPhotoWrapper}>
+              <div className={styles.teamPhoto}>
+                <Image
+                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&fit=crop"
+                  alt={t('teamMembers.ekaterina')}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  loading="lazy"
+                />
+              </div>
+              <div className={styles.teamOverlay}></div>
             </div>
             <div className={styles.teamInfo}>
               <div className={styles.teamName}>{t('teamMembers.ekaterina')}</div>
@@ -463,7 +475,7 @@ export function OfficeSection({ t }: { t: any }) {
 
                 // Add office marker
                 const marker = new mapboxgl.Marker({
-                  color: '#003077',
+                  color: '#e6a165',
                 })
                   .setLngLat([55.2708, 25.2048])
                   .addTo(map);
@@ -701,80 +713,84 @@ export function FAQSection({ t }: { t: any }) {
 }
 
 export function LeadershipSection({ t }: { t: any }) {
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
-
-  const handleToggle = (name: string) => {
-    setExpandedCard(expandedCard === name ? null : name);
-  };
-
   return (
     <div className={styles.leadershipSection}>
       <div className={styles.leadershipContainer}>
-        <h2 className={styles.leadershipTitle}>{t('leadersTitle')}</h2>
-        <div className={styles.leadersGrid}>
-          <LeaderCard
-            name={t('leaders.artem.name')}
-            description={t('leaders.artem.description')}
-            photo="/Screenshot-2025-06-29-at-16.28.29.png"
-            isExpanded={expandedCard === t('leaders.artem.name')}
-            onToggle={() => handleToggle(t('leaders.artem.name'))}
-          />
-          <LeaderCard
-            name={t('leaders.nikita.name')}
-            description={t('leaders.nikita.description')}
-            photo="/Screenshot-2025-06-29-at-13.30.47.png"
-            isExpanded={expandedCard === t('leaders.nikita.name')}
-            onToggle={() => handleToggle(t('leaders.nikita.name'))}
-          />
-          <LeaderCard
-            name={t('leaders.antony.name')}
-            description={t('leaders.antony.description')}
-            photo="/photo_2024-09-23_15-49-10.webp"
-            isExpanded={expandedCard === t('leaders.antony.name')}
-            onToggle={() => handleToggle(t('leaders.antony.name'))}
-          />
-          <LeaderCard
-            name={t('leaders.gulnoza.name')}
-            description={t('leaders.gulnoza.description')}
-            photo="/IMG_4539-1-scaled.webp"
-            isExpanded={expandedCard === t('leaders.gulnoza.name')}
-            onToggle={() => handleToggle(t('leaders.gulnoza.name'))}
-          />
+        <div className={styles.leadershipContent}>
+          <div className={styles.leadershipPhotoColumn}>
+            <div className={styles.leadershipPhotoWrapper}>
+              <div className={styles.leadershipPhoto}>
+                <Image
+                  src="https://res.cloudinary.com/dgv0rxd60/image/upload/v1763019357/photo_2025-03-22_22-48-51_fm2kpr.jpg"
+                  alt="Olexandr Logachev"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 900px) 100vw, 40vw"
+                  loading="lazy"
+                />
+              </div>
+              <div className={styles.leadershipTag}>
+                <span>CEO & Founder</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className={styles.leadershipInfoColumn}>
+            <div className={styles.leadershipProfile}>
+              <h3 className={styles.leadershipName}>Olexandr Logachev</h3>
+              <p className={styles.leadershipRole}>CEO & Managing Director at ProPart Real Estate</p>
+              
+              <p className={styles.leadershipBio}>
+                A visionary leader with a proven track record in strategic real estate development, investment, and management. Under his leadership, ProPart Real Estate has expanded its presence across key international markets, delivering innovative property solutions with a strong focus on client satisfaction, operational excellence, and long-term value creation.
+              </p>
+              
+              <div className={styles.leadershipSocial}>
+                <a href="https://www.youtube.com/@logachev_alexsandr" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="YouTube">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                </a>
+                <a href="https://www.instagram.com/pro.part.ae?igsh=MWxqemdyMm56cG1lYw%3D%3D" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Instagram">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                  </svg>
+                </a>
+                <a href="https://t.me/pro_partUAE" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Telegram">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            <div className={styles.leadershipExperience}>
+              <h4 className={styles.experienceTitle}>Olexandr Logachev Experience</h4>
+              <p className={styles.experienceDescription}>
+                With over 15 years of experience in the real estate industry, Olexandr has built a reputation for excellence in property development, strategic investments, and client relations. His expertise spans across residential, commercial, and luxury property markets in Dubai and beyond.
+              </p>
+              <ul className={styles.experienceList}>
+                <li>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Over 15 years of experience in the real estate industry</span>
+                </li>
+                <li>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Successfully led expansion into key international markets</span>
+                </li>
+                <li>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Recognized for innovative property solutions and client satisfaction excellence</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function LeaderCard({ name, description, photo, isExpanded, onToggle }: Leader & { isExpanded: boolean; onToggle: () => void }) {
-  return (
-    <div 
-      className={`${styles.leaderCard} ${isExpanded ? styles.expanded : ''}`}
-    >
-      <div className={styles.leaderPhoto}>
-        <Image
-          src={photo}
-          alt={name}
-          fill
-          style={{ objectFit: 'cover', filter: 'grayscale(100%)' }}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          loading="lazy"
-          unoptimized
-        />
-      </div>
-      <div className={styles.leaderContent}>
-        <h3 className={styles.leaderName}>{name}</h3>
-        <div className={styles.leaderDescription}>
-          <p className={isExpanded ? styles.fullText : styles.shortText}>
-            {description}
-          </p>
-        </div>
-        <button 
-          className={styles.leaderToggle}
-          onClick={onToggle}
-        >
-          {isExpanded ? 'Read Less' : 'Read More'}
-        </button>
       </div>
     </div>
   );

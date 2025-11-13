@@ -105,7 +105,7 @@ export default function Header() {
       <div className={styles.container}>
         <div className={styles.logo}>
           <Link href={getLocalizedPath('/')}>
-            <img src={isScrolled || !isHomePage ? "/new logo blue.png" : "/new logo.png"} alt="Logo" />
+            <img src={isScrolled || !isHomePage ? "https://res.cloudinary.com/dgv0rxd60/image/upload/v1762950927/logo_color_app9pt.png" : "https://res.cloudinary.com/dgv0rxd60/image/upload/v1762950927/logo_white_ncl50e.png"} alt="ProPart Dubai Logo" />
           </Link>
         </div>
         
@@ -122,8 +122,7 @@ export default function Header() {
         </nav>
         
         <nav className={styles.authNav}>
-          <Link href={getLocalizedPath('/login')} className={styles.glassButton}>{t('signIn')}</Link>
-          <Link href={getLocalizedPath('/register')} className={`${styles.glassButton} ${styles.register}`}>{t('register')}</Link>
+          <a href="https://agent.pro-part.online/login" target="_blank" rel="noopener noreferrer" className={`${styles.glassButton} ${styles.register}`}>Agent Portal</a>
         </nav>
 
         {/* Hamburger menu button for mobile */}
@@ -183,20 +182,15 @@ export default function Header() {
         </nav>
         
         <div className={styles.mobileAuth}>
-          <Link 
-            href={getLocalizedPath('/login')} 
-            className={styles.mobileAuthButton}
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            {t('signIn')}
-          </Link>
-          <Link 
-            href={getLocalizedPath('/register')} 
+          <a 
+            href="https://agent.pro-part.online/login" 
+            target="_blank" 
+            rel="noopener noreferrer"
             className={`${styles.mobileAuthButton} ${styles.mobileAuthButtonRegister}`}
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            {t('register')}
-          </Link>
+            Agent Portal
+          </a>
         </div>
       </div>
     </header>

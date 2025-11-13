@@ -22,10 +22,10 @@
 }
 
 .statValue {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 64px;
   font-weight: 300;
-  color: #003077;
+  color: #e6a165;
   line-height: 1;
   margin: 0;
 }
@@ -33,20 +33,20 @@
 .suffix {
   font-size: 64px;
   font-weight: 300;
-  color: #003077;
+  color: #e6a165;
 }
 
 .statTitle {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
   font-weight: 700;
-  color: #003077;
+  color: #e6a165;
   margin: 0;
   line-height: 1.4;
 }
 
 .statDescription {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
   color: #666666;

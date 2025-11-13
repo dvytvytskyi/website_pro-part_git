@@ -29,10 +29,10 @@ export default function Footer() {
         <div className={styles.mainContent}>
           <div className={styles.logoSection}>
             <Link href={getLocalizedPath('/')}>
-              <img src="/new logo blue.png" alt="Logo" />
+              <img src="https://res.cloudinary.com/dgv0rxd60/image/upload/v1762950927/logo_color_app9pt.png" alt="ProPart Dubai Logo" />
             </Link>
             <p className={styles.tagline}>
-              Finding Spaces That Inspire Modern World in Dubai
+              Your Gateway to Premium Real Estate in Dubai
             </p>
           </div>
 
@@ -82,14 +82,14 @@ export default function Footer() {
             <h3 className={styles.sectionTitle}>Contact Us</h3>
             <div className={styles.contactInfo}>
               <p className={styles.contactAddress}>
-                Onyx Tower 2, Level 9, office 910<br />
-                Dubai, United Arab Emirates
+                Al Shafar Tower 1<br />
+                Dubai, UAE
               </p>
-              <a href="mailto:info@foryou-realestate.com" className={styles.contactLink}>
-                info@foryou-realestate.com
+              <a href="mailto:info@pro-part.online" className={styles.contactLink}>
+                info@pro-part.online
               </a>
-              <a href="tel:+971501769699" className={styles.contactLink}>
-                +971 50 176 9699
+              <a href="tel:+971521037893" className={styles.contactLink}>
+                +971 52 103 8793
               </a>
             </div>
           </div>

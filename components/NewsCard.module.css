@@ -12,7 +12,7 @@
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 48, 119, 0.15);
+  box-shadow: 0 8px 24px rgba(230, 161, 101, 0.15);
 }
 
 .imageContainer {
@@ -54,10 +54,10 @@
 }
 
 .title {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
   margin: 0 0 12px 0;
   line-height: 1.4;
   display: -webkit-box;
@@ -67,7 +67,7 @@
 }
 
 .description {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 300;
   color: #666666;
@@ -90,7 +90,7 @@
 }
 
 .date {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: #999999;

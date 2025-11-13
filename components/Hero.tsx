@@ -97,6 +97,9 @@ export default function Hero() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Video source - use cloud URL if available, otherwise fallback to local
+  const videoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || '/dubai-hero-video.mp4';
+
   return (
     <section className={styles.hero}>
       <div className={styles.videoContainer}>
@@ -107,7 +110,7 @@ export default function Hero() {
           playsInline
           className={styles.video}
         >
-          <source src="/dubai-hero-video.mp4" type="video/mp4" />
+          <source src={videoSrc} type="video/mp4" />
         </video>
         <div className={styles.gradientTop}></div>
         <div className={styles.overlay}></div>

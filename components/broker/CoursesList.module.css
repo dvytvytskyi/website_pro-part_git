@@ -3,17 +3,17 @@
 }
 
 .sectionTitle {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 36px;
   font-weight: 400;
-  color: #003077;
+  color: #e6a165;
   margin: 0 0 32px 0;
 }
 
 .loading {
   text-align: center;
   padding: 60px 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   color: #666666;
 }
@@ -26,7 +26,7 @@
 
 .courseCard {
   background: #ffffff;
-  border: 1px solid rgba(0, 48, 119, 0.1);
+  border: 1px solid rgba(230, 161, 101, 0.1);
   border-radius: 12px;
   padding: 24px;
   display: flex;
@@ -39,9 +39,9 @@
 }
 
 .courseCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 48, 119, 0.1);
+  box-shadow: 0 4px 12px rgba(230, 161, 101, 0.1);
   transform: translateY(-2px);
-  border-color: rgba(0, 48, 119, 0.2);
+  border-color: rgba(230, 161, 101, 0.2);
 }
 
 .courseCardContent {
@@ -49,15 +49,15 @@
 }
 
 .courseTitle {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
   margin: 0 0 8px 0;
 }
 
 .courseDescription {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 300;
   color: #666666;
@@ -73,14 +73,14 @@
 
 .courseSections,
 .courseLinks {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: #999999;
 }
 
 .courseArrow {
-  color: #003077;
+  color: #e6a165;
   flex-shrink: 0;
   transition: transform 0.3s ease;
 }

@@ -335,19 +335,13 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
   return (
     <div className={`${styles.filters} ${isModal ? styles.filtersModal : ''}`}>
       <div className={`${styles.filtersRow} ${isModal ? styles.filtersRowModal : ''}`}>
-        {/* Off Plan / Secondary Toggle */}
+        {/* Off Plan Toggle */}
         <div className={styles.typeToggle}>
           <button
             className={`${styles.typeButton} ${localFilters.type === 'new' ? styles.active : ''}`}
             onClick={() => handleChange('type', 'new')}
           >
             {t('type.offPlan')}
-          </button>
-          <button
-            className={`${styles.typeButton} ${localFilters.type === 'secondary' ? styles.active : ''}`}
-            onClick={() => handleChange('type', 'secondary')}
-          >
-            {t('type.secondary')}
           </button>
         </div>
 

@@ -1,6 +1,6 @@
 .filters {
   background: #ffffff;
-  border: 1px solid rgba(0, 48, 119, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 40px;
@@ -31,7 +31,7 @@
 .typeToggle {
   display: flex;
   gap: 0;
-  border: 1px solid rgba(0, 48, 119, 0.2);
+  border: 1px solid rgba(230, 161, 101, 0.4);
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
@@ -41,13 +41,13 @@
   padding: 10px 20px;
   border: none;
   background: #ffffff;
-  color: #003077;
-  font-family: 'Inter', sans-serif;
+  color: #e6a165;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-right: 1px solid rgba(0, 48, 119, 0.2);
+  border-right: 1px solid rgba(230, 161, 101, 0.2);
   white-space: nowrap;
 }
 
@@ -56,11 +56,11 @@
 }
 
 .typeButton:hover {
-  background: rgba(0, 48, 119, 0.05);
+  background: rgba(230, 161, 101, 0.05);
 }
 
 .typeButton.active {
-  background: #003077;
+  background: #e6a165;
   color: #ffffff;
 }
 
@@ -72,22 +72,22 @@
 .searchInput {
   width: 100%;
   padding: 10px 16px;
-  border: 1px solid rgba(0, 48, 119, 0.2);
+  border: 1px solid rgba(230, 161, 101, 0.4);
   border-radius: 8px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 300;
-  color: #003077;
+  color: #e6a165;
   outline: none;
   transition: border-color 0.3s ease;
 }
 
 .searchInput:focus {
-  border-color: #003077;
+  border-color: #e6a165;
 }
 
 .searchInput::placeholder {
-  color: rgba(0, 48, 119, 0.5);
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .dropdownWrapper {
@@ -184,11 +184,11 @@
   gap: 12px;
   padding: 10px 16px;
   width: 100%;
-  border: 1px solid rgba(0, 48, 119, 0.2);
+  border: 1px solid rgba(230, 161, 101, 0.4);
   border-radius: 8px;
   background: #ffffff;
-  color: #003077;
-  font-family: 'Inter', sans-serif;
+  color: #e6a165;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
   cursor: pointer;
@@ -197,8 +197,8 @@
 }
 
 .dropdownButton:hover {
-  border-color: #003077;
-  background: rgba(0, 48, 119, 0.02);
+  border-color: #e6a165;
+  background: rgba(230, 161, 101, 0.02);
 }
 
 .dropdownButton span {
@@ -223,9 +223,9 @@
   left: 0;
   width: 100%;
   background: #ffffff;
-  border: 1px solid rgba(0, 48, 119, 0.2);
+  border: 1px solid rgba(230, 161, 101, 0.3);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   z-index: 1100; /* Higher than header (1000) to appear above it and property cards */
   max-height: 300px;
   overflow-y: auto;
@@ -243,7 +243,7 @@
 .dropdownMenuUp {
   top: auto;
   bottom: calc(100% + 8px);
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 /* Modal mode styles */
@@ -264,24 +264,26 @@
   padding: 10px 12px;
   border: none;
   background: transparent;
-  color: #003077;
-  font-family: 'Inter', sans-serif;
+  color: #666666;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
   text-align: left;
   cursor: pointer;
   border-radius: 6px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
   white-space: normal;
   word-wrap: break-word;
 }
 
 .dropdownItem:hover {
-  background: rgba(0, 48, 119, 0.05);
+  background: rgba(230, 161, 101, 0.08);
+  color: #e6a165;
 }
 
 .dropdownItem.active {
-  background: rgba(0, 48, 119, 0.1);
+  background: rgba(230, 161, 101, 0.12);
+  color: #e6a165;
   font-weight: 500;
 }
 
@@ -292,7 +294,7 @@
   padding: 10px 12px;
   cursor: pointer;
   border-radius: 6px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -300,29 +302,46 @@
 }
 
 .checkboxItem:hover {
-  background: rgba(0, 48, 119, 0.05);
+  background: rgba(230, 161, 101, 0.08);
+}
+
+.checkboxItem:hover span {
+  color: #e6a165;
 }
 
 .checkboxItem input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;
-  accent-color: #003077;
+  accent-color: #e6a165;
   flex-shrink: 0;
   margin-top: 2px;
+  border: 1px solid rgba(230, 161, 101, 0.4);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.checkboxItem input[type="checkbox"]:checked {
+  background-color: #e6a165;
+  border-color: #e6a165;
+}
+
+.checkboxItem input[type="checkbox"]:hover {
+  border-color: #e6a165;
 }
 
 .checkboxItem span {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #003077;
+  color: #666666;
   flex: 1;
   min-width: 0;
   white-space: normal;
   word-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1.4;
+  transition: color 0.2s ease;
 }
 
 .rangeInputs {
@@ -337,48 +356,48 @@
   width: 100px;
   min-width: 80px;
   padding: 10px 12px;
-  border: 1px solid rgba(0, 48, 119, 0.2);
+  border: 1px solid rgba(230, 161, 101, 0.3);
   border-radius: 6px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 300;
-  color: #003077;
+  color: #111;
   outline: none;
   transition: border-color 0.3s ease;
 }
 
 .unitInLabel {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 11px;
   font-weight: 400;
-  color: #003077;
-  opacity: 0.6;
+  color: #e6a165;
+  opacity: 0.7;
   margin-left: 4px;
 }
 
 .rangeInput:focus {
-  border-color: #003077;
+  border-color: #e6a165;
 }
 
 .rangeInput::placeholder {
-  color: rgba(0, 48, 119, 0.5);
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .rangeSeparator {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #003077;
-  opacity: 0.6;
+  color: #e6a165;
+  opacity: 0.7;
   flex-shrink: 0;
 }
 
 .rangeUnit {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #003077;
-  opacity: 0.7;
+  color: #e6a165;
+  opacity: 0.8;
   flex-shrink: 0;
   min-width: 40px;
 }

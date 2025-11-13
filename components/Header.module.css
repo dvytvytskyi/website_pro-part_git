@@ -19,37 +19,37 @@
 }
 
 .header.alwaysWhite .navLink {
-  color: var(--accent-color, #003077);
+  color: #e6a165;
 }
 
 .header.alwaysWhite .navLink::after {
-  background-color: var(--accent-color, #003077);
+  background-color: #e6a165;
 }
 
 .header.alwaysWhite .glassButton {
   background: transparent;
-  border: 1px solid rgba(0, 48, 119, 0.2);
-  color: var(--accent-color, #003077);
+  border: 1px solid rgba(230, 161, 101, 0.2);
+  color: #111;
 }
 
 .header.alwaysWhite .glassButton:hover {
   background: transparent;
-  border-color: rgba(0, 48, 119, 0.3);
+  border-color: rgba(230, 161, 101, 0.3);
 }
 
 .header.alwaysWhite .glassButton.register {
-  background: #003077;
-  border: 1px solid #003077;
+  background: #e6a165;
+  border: 1px solid #e6a165;
   color: #ffffff;
 }
 
 .header.alwaysWhite .glassButton.register:hover {
-  background: #003f94;
-  border-color: #003f94;
+  background: #e6a165;
+  border-color: #e6a165;
 }
 
 .header.alwaysWhite .logo img {
-  height: 22.4px;
+  height: 33px;
 }
 
 .header.scrolled {
@@ -75,13 +75,13 @@
 }
 
 .logo img {
-  height: 22.4px;
+  height: 33px;
   width: auto;
   transition: height 0.3s ease;
 }
 
 .header.scrolled .logo img {
-  height: 22.4px;
+  height: 33px;
 }
 
 .mainNav {
@@ -128,11 +128,11 @@
 }
 
 .header.scrolled .navLink {
-  color: var(--accent-color, #003077);
+  color: #e6a165;
 }
 
 .header.scrolled .navLink::after {
-  background-color: var(--accent-color, #003077);
+  background-color: #e6a165;
 }
 
 .authNav {
@@ -148,10 +148,10 @@
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  padding: 12px 24px;
+  padding: 10px 18px;
   border-radius: 8px;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 13px;
   transition: all 0.3s ease;
   cursor: pointer;
   text-decoration: none;
@@ -169,13 +169,13 @@
 }
 
 .glassButton.register {
-  background: #003077;
-  border: 1px solid #003077;
+  background: #e6a165;
+  border: 1px solid #e6a165;
 }
 
 .glassButton.register:hover {
-  background: #003f94;
-  border-color: #003f94;
+  background: #e6a165;
+  border-color: #e6a165;
 }
 
 .glassButton.register:active {
@@ -184,24 +184,24 @@
 
 .header.scrolled .glassButton {
   background: transparent;
-  border: 1px solid rgba(0, 48, 119, 0.2);
-  color: var(--accent-color, #003077);
+  border: 1px solid rgba(230, 161, 101, 0.2);
+  color: #111;
 }
 
 .header.scrolled .glassButton:hover {
   background: transparent;
-  border-color: rgba(0, 48, 119, 0.3);
+  border-color: rgba(230, 161, 101, 0.3);
 }
 
 .header.scrolled .glassButton.register {
-  background: #003077;
-  border: 1px solid #003077;
+  background: #e6a165;
+  border: 1px solid #e6a165;
   color: #ffffff;
 }
 
 .header.scrolled .glassButton.register:hover {
-  background: #003f94;
-  border-color: #003f94;
+  background: #e6a165;
+  border-color: #e6a165;
 }
 
 .header.scrolled .glassButton.register:active {
@@ -269,7 +269,7 @@
 
 .header.scrolled .hamburger span,
 .header.alwaysWhite .hamburger span {
-  background-color: var(--accent-color, #003077);
+  background-color: var(--accent-color, #e6a165);
 }
 
 .hamburger.hamburgerOpen span:nth-child(1) {
@@ -369,7 +369,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--accent-color, #003077);
+  color: var(--accent-color, #e6a165);
   z-index: 1002;
   padding: 8px;
   border-radius: 50%;
@@ -377,7 +377,7 @@
 }
 
 .mobileMenuClose:hover {
-  background: rgba(0, 48, 119, 0.1);
+  background: rgba(230, 161, 101, 0.1);
   transform: rotate(90deg);
 }
 
@@ -400,21 +400,21 @@
 .mobileNavLink {
   font-size: 18px;
   font-weight: 400;
-  color: var(--accent-color, #003077);
+  color: var(--accent-color, #e6a165);
   text-decoration: none;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(0, 48, 119, 0.1);
+  border-bottom: 1px solid rgba(230, 161, 101, 0.1);
   transition: all 0.3s ease;
   display: block;
 }
 
 .mobileNavLink:first-child {
-  border-top: 1px solid rgba(0, 48, 119, 0.1);
+  border-top: 1px solid rgba(230, 161, 101, 0.1);
 }
 
 .mobileNavLink:hover,
 .mobileNavLink:active {
-  color: #003f94;
+  color: #e6a165;
   padding-left: 8px;
 }
 
@@ -424,7 +424,7 @@
   gap: 12px;
   padding: 24px 20px;
   margin-top: 24px;
-  border-top: 1px solid rgba(0, 48, 119, 0.1);
+  border-top: 1px solid rgba(230, 161, 101, 0.1);
 }
 
 .mobileAuthButton {
@@ -435,27 +435,27 @@
   text-align: center;
   text-decoration: none;
   transition: all 0.3s ease;
-  border: 1px solid rgba(0, 48, 119, 0.2);
-  color: var(--accent-color, #003077);
+  border: 1px solid rgba(230, 161, 101, 0.2);
+  color: #111;
   background: transparent;
 }
 
 .mobileAuthButton:hover,
 .mobileAuthButton:active {
-  background: rgba(0, 48, 119, 0.05);
-  border-color: rgba(0, 48, 119, 0.3);
+  background: rgba(230, 161, 101, 0.05);
+  border-color: rgba(230, 161, 101, 0.3);
 }
 
 .mobileAuthButtonRegister {
-  background: #003077;
-  border: 1px solid #003077;
+  background: #e6a165;
+  border: 1px solid #e6a165;
   color: #ffffff;
 }
 
 .mobileAuthButtonRegister:hover,
 .mobileAuthButtonRegister:active {
-  background: #003f94;
-  border-color: #003f94;
+  background: #e6a165;
+  border-color: #e6a165;
 }
 
 @media (max-width: 768px) {

@@ -83,7 +83,7 @@ function createMarkerElement(priceAED: number): HTMLDivElement {
   const priceText = formatPriceForMarker(priceAED);
   
   // Orange color for properties >= AED 5M, blue for others
-  const backgroundColor = priceAED >= 5000000 ? '#EBA44E' : '#003077';
+  const backgroundColor = priceAED >= 5000000 ? '#EBA44E' : '#e6a165';
   
   // Use CSS classes instead of inline styles for better performance
   el.className = 'custom-marker custom-marker-price';
@@ -93,7 +93,7 @@ function createMarkerElement(priceAED: number): HTMLDivElement {
     color: #ffffff;
     padding: 4px 8px;
     border-radius: 4px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 11px;
     font-weight: 600;
     line-height: 1.2;
@@ -932,12 +932,12 @@ export default function MapboxMap({ accessToken, properties = [] }: MapboxMapPro
           onClick={toggleMapStyle}
           style={{
             position: 'relative',
-            background: '#003077',
+            background: '#e6a165',
             color: '#ffffff',
             border: 'none',
             borderRadius: '8px',
             padding: '10px 16px',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Poppins', sans-serif",
             fontSize: '14px',
             fontWeight: '500',
             cursor: 'pointer',
@@ -945,11 +945,11 @@ export default function MapboxMap({ accessToken, properties = [] }: MapboxMapPro
             transition: 'all 0.2s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#003f94';
+            e.currentTarget.style.background = '#e6a165';
             e.currentTarget.style.transform = 'translateY(-1px)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#003077';
+            e.currentTarget.style.background = '#e6a165';
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >

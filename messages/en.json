@@ -13,8 +13,8 @@
     }
   },
   "hero": {
-    "title": "Finding Spaces That Inspire Modern World in Dubai",
-    "subtitle": "With years of experience in the market, we specialize in helping clients sell their properties quickly and at the best possible price, ensuring a smooth and successful transaction from start to finish",
+    "title": "Discover Premium Property Opportunities in Dubai",
+    "subtitle": "ProPart Dubai connects you with exceptional properties across the emirate. Our expert team guides you through every step, from discovery to investment, ensuring your real estate journey is seamless and rewarding",
     "search": {
       "placeholder": "Search by area name",
       "bedrooms": "Bedrooms",
@@ -23,8 +23,8 @@
     }
   },
   "areas": {
-    "title": "These are popular locations to live in Dubai",
-    "description": "Discover the most attractive neighborhoods in Dubai, each offering a unique lifestyle, convenient amenities, and excellent investment potential.",
+    "title": "Explore Dubai's Top Areas",
+    "description": "From vibrant waterfront communities to prestigious business districts, discover Dubai's premier locations where luxury living meets exceptional investment opportunities.",
     "projects": "PROPERTIES",
     "pageTitle": "Areas",
     "pageDescription": "Explore all the amazing neighborhoods in Dubai. Each area offers unique opportunities for living and investment.",
@@ -37,17 +37,17 @@
   },
   "aboutUs": {
     "header": "ABOUT US",
-    "title": "Discover Our Journey to Real Estate Excellence",
-    "description1": "ForYou Real Estate has evolved from a small local agency into a leading real estate firm known for its innovative approach and exceptional service in Dubai's luxury property market.",
-    "description2": "Our team combines extensive market experience with a passion for excellence, aiming to exceed expectations while maintaining a strong commitment to our clients' success and satisfaction.",
+    "title": "Your Trusted Partner in Dubai Real Estate",
+    "description1": "ProPart Dubai stands at the forefront of Dubai's dynamic real estate landscape. We bring together deep market knowledge, innovative solutions, and personalized service to help you navigate the city's premium property market with confidence.",
+    "description2": "Whether you're seeking your dream home, exploring investment opportunities, or looking to sell, our dedicated professionals are committed to delivering results that exceed your expectations and support your long-term goals.",
     "cta": "ABOUT US",
     "image1Alt": "Modern Dubai property",
     "image2Alt": "Real estate team",
     "stat1": "Properties successfully sold this year",
     "stat2": "Years of expertise in Dubai real estate market",
-    "heroTitle1": "ForYou the",
-    "heroTitle2": "Real Estate story.",
-    "heroDescription": "We believe that real estate is more than just creating buildings it's about shaping experiences, fostering connections & enhancing communities.",
+    "heroTitle1": "ProPart Dubai -",
+    "heroTitle2": "Your Gateway to Dubai Real Estate.",
+    "heroDescription": "We understand that real estate represents more than transactions—it's about building futures, creating lasting value, and connecting people with spaces that transform their lives.",
     "heroSubDescription": "Here's what we're all about",
     "heroImageAlt": "Modern real estate buildings",
     "stat1Number": "840+",
@@ -59,12 +59,12 @@
     "stat4Number": "04",
     "stat4Label": "AWARDS ACHIEVEMENTS",
     "milestonesTitle": "Our Historical Milestones",
-    "milestonesDescription": "At ForYou, our journey reflects vision, growth, and a steadfast commitment to excellence.",
+    "milestonesDescription": "At ProPart Dubai, our journey reflects vision, growth, and a steadfast commitment to excellence.",
     "milestone2022": {
       "year": "2022",
       "shortTitle": "First Major Project",
       "boldTitle": "A Milestone Achievement",
-      "description": "By 2022, ForYou had completed its first major project. This project was a testament to our innovative approach and commitment to quality, earning us early recognition in the industry."
+      "description": "By 2022, ProPart Dubai had completed its first major project. This project was a testament to our innovative approach and commitment to quality, earning us early recognition in the industry."
     },
     "milestone2023": {
       "year": "2023",
@@ -82,7 +82,7 @@
       "year": "2025",
       "shortTitle": "Looking Ahead",
       "boldTitle": "The Future Of Real Estate",
-      "description": "As we look to the future, ForYou remains committed to innovation, excellence, and sustainability. We are excited about upcoming projects and opportunities to further our impact in the world of real estate."
+      "description": "As we look to the future, ProPart Dubai remains committed to innovation, excellence, and sustainability. We are excited about upcoming projects and opportunities to further our impact in the world of real estate."
     },
     "partnersTitle": "We Partner With",
     "teamTitle": "Our Team",
@@ -198,23 +198,23 @@
   "statistics": {
     "yearsExperience": {
       "title": "Years experience",
-      "description": "Providing expert real estate services in Dubai's luxury property market"
+      "description": "Delivering exceptional real estate expertise across Dubai's most prestigious developments"
     },
     "propertiesSold": {
       "title": "Properties sold",
-      "description": "Successfully completed sales transactions across Dubai's premium neighborhoods"
+      "description": "Successfully facilitating property transactions in Dubai's most sought-after locations"
     },
     "happyClients": {
       "title": "Happy clients",
-      "description": "Trusted by clients seeking their dream properties in Dubai"
+      "description": "Building lasting relationships with clients who trust us with their real estate needs"
     },
     "clientSatisfaction": {
       "title": "Client satisfaction",
-      "description": "Dedicated to ensuring exceptional service and results for every client"
+      "description": "Committed to delivering outstanding results and personalized service to every client"
     }
   },
   "footer": {
-    "copyright": "© 2025 ForYou Real Estate. All rights reserved.",
+    "copyright": "© 2025 ProPart Dubai. All rights reserved.",
     "language": "Language",
     "navigation": {
       "title": "Navigation",

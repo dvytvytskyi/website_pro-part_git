@@ -258,11 +258,11 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
         {imageLoading && (
           <div className={styles.imageSkeleton}></div>
         )}
-        {/* Ensure photos is an array and has at least one valid URL */}
-        {Array.isArray(property.photos) && property.photos.length > 0 && property.photos[0] && (
+        {/* Ensure photos is an array and has at least one valid URL string */}
+        {Array.isArray(property.photos) && property.photos.length > 0 && property.photos[0] && typeof property.photos[0] === 'string' && property.photos[0].trim().length > 0 && (
           <div className={styles.imageWrapper} style={{ opacity: imageLoading ? 0 : 1, transition: 'opacity 0.3s ease' }}>
             {/* Previous image - sliding out */}
-            {isTransitioning && prevImageIndex !== currentImageIndex && property.photos[prevImageIndex] && (
+            {isTransitioning && prevImageIndex !== currentImageIndex && property.photos[prevImageIndex] && typeof property.photos[prevImageIndex] === 'string' && (
               <Image
                 key={`prev-${prevImageIndex}`}
                 src={property.photos[prevImageIndex]}
@@ -275,7 +275,7 @@ function PropertyCard({ property, currentPage = 1 }: PropertyCardProps) {
               />
             )}
             {/* Current image - sliding in */}
-            {property.photos[currentImageIndex] && (
+            {property.photos[currentImageIndex] && typeof property.photos[currentImageIndex] === 'string' && (
               <Image
                 key={`current-${currentImageIndex}`}
                 src={property.photos[currentImageIndex]}

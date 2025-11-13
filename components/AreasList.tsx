@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getAreas, Area as ApiArea } from '@/lib/api';
+import { getAreas, Area as ApiArea, normalizeImageUrl } from '@/lib/api';
 import styles from './AreasList.module.css';
 import AreaCardSkeleton from '@/components/AreaCardSkeleton';
 
@@ -56,11 +56,52 @@ export default function AreasList() {
       setLoading(true);
       setError(null);
       try {
+        // Load allowed areas from areas.json
+        let allowedAreaNames = new Set<string>();
+        try {
+          const areasResponse = await fetch('/areas.json');
+          if (areasResponse.ok) {
+            const allowedAreasData = await areasResponse.json();
+            allowedAreaNames = new Set(
+              allowedAreasData.map((area: { name: string }) => area.name.trim())
+            );
+          }
+        } catch (err) {
+          console.warn('Failed to load areas.json, showing all areas:', err);
+        }
+        
         const apiAreas = await getAreas();
         
-        // Convert API areas to component format and filter out areas with placeholder images
+        // Convert API areas to component format - allow areas without images (use placeholder)
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`📊 AreasList: Received ${apiAreas.length} areas from API`);
+          console.log(`📋 AreasList: Allowed areas from areas.json: ${allowedAreaNames.size} areas`);
+          const areasWithImages = apiAreas.filter(a => a.images && Array.isArray(a.images) && a.images.length > 0).length;
+          console.log(`📸 AreasList: ${areasWithImages}/${apiAreas.length} areas have images array`);
+          
+          if (areasWithImages > 0) {
+            const sample = apiAreas.filter(a => a.images && Array.isArray(a.images) && a.images.length > 0).slice(0, 3);
+            console.log('📸 AreasList: Sample areas with images:', sample.map(a => ({
+              name: a.nameEn,
+              imagesCount: a.images?.length || 0,
+              firstImage: a.images?.[0]?.substring(0, 80) || 'N/A'
+            })));
+          }
+        }
+        
         const convertedAreas: Area[] = apiAreas
           .filter(area => {
+            // Filter by allowed area names from areas.json (only if areas.json was loaded successfully)
+            if (allowedAreaNames.size > 0) {
+              const areaName = area.nameEn?.trim();
+              if (!areaName || !allowedAreaNames.has(areaName)) {
+                if (process.env.NODE_ENV === 'development') {
+                  console.log(`❌ Area "${areaName}" (${area.id}) filtered out: not in areas.json`);
+                }
+                return false;
+              }
+            }
+            
             // Filter out areas with 0 projects
             const projectsCount = area.projectsCount?.total || 0;
             if (projectsCount === 0) {
@@ -70,88 +111,115 @@ export default function AreasList() {
               return false;
             }
             
-            // Filter out areas that don't have real images (have placeholder)
-            const hasImages = area.images && Array.isArray(area.images) && area.images.length > 0;
-            if (!hasImages) {
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: no images`);
-              }
-              return false; // No images at all
-            }
-            
-            // Get first image URL
-            const firstImage = area.images && area.images.length > 0 ? area.images[0] : null;
-            if (!firstImage || typeof firstImage !== 'string' || firstImage.trim() === '') {
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: empty image URL`);
-              }
-              return false; // Empty or invalid image URL
-            }
-            
-            // Check if image URL is a placeholder (unsplash.com or other placeholder services)
-            const isPlaceholder = firstImage.includes('unsplash.com') ||
-              firstImage.includes('placeholder') ||
-              firstImage.includes('via.placeholder.com') ||
-              firstImage.includes('dummyimage.com') ||
-              firstImage.includes('placehold.it') ||
-              firstImage.includes('fakeimg.pl');
-            
-            if (isPlaceholder) {
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: placeholder image URL: ${firstImage.substring(0, 100)}`);
-              }
-              return false;
-            }
-            
-            // Check if URL looks valid (starts with http:// or https://)
-            const isValidUrl = firstImage.startsWith('http://') || firstImage.startsWith('https://');
-            if (!isValidUrl) {
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`❌ Area "${area.nameEn}" (${area.id}) filtered out: invalid URL format: ${firstImage.substring(0, 100)}`);
-              }
-              return false;
-            }
-            
-            // Check if URL is from known valid image domains (optional - can be removed if too restrictive)
-            // This helps filter out obviously invalid URLs
-            const validImageDomains = [
-              'reelly.io',
-              'xano.io',
-              'alnair.ae',
-              'foryou-realestate.com',
-              'cdn',
-              'cloudinary.com',
-              'amazonaws.com',
-              's3.amazonaws.com',
-              'imgur.com',
-              'i.imgur.com',
-            ];
-            
-            const hasValidDomain = validImageDomains.some(domain => firstImage.includes(domain));
-            // Don't filter out based on domain alone, as there might be other valid domains
-            // But log it for debugging
-            if (process.env.NODE_ENV === 'development' && !hasValidDomain) {
-              console.log(`⚠️ Area "${area.nameEn}" (${area.id}) has image from unknown domain: ${new URL(firstImage).hostname}`);
-            }
-            
-            // Area passed all checks
+            // Allow areas even without images - we'll use a placeholder if needed
             return true;
           })
-          .map(area => {
-            // At this point, we know area has valid real images
-            const imageUrl = area.images && area.images.length > 0 
-              ? area.images[0] 
-              : '';
+          .map((area, index) => {
+            // Get image - prioritize real images from API
+            let imageUrl = '';
             
-            return {
+            // First priority: images array from API (real photos)
+            if (area.images && Array.isArray(area.images) && area.images.length > 0) {
+              const firstImage = area.images[0];
+              
+              if (typeof firstImage === 'string' && firstImage.trim() !== '') {
+                // If it's already a full URL (reely, alnair, etc.), use it as is
+                if (firstImage.startsWith('http://') || firstImage.startsWith('https://')) {
+                  // Check if it's a placeholder
+                  const isPlaceholder = firstImage.includes('unsplash.com') ||
+                    firstImage.includes('placeholder') ||
+                    firstImage.includes('via.placeholder.com') ||
+                    firstImage.includes('dummyimage.com') ||
+                    firstImage.includes('placehold.it') ||
+                    firstImage.includes('fakeimg.pl');
+                  
+                  if (!isPlaceholder) {
+                    imageUrl = firstImage.trim();
+                  }
+                } else {
+                  // If it's not a full URL, use normalizeImageUrl for Cloudinary/public_id
+                  const normalized = normalizeImageUrl(firstImage, {
+                    width: 800,
+                    height: 600,
+                    quality: 'auto',
+                    format: 'auto'
+                  });
+                  
+                  if (normalized && normalized.trim() !== '') {
+                    const isPlaceholder = normalized.includes('unsplash.com') ||
+                      normalized.includes('placeholder') ||
+                      normalized.includes('via.placeholder.com') ||
+                      normalized.includes('dummyimage.com') ||
+                      normalized.includes('placehold.it') ||
+                      normalized.includes('fakeimg.pl');
+                    
+                    if (!isPlaceholder) {
+                      imageUrl = normalized;
+                    }
+                  }
+                }
+              }
+            }
+            
+            // Second priority: other image fields (only if images array is empty)
+            if (!imageUrl) {
+              if (area.imageUrl && typeof area.imageUrl === 'string' && area.imageUrl.trim() !== '') {
+                // If it's already a full URL, use it as is
+                if (area.imageUrl.startsWith('http://') || area.imageUrl.startsWith('https://')) {
+                  imageUrl = area.imageUrl.trim();
+                } else {
+                  imageUrl = normalizeImageUrl(area.imageUrl, {
+                    width: 800,
+                    height: 600,
+                    quality: 'auto',
+                    format: 'auto'
+                  });
+                }
+              } else if (area.cloudinaryId && typeof area.cloudinaryId === 'string') {
+                imageUrl = normalizeImageUrl(area.cloudinaryId, {
+                  width: 800,
+                  height: 600,
+                  quality: 'auto',
+                  format: 'auto'
+                });
+              } else if (area.publicId && typeof area.publicId === 'string') {
+                imageUrl = normalizeImageUrl(area.publicId, {
+                  width: 800,
+                  height: 600,
+                  quality: 'auto',
+                  format: 'auto'
+                });
+              }
+            }
+            
+            // Fallback to a default placeholder if no valid image
+            if (!imageUrl) {
+              imageUrl = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&h=600&fit=crop';
+              
+              if (process.env.NODE_ENV === 'development' && index < 3) {
+                console.warn(`⚠️ AreasList: Area "${area.nameEn}" using placeholder image`);
+              }
+            }
+            
+            const convertedArea = {
               id: area.id,
               name: area.nameEn,
               nameRu: area.nameRu,
-              projectsCount: area.projectsCount.total,
+              projectsCount: area.projectsCount?.total || 0,
               image: imageUrl,
-              city: area.city.nameEn,
-              cityRu: area.city.nameRu,
+              city: area.city?.nameEn || '',
+              cityRu: area.city?.nameRu || '',
             };
+            
+            if (process.env.NODE_ENV === 'development' && index < 3) {
+              console.log(`✅ AreasList: Converted area "${convertedArea.name}":`, {
+                image: convertedArea.image.substring(0, 80),
+                isPlaceholder: convertedArea.image.includes('unsplash.com'),
+                isCloudinary: convertedArea.image.includes('cloudinary.com'),
+              });
+            }
+            
+            return convertedArea;
           });
         
         setAllAreas(convertedAreas);

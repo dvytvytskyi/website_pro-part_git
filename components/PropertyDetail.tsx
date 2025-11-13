@@ -229,7 +229,7 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
       outerCircle.style.cssText = `
         width: 18px;
         height: 18px;
-        border: 1.5px solid #003077;
+        border: 1.5px solid #e6a165;
         border-radius: 50%;
         background: transparent;
         position: absolute;
@@ -243,7 +243,7 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
       innerCircle.style.cssText = `
         width: 8px;
         height: 8px;
-        background: #003077;
+        background: #e6a165;
         border-radius: 50%;
         position: absolute;
         top: 5px;

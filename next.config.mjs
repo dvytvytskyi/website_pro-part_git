@@ -28,14 +28,25 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.cloudinary.com',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'cloudinary.com',
+        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'admin.foryou-realestate.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'admin.pro-part.online',
       },
       {
         protocol: 'https',
@@ -58,6 +69,7 @@ const nextConfig = {
         hostname: 'propertyfinder.ae',
       },
     ],
+    unoptimized: false,
   },
 };
 

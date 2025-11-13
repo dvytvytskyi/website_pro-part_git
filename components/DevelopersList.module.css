@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap');
 
 .developersList {
   height: 100vh;
@@ -31,19 +30,19 @@
 }
 
 .title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 56px;
   font-weight: 400;
-  color: #003077;
+  color: #e6a165;
   margin: 0;
 }
 
 .loading {
   text-align: center;
   padding: 100px 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
-  color: #003077;
+  color: #e6a165;
 }
 
 .content {
@@ -75,7 +74,7 @@
 }
 
 .developersGrid::-webkit-scrollbar-thumb {
-  background: #003077;
+  background: #e6a165;
   border-radius: 4px;
 }
 
@@ -100,15 +99,15 @@
 }
 
 .developerCard:hover {
-  border-color: #003077;
+  border-color: #e6a165;
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 48, 119, 0.1);
+  box-shadow: 0 4px 12px rgba(230, 161, 101, 0.1);
 }
 
 .developerCard.selected {
-  border-color: #003077;
+  border-color: #e6a165;
   background: #f8f9fa;
-  box-shadow: 0 4px 12px rgba(0, 48, 119, 0.15);
+  box-shadow: 0 4px 12px rgba(230, 161, 101, 0.15);
 }
 
 .logoWrapper {
@@ -148,12 +147,12 @@
   max-width: 120px;
   max-height: 120px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #003077 0%, #0055aa 100%);
+  background: linear-gradient(135deg, #e6a165 0%, #0055aa 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 48px;
   font-weight: 600;
   flex-shrink: 0;
@@ -165,10 +164,10 @@
 }
 
 .developerName {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
   margin: 0;
   line-height: 1.4;
   flex: 1;
@@ -184,12 +183,12 @@
 }
 
 .viewButton {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #003077;
+  color: #e6a165;
   background: transparent;
-  border: 1px solid #003077;
+  border: 1px solid #e6a165;
   border-radius: 6px;
   padding: 8px 20px;
   cursor: pointer;
@@ -203,7 +202,7 @@
 }
 
 .viewButton:hover {
-  background: #003077;
+  background: #e6a165;
   color: #ffffff;
 }
 
@@ -216,14 +215,14 @@
 }
 
 .projectsCountNumber {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
 }
 
 .projectsCountLabel {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: #666666;
@@ -268,7 +267,7 @@
 }
 
 .developerDetails::-webkit-scrollbar-thumb {
-  background: #003077;
+  background: #e6a165;
   border-radius: 4px;
 }
 
@@ -305,12 +304,12 @@
   width: 120px;
   height: 120px;
   border-radius: 20px;
-  background: linear-gradient(135deg, #003077 0%, #0055aa 100%);
+  background: linear-gradient(135deg, #e6a165 0%, #0055aa 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 48px;
   font-weight: 600;
 }
@@ -320,10 +319,10 @@
 }
 
 .detailsName {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 32px;
   font-weight: 400;
-  color: #003077;
+  color: #e6a165;
   margin: 0;
 }
 
@@ -332,10 +331,10 @@
 }
 
 .description p {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 300;
-  color: #003077;
+  color: #666666;
   line-height: 1.6;
   margin: 0;
 }
@@ -345,10 +344,10 @@
 }
 
 .imagesTitle {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
   margin: 0 0 20px 0;
 }
 
@@ -372,7 +371,7 @@
 }
 
 .createdAt {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 400;
   color: #666666;
@@ -383,14 +382,14 @@
   text-align: center;
   padding: 60px 20px;
   color: #666666;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
 }
 
 .error {
   text-align: center;
   padding: 100px 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
   color: #d32f2f;
 }
@@ -398,7 +397,7 @@
 .noDevelopers {
   text-align: center;
   padding: 100px 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
   color: #666666;
   grid-column: 1 / -1;

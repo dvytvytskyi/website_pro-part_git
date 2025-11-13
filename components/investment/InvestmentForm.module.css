@@ -5,15 +5,15 @@
 }
 
 .title {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
   margin: 0 0 8px 0;
 }
 
 .description {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   color: rgb(93 93 93 / 80%);
   margin: 0 0 24px 0;
@@ -26,7 +26,7 @@
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 16px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   color: #c33;
 }
@@ -44,15 +44,15 @@
 }
 
 .success h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
   margin: 0 0 8px 0;
 }
 
 .success p {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   color: rgb(93 93 93 / 80%);
   margin: 0;
@@ -83,14 +83,14 @@
 }
 
 .label {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #003077;
+  color: #e6a165;
 }
 
 .input {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   padding: 12px 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -104,7 +104,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #003077;
+  border-color: #e6a165;
 }
 
 .input::placeholder {
@@ -121,18 +121,18 @@
 }
 
 .errorMessage {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   color: #dc3545;
   margin-top: -4px;
 }
 
 .submitButton {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 500;
   padding: 14px 24px;
-  background: #003077;
+  background: #e6a165;
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -144,7 +144,7 @@
 }
 
 .submitButton:hover:not(:disabled) {
-  background: #002366;
+  background: #e6a165;
 }
 
 .submitButton:disabled {
@@ -153,7 +153,7 @@
 }
 
 .termsMessage {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   color: rgb(93 93 93 / 80%);
   line-height: 1.5;
@@ -178,7 +178,7 @@
   justify-content: center;
   color: rgb(93 93 93 / 60%);
   flex-shrink: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 20px;
   font-weight: 600;
   overflow: hidden;
@@ -200,15 +200,15 @@
 }
 
 .agentName {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: #003077;
+  color: #e6a165;
   margin-bottom: 4px;
 }
 
 .agentRole {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   font-size: 14px;
   color: rgb(93 93 93 / 60%);
 }
