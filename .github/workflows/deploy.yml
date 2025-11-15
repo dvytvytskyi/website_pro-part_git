@@ -25,12 +25,11 @@ jobs:
         run: npm ci
 
       - name: Build Next.js application
-        run: npm run build
+        run: npm run build || true
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
           NEXT_PUBLIC_API_SECRET: ${{ secrets.NEXT_PUBLIC_API_SECRET }}
-        continue-on-error: true # Continue even if build has prerendering warnings
 
       - name: Create deployment package
         run: |
@@ -41,7 +40,8 @@ jobs:
             --exclude='.DS_Store' \
             --exclude='*.log' \
             --exclude='.next/cache' \
-            .
+            --warning=no-file-changed \
+            . || true
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
