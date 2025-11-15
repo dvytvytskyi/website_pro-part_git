@@ -57,8 +57,16 @@ jobs:
           scp -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/tmp/
 
       - name: Deploy to server
+        env:
+          DOMAIN: ${{ secrets.DOMAIN }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+          SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+          PORT: ${{ secrets.PORT }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
+          NEXT_PUBLIC_API_SECRET: ${{ secrets.NEXT_PUBLIC_API_SECRET }}
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} bash << 'ENDSSH'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} bash -s << 'ENDSSH' "$DOMAIN" "$APP_DIR" "$SERVICE_NAME" "$PORT" "$NEXT_PUBLIC_API_URL" "$NEXT_PUBLIC_API_KEY" "$NEXT_PUBLIC_API_SECRET"
           set -e
           
           DOMAIN="$1"
@@ -216,13 +224,6 @@ jobs:
           echo "✅ Deployment completed!"
           echo "🌐 Site should be available at http://${DOMAIN}"
           ENDSSH
-          "${{ secrets.DOMAIN }}" \
-          "${{ secrets.APP_DIR }}" \
-          "${{ secrets.SERVICE_NAME }}" \
-          "${{ secrets.PORT }}" \
-          "${{ secrets.NEXT_PUBLIC_API_URL }}" \
-          "${{ secrets.NEXT_PUBLIC_API_KEY }}" \
-          "${{ secrets.NEXT_PUBLIC_API_SECRET }}"
 
       - name: Cleanup
         if: always()
