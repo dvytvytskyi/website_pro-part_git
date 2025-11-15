@@ -18,6 +18,8 @@
 # misc
 .DS_Store
 *.pem
+deploy.tar.gz
+deploy-propart.tar.gz
 
 # debug
 npm-debug.log*
