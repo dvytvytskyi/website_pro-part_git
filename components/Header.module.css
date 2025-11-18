@@ -86,10 +86,11 @@
 
 .mainNav {
   display: flex;
-  gap: 32px;
+  gap: 24px;
   align-items: center;
   flex: 1;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .navLink {
@@ -208,13 +209,23 @@
   background: #002866;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1400px) {
   .mainNav {
-    gap: 24px;
+    gap: 20px;
   }
   
   .navLink {
     font-size: 13px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .mainNav {
+    gap: 18px;
+  }
+  
+  .navLink {
+    font-size: 12px;
   }
 }
 

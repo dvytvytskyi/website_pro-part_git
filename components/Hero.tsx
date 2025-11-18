@@ -19,7 +19,7 @@ export default function Hero() {
   const locale = useLocale();
   const router = useRouter();
   const [selectedArea, setSelectedArea] = useState<Area | null>(null);
-  const [selectedBedrooms, setSelectedBedrooms] = useState<string>('all');
+  const [selectedBedrooms, setSelectedBedrooms] = useState<string>('');
   const [isAreaDropdownOpen, setIsAreaDropdownOpen] = useState(false);
   const [isBedroomsDropdownOpen, setIsBedroomsDropdownOpen] = useState(false);
   const [areas, setAreas] = useState<Area[]>([]);
@@ -27,18 +27,61 @@ export default function Hero() {
   const areaDropdownRef = useRef<HTMLDivElement>(null);
   const bedroomsDropdownRef = useRef<HTMLDivElement>(null);
 
-  const bedroomsOptions = ['all', '1', '2', '3', '4', '5+'];
+  const bedroomsOptions = ['1', '2', '3', '4', '5+'];
 
-  // Load areas from API - оптимізовано: завантажуємо тільки areas, а не всі дані
+  // Top 20 main Dubai areas to show in dropdown
+  const MAIN_DUBAI_AREAS = [
+    'Business Bay',
+    'Downtown Dubai',
+    'Palm Jumeirah',
+    'Dubai Marina',
+    'Dubai Hills',
+    'Jumeirah Village Circle (JVC)',
+    'Jumeirah Village Triangle (JVT)',
+    'Arjan',
+    'Al Furjan',
+    'Dubai Harbour',
+    'Dubai Creek Harbour',
+    'Mohammed Bin Rashid City (MBR)',
+    'Dubai Silicon Oasis',
+    'Dubai Sports City',
+    'International City',
+    'Dubai Investment Park',
+    'Dubai Science Park',
+    'Dubai Industrial City',
+    'Tilal Al Ghaf',
+    'City of Arabia',
+  ];
+
+  // Load areas from API - filter to show only main 20 Dubai areas
   useEffect(() => {
     const loadAreas = async () => {
       try {
         const apiAreas = await getAreas();
         if (apiAreas && Array.isArray(apiAreas)) {
-          setAreas(apiAreas);
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`✅ Hero: Loaded ${apiAreas.length} areas (optimized - only areas, not all public data)`);
-          }
+          // Filter to show only main Dubai areas
+          const filteredAreas = apiAreas.filter((area) => {
+            const areaName = area.nameEn?.trim();
+            if (!areaName) return false;
+            
+            // Check if area name matches any of the main areas (case-insensitive)
+            return MAIN_DUBAI_AREAS.some(
+              (mainArea) => mainArea.toLowerCase() === areaName.toLowerCase()
+            );
+          });
+          
+          // Sort areas according to MAIN_DUBAI_AREAS order
+          const sortedAreas = filteredAreas.sort((a, b) => {
+            const aIndex = MAIN_DUBAI_AREAS.findIndex(
+              (name) => name.toLowerCase() === a.nameEn?.toLowerCase()
+            );
+            const bIndex = MAIN_DUBAI_AREAS.findIndex(
+              (name) => name.toLowerCase() === b.nameEn?.toLowerCase()
+            );
+            return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+          });
+          
+          setAreas(sortedAreas);
         }
       } catch (error) {
         console.error('Error loading areas:', error);
@@ -51,16 +94,16 @@ export default function Hero() {
   }, []);
 
   const handleSearch = () => {
-    if (!selectedArea) return;
+    if (!selectedArea || !selectedBedrooms) return;
 
     const params = new URLSearchParams();
     params.set('areaId', selectedArea.id);
-    if (selectedBedrooms !== 'all') {
-      params.set('bedrooms', selectedBedrooms);
-    }
+    params.set('bedrooms', selectedBedrooms);
 
     const localePrefix = locale === 'en' ? '' : `/${locale}`;
-    router.push(`${localePrefix}/properties?${params.toString()}`);
+    const url = `${localePrefix}/properties?${params.toString()}`;
+    
+    router.push(url);
   };
 
   const handleAreaSelect = (area: Area) => {
@@ -79,7 +122,7 @@ export default function Hero() {
   };
 
   const getBedroomLabel = (value: string) => {
-    if (value === 'all') return t('search.bedroomsAll');
+    if (!value) return t('search.bedroomsPlaceholder');
     return `${value} ${t('search.bedrooms')}`;
   };
 
@@ -98,7 +141,7 @@ export default function Hero() {
   }, []);
 
   // Video source - use cloud URL if available, otherwise fallback to local
-  const videoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || '/dubai-hero-video.mp4';
+  const videoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || 'https://res.cloudinary.com/dgv0rxd60/video/upload/v1762957287/3ea514df-18e3-4c44-8177-fdc048fca302_fldvse.mp4';
 
   return (
     <section className={styles.hero}>
@@ -200,7 +243,9 @@ export default function Hero() {
               onClick={() => setIsBedroomsDropdownOpen(!isBedroomsDropdownOpen)}
               className={styles.bedroomsSelect}
             >
-              <span>{getBedroomLabel(selectedBedrooms)}</span>
+              <span className={selectedBedrooms ? '' : styles.placeholder}>
+                {getBedroomLabel(selectedBedrooms)}
+              </span>
               <svg
                 className={`${styles.dropdownArrow} ${isBedroomsDropdownOpen ? styles.dropdownArrowOpen : ''}`}
                 width="12"
@@ -238,7 +283,7 @@ export default function Hero() {
           <button 
             onClick={handleSearch} 
             className={styles.searchButton}
-            disabled={!selectedArea}
+            disabled={!selectedArea || !selectedBedrooms}
           >
             {t('search.searchButton')}
           </button>

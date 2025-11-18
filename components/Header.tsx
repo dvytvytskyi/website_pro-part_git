@@ -92,6 +92,7 @@ export default function Header() {
     { key: 'map', path: '/map' },
     { key: 'areas', path: '/areas' },
     { key: 'developers', path: '/developers' },
+    { key: 'consulting', path: '/consulting' },
     { key: 'aboutUs', path: '/about' },
     { key: 'news', path: '/news' },
   ];

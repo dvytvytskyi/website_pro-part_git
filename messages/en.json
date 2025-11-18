@@ -8,6 +8,7 @@
       "map": "Map",
       "areas": "Areas",
       "developers": "Developers",
+      "consulting": "Consulting",
       "aboutUs": "About Us",
       "news": "News"
     }
@@ -18,7 +19,7 @@
     "search": {
       "placeholder": "Search by area name",
       "bedrooms": "Bedrooms",
-      "bedroomsAll": "All",
+      "bedroomsPlaceholder": "Select Bedrooms",
       "searchButton": "Search Properties"
     }
   },
@@ -34,6 +35,166 @@
     "of": "of",
     "previous": "Previous",
     "next": "Next"
+  },
+  "consulting": {
+    "heroTitle": "Your strategic partner for business success",
+    "heroDescription": "With years of experience across various industries, our dedicated team is committed to driving growth and operational excellence.",
+    "services": {
+      "business-registration": {
+        "title": "Business Registration & Support in UAE",
+        "description": "Complete cycle of business setup in various UAE jurisdictions with ongoing support."
+      },
+      "visa-services": {
+        "title": "Visa Services & Immigration Support",
+        "description": "Services for processing various types of visas for residence and work in the country."
+      },
+      "legal-support": {
+        "title": "Legal Support",
+        "description": "Legal business support including contract preparation and corporate regulation consulting."
+      },
+      "investment-consulting": {
+        "title": "Investment Consulting",
+        "description": "Consulting on profitable investment solutions in real estate, business, and securities in UAE."
+      },
+      "accounting-services": {
+        "title": "Accounting & Financial Services",
+        "description": "Accounting services, tax consulting, and financial reporting preparation."
+      },
+      "employment": {
+        "title": "Employment",
+        "description": "Assistance with legal employee registration and obtaining work visas."
+      },
+      "trademark-registration": {
+        "title": "Trademark Registration",
+        "description": "Complete support in the trademark registration process for brand protection in UAE."
+      },
+      "power-of-attorney": {
+        "title": "Power of Attorney",
+        "description": "Notarization services for powers of attorney and other official documents."
+      }
+    },
+    "infoText": "With over 15 years of experience, we specialize in delivering tailored solutions that drive success across industries like finance, technology, and operations. Our dedicated team is focused on accelerating growth and helping your business thrive in an ever-changing market.",
+    "stat1": {
+      "number": "95%",
+      "label": "Complete customer satisfaction"
+    },
+    "stat2": {
+      "number": "10+",
+      "label": "Innovation and valuable insight"
+    },
+    "stat3": {
+      "number": "$10m",
+      "label": "Highly efficient financial strategies"
+    },
+    "stat4": {
+      "number": "50m",
+      "label": "Users worldwide, providing them with"
+    },
+    "logoText": "Logoipsum",
+    "advantages": {
+      "title": "Why do they trust us?",
+      "advantage1": {
+        "number": ">20",
+        "label": "companies monthly",
+        "description": "We successfully register for our clients in various UAE jurisdictions."
+      },
+      "advantage2": {
+        "number": "90%",
+        "label": "Free Zone accreditation",
+        "description": "We are agents of the largest and most reliable free economic zones."
+      },
+      "advantage3": {
+        "number": "7 days",
+        "label": "average term",
+        "description": "From application submission to obtaining a business license."
+      }
+    },
+    "servicesBlock": {
+      "title": "Our services: Everything you need for your business in UAE",
+      "service1": {
+        "title": "Business Registration",
+        "description": "We register your business \"turnkey\" in Free Zone or Mainland, selecting the optimal jurisdiction and ownership form for your goals."
+      },
+      "service2": {
+        "title": "Visa Support",
+        "description": "We help obtain residence visas for investors, employees and their family members, including the prestigious \"Golden Visa\"."
+      },
+      "service3": {
+        "title": "Legal Support",
+        "description": "We provide full legal support: from contract preparation to corporate law consultations and AML/KYC compliance."
+      },
+      "service4": {
+        "title": "Accounting & Taxes",
+        "description": "We maintain your company's accounting in accordance with UAE legislation, prepare reports and advise on tax optimization."
+      },
+      "service5": {
+        "title": "Investment Consulting",
+        "description": "Our experts provide consultations on investments in real estate, ready-made businesses and other assets in the UAE market."
+      },
+      "service6": {
+        "title": "Employment & HR Services",
+        "description": "We assist with legal employee registration, obtaining work visas, and provide comprehensive HR support for your business."
+      }
+    },
+    "processBlock": {
+      "title": "Simple path to launching your business",
+      "step1": {
+        "number": "Step 1",
+        "title": "Consultation & Strategy",
+        "description": "We conduct a free consultation, analyze your goals and propose an optimal roadmap for registration and launch."
+      },
+      "step2": {
+        "number": "Step 2",
+        "title": "Document Preparation",
+        "description": "Our team handles all paperwork, prepares necessary applications and documents, minimizing your involvement in the process."
+      },
+      "step3": {
+        "number": "Step 3",
+        "title": "Registration & Licensing",
+        "description": "We interact with UAE government agencies for quick obtaining of trade license, registration documents and Establishment Card."
+      },
+      "step4": {
+        "number": "Step 4",
+        "title": "Launch & Support",
+        "description": "After registration, we help open a corporate bank account, process visas and provide ongoing support for your business."
+      }
+    },
+    "successBlock": {
+      "title": "Solutions that work: From IT startup to international trading company",
+      "description": "Many of our clients come to us with a great business idea, but get lost in the complexities of UAE legislation. For example, one of our partners, a European IT startup, wanted to enter the Middle East market, but didn't know which free zone to choose to minimize taxes and maximize flexibility.",
+      "solution": "We conducted a full analysis of their business model and recommended registration in DMCC. As a result, the client not only successfully registered the company in 10 days, but also received visas for key developers and access to developed IT infrastructure. This allowed them to focus on the product and attract first investments just 3 months after launch.",
+      "cta": "Your success story could be next."
+    },
+    "contactBlock": {
+      "title": "Ready to discuss your project?",
+      "description": "Leave your contacts, and our lead consultant will contact you within 24 hours to conduct a free consultation and answer all your questions. This does not obligate you to anything.",
+      "form": {
+        "name": "Your name",
+        "contact": "Your Email or Phone",
+        "message": "Briefly describe your task",
+        "submit": "Send request",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      }
+    },
+    "faqBlock": {
+      "title": "Answers to your questions",
+      "questions": {
+        "q1": {
+          "question": "Do I need to come to UAE to register a company?",
+          "answer": "Most registration steps can be done remotely. Your personal presence may only be required at the final stages, for example, to open a bank account and for visa biometrics, and we will organize this process as quickly as possible."
+        },
+        "q2": {
+          "question": "What is the cost of registering a company \"turnkey\"?",
+          "answer": "The cost depends on the chosen jurisdiction (Free Zone or Mainland), type of license, and number of visas. We will provide you with a detailed calculation with all government fees after the first free consultation."
+        },
+        "q3": {
+          "question": "What taxes will I pay in UAE?",
+          "answer": "UAE has a corporate income tax of 9% (for profits over 375,000 AED) and VAT of 5%. However, many free economic zones offer tax benefits. We will help you choose the optimal tax regime."
+        }
+      }
+    }
   },
   "aboutUs": {
     "header": "ABOUT US",
@@ -436,6 +597,824 @@
     "pendingApprovalText": "Your account has been created and is pending approval. You will receive a notification once your account is activated.",
     "resetPasswordSuccess": "Password Reset Successful!",
     "resetPasswordSuccessText": "Your password has been reset successfully. You can now sign in with your new password."
+  },
+  "businessRegistration": {
+    "hero": {
+      "title": "Launch Your UAE Business with Confidence",
+      "subtitle": "We provide a complete suite of services, from company registration and accounting to resident visa processing. Focus on growing your business while we handle all the complexities for you.",
+      "cta": "Book a Free Consultation"
+    },
+    "services": {
+      "title": "A Single Solution for All Your Business Needs",
+      "description": "We deliver integrated services to ensure your company has a fast, compliant, and successful start in the UAE.",
+      "card1": {
+        "title": "Turnkey Company Registration",
+        "description": "We select the optimal jurisdiction (Free Zone or Mainland) for your business model, prepare the complete document package, and register your company in the shortest possible time."
+      },
+      "card2": {
+        "title": "Legal & Accounting Support",
+        "description": "We ensure full compliance with UAE legislation. Our services include bookkeeping, financial reporting, and expert advice on all legal and tax matters, including AML and ESR."
+      },
+      "card3": {
+        "title": "Visa & Emirates ID Processing",
+        "description": "We manage the entire process of obtaining resident visas for you, your employees, and your family members, including the Emirates ID, unlocking all the benefits of UAE residency."
+      },
+      "card4": {
+        "title": "Dedicated Manager & Support",
+        "description": "Each client is assigned a dedicated manager who provides ongoing support on all matters—from obtaining licenses and certificates to successfully opening a corporate bank account."
+      }
+    },
+    "comparison": {
+      "title": "Choosing the Right Jurisdiction for Your Company",
+      "description": "The choice between a Free Zone and the Mainland is a key strategic decision. We'll help you make the right one.",
+      "feature": "Feature",
+      "freeZone": "Free Zone Company",
+      "mainland": "Mainland Company (LLC)",
+      "features": {
+        "ownership": {
+          "label": "Company Ownership",
+          "freeZone": "100% Foreign Ownership",
+          "mainland": "100% Foreign Ownership (for most activities)"
+        },
+        "scope": {
+          "label": "Scope of Business",
+          "freeZone": "Inside the Free Zone & outside the UAE",
+          "mainland": "Across the entire UAE & internationally"
+        },
+        "tax": {
+          "label": "Corporate Tax",
+          "freeZone": "0% (in many zones) or 9%",
+          "mainland": "9% on profits exceeding AED 375,000"
+        },
+        "vat": {
+          "label": "VAT",
+          "freeZone": "0% on zone-to-zone transactions, 5% otherwise",
+          "mainland": "5% on most goods and services"
+        },
+        "office": {
+          "label": "Office Requirement",
+          "freeZone": "Flexi-desk or physical office within the zone",
+          "mainland": "Physical office lease registered with Ejari"
+        },
+        "contracts": {
+          "label": "Government Contracts",
+          "freeZone": "Limited access",
+          "mainland": "Direct eligibility to bid for government tenders"
+        }
+      }
+    },
+    "steps": {
+      "title": "Your Path to a UAE Company",
+      "step1": {
+        "title": "Step 1: Consultation & Strategy",
+        "description": "We analyze your business model and objectives, then recommend the optimal corporate structure and jurisdiction for your success."
+      },
+      "step2": {
+        "title": "Step 2: Document Preparation & Submission",
+        "description": "Our team collects, verifies, and submits all required documents to the relevant government authorities, minimizing your involvement."
+      },
+      "step3": {
+        "title": "Step 3: License Issuance & Registration",
+        "description": "We secure your trade license, certificate of registration, and establishment card, officially bringing your new company to life."
+      },
+      "step4": {
+        "title": "Step 4: Bank Account Opening & Visa Processing",
+        "description": "We guide you through the process of opening a corporate bank account and manage the application for resident visas for all shareholders and employees."
+      }
+    },
+    "trust": {
+      "title": "Your Reliable Partner in the UAE Business Landscape",
+      "stat1": "Companies registered every month.",
+      "stat2": "We are official agents for the UAE's largest and most reputable accredited Free Zones.",
+      "features": {
+        "pricing": {
+          "title": "Transparent Pricing",
+          "description": "You will always receive a clear breakdown of all government fees and our service charges. No hidden costs."
+        },
+        "expertise": {
+          "title": "Deep Expertise",
+          "description": "Our specialists possess in-depth knowledge of UAE corporate law, tax regulations, and administrative procedures."
+        },
+        "speed": {
+          "title": "Speed and Efficiency",
+          "description": "Our established relationships with government authorities allow us to streamline the registration process and ensure the fastest turnaround times."
+        },
+        "service": {
+          "title": "Full Concierge Service",
+          "description": "We accompany you at every stage, providing a turnkey solution to handle any challenge that arises."
+        }
+      }
+    },
+    "contact": {
+      "title": "Ready to Take the First Step?",
+      "description": "Leave your details below, and our expert consultant will contact you for a free, no-obligation consultation to build a personalized roadmap for your business in the UAE.",
+      "form": {
+        "name": "Your Name",
+        "contact": "Your Email / Phone",
+        "message": "How can we help?",
+        "submit": "Submit Request",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "Do I need to travel to the UAE to register a company?",
+          "answer": "Most of the setup process can be completed remotely. Your physical presence is typically only required for the final steps, such as biometrics for your Emirates ID and bank account activation, which we will help you schedule efficiently."
+        },
+        "q2": {
+          "question": "Do I need a local UAE partner?",
+          "answer": "For the vast majority of business activities on the Mainland and for all companies in a Free Zone, a local partner (UAE national) is no longer required. You can retain 100% ownership."
+        },
+        "q3": {
+          "question": "What documents are needed to start?",
+          "answer": "To begin the process, we typically only need a clear copy of your passport. Our team will guide you and help prepare all other necessary documentation."
+        }
+      }
+    }
+  },
+  "visaServices": {
+    "hero": {
+      "title": "Secure Your Future in the UAE: Your Gateway to Residency",
+      "subtitle": "Navigating the complexities of immigration can be overwhelming. We provide expert, end-to-end visa services to ensure a smooth, fast, and successful journey to your new life in the Emirates.",
+      "cta": "Find Your Perfect Visa Now"
+    },
+    "options": {
+      "title": "Visa Solutions Tailored to Your Ambitions",
+      "description": "Whether you are an investor, a professional, or a talent, we have the right visa solution for you.",
+      "card1": {
+        "title": "Golden Visa",
+        "ideal": "Ideal for: Investors & Talents",
+        "description": "Secure a 10-year renewable residency through real estate investment or by being a recognized talent, enjoying long-term stability for you and your family."
+      },
+      "card2": {
+        "title": "Investor / Partner Visa",
+        "ideal": "Ideal for: Business Owners",
+        "description": "Obtain residency by establishing a company or owning shares in an existing one. This visa is your key to managing your business directly from the UAE."
+      },
+      "card3": {
+        "title": "Freelance Visa",
+        "ideal": "Ideal for: Self-Employed Professionals",
+        "description": "Work legally as an independent contractor with a permit from a designated free zone. Perfect for IT specialists, marketers, designers, and other consultants."
+      },
+      "card4": {
+        "title": "Employee Visa",
+        "ideal": "Ideal for: Hired Professionals",
+        "description": "A standard 2-year work visa sponsored by your employer in the UAE, providing you with full residency benefits, including an Emirates ID and local bank account access."
+      }
+    },
+    "benefits": {
+      "title": "Unlock a World of Opportunity",
+      "subtitle": "A UAE residence visa is more than just an entry permit; it's your ticket to a secure and prosperous lifestyle.",
+      "family": {
+        "title": "Sponsor Your Family",
+        "description": "Easily obtain residence visas for your spouse, children, and even parents."
+      },
+      "tax": {
+        "title": "Zero Income Tax",
+        "description": "Enjoy the benefit of no personal income tax on your earnings."
+      },
+      "banking": {
+        "title": "Access to World-Class Banking",
+        "description": "Open personal and corporate bank accounts with ease and access global financial services."
+      },
+      "security": {
+        "title": "Long-Term Security",
+        "description": "Live in one of the safest countries in the world with a stable economy and a high standard of living."
+      },
+      "travel": {
+        "title": "Global Travel Hub",
+        "description": "Benefit from Dubai and Abu Dhabi's strategic locations, connecting you to the rest of the world."
+      }
+    },
+    "steps": {
+      "title": "Your Hassle-Free Path to Residency",
+      "step1": {
+        "title": "Step 1: Free Assessment & Strategy",
+        "description": "We start with a detailed consultation to understand your profile and goals, then recommend the most suitable visa strategy."
+      },
+      "step2": {
+        "title": "Step 2: Document Management",
+        "description": "Our team assists you in collecting, preparing, and legalizing all necessary documents, ensuring they meet the strict requirements of UAE authorities."
+      },
+      "step3": {
+        "title": "Step 3: Application Submission & Follow-up",
+        "description": "We submit your application through the official channels and proactively manage all communication with the immigration and government departments."
+      },
+      "step4": {
+        "title": "Step 4: Visa Stamping & Emirates ID",
+        "description": "We guide you through the final steps, including medical tests, biometrics, and the final visa stamping in your passport, culminating in receiving your Emirates ID card."
+      }
+    },
+    "contact": {
+      "title": "Get Your Personalized Visa Plan",
+      "description": "Ready to begin? Fill out the form, and our immigration expert will contact you to provide a free, no-obligation consultation and answer all your questions.",
+      "form": {
+        "name": "Your Name",
+        "contact": "Your Email / Phone",
+        "visaType": "Which visa are you interested in? (Optional)",
+        "visaTypes": {
+          "golden": "Golden Visa",
+          "investor": "Investor / Partner Visa",
+          "freelance": "Freelance Visa",
+          "employee": "Employee Visa"
+        },
+        "message": "Your Message",
+        "submit": "Request My Free Consultation",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "Can I sponsor my family with any visa?",
+          "answer": "Most UAE residence visas, including Investor, Employee, and Golden Visas, allow you to act as a sponsor for your immediate family members (spouse and children). We can advise on the specific requirements for your case."
+        },
+        "q2": {
+          "question": "How long is a residence visa valid for?",
+          "answer": "Validity varies by type. Employee and Freelance visas are typically for 1-2 years, Investor visas for 2-3 years, and the Golden Visa for 10 years. All are renewable as long as the conditions are met."
+        },
+        "q3": {
+          "question": "Do I have to stay in the UAE permanently?",
+          "answer": "To maintain your residency status, you generally need to enter the UAE at least once every 180 days. For the Golden Visa, this requirement is more flexible, allowing you to stay outside the country for longer periods."
+        }
+      }
+    }
+  },
+  "investmentConsulting": {
+    "hero": {
+      "title": "Unlock the UAE's Premier Investment Opportunities",
+      "subtitle": "We provide strategic investment consulting for high-net-worth individuals and corporations seeking to capitalize on the dynamic growth of the UAE market. Navigate your next investment with data-driven insights and expert execution.",
+      "cta": "Schedule a Confidential Consultation"
+    },
+    "pillars": {
+      "title": "A Diversified Approach to Wealth Creation",
+      "description": "Our expertise covers the three key pillars of investment in the UAE, allowing us to build a robust and balanced portfolio tailored to your goals.",
+      "pillar1": {
+        "title": "Strategic Real Estate Investment",
+        "description": "We identify and secure high-yield residential and commercial properties, from luxury villas to Grade A office spaces. Our focus is on assets with strong potential for both capital appreciation and stable rental income, including exclusive off-market opportunities."
+      },
+      "pillar2": {
+        "title": "Business Acquisition & Private Equity",
+        "description": "Gain direct access to the region's economy by acquiring profitable, turnkey businesses. We conduct rigorous due diligence, valuation, and negotiation to ensure you invest in scalable enterprises with a proven track record."
+      },
+      "pillar3": {
+        "title": "Securities & Capital Markets",
+        "description": "Diversify your portfolio by investing in the UAE's growing capital markets. We provide expert guidance on building a portfolio of local and regional stocks, bonds, and other financial instruments to achieve your desired risk-return profile."
+      }
+    },
+    "advantage": {
+      "title": "A Global Hub for Secure and Profitable Investment",
+      "subtitle": "The UAE offers a unique combination of stability, growth, and pro-business policies, making it one of the world's most attractive investment environments.",
+      "tax": {
+        "title": "Tax-Efficient Environment",
+        "description": "Benefit from 0% personal income tax, low corporate tax rates, and no capital gains tax on property or securities."
+      },
+      "stability": {
+        "title": "Economic Stability & Growth",
+        "description": "A diversified, resilient economy with a strategic global location connecting Europe, Asia, and Africa."
+      },
+      "governance": {
+        "title": "Pro-Business Governance",
+        "description": "A government committed to attracting foreign investment through transparent regulations and world-class infrastructure."
+      },
+      "roi": {
+        "title": "High ROI Potential",
+        "description": "Consistently strong returns across real estate, tourism, technology, and trade sectors."
+      }
+    },
+    "process": {
+      "title": "A Disciplined Approach to Maximizing Your Returns",
+      "step1": {
+        "title": "Step 1: Discovery & Goal Alignment",
+        "description": "We begin with a confidential consultation to understand your financial objectives, risk tolerance, and long-term vision."
+      },
+      "step2": {
+        "title": "Step 2: Market Analysis & Opportunity Sourcing",
+        "description": "Our team conducts in-depth market research and leverages its exclusive network to identify and vet investment opportunities that align with your strategy."
+      },
+      "step3": {
+        "title": "Step 3: Due Diligence & Execution",
+        "description": "We manage the entire transaction process, from comprehensive financial and legal due diligence to negotiation and final acquisition."
+      },
+      "step4": {
+        "title": "Step 4: Portfolio Management & Reporting",
+        "description": "After the investment, we provide ongoing performance monitoring and detailed reporting, ensuring your assets are managed effectively to achieve their full potential."
+      }
+    },
+    "contact": {
+      "title": "Begin Your Strategic Investment Journey",
+      "description": "Schedule a private, no-obligation consultation with our senior advisors to discuss how we can help you achieve your financial goals in the UAE.",
+      "form": {
+        "name": "Full Name",
+        "email": "Email Address",
+        "phone": "Phone Number (Optional)",
+        "interest": "Primary Area of Interest",
+        "interests": {
+          "realEstate": "Real Estate",
+          "business": "Business Acquisition",
+          "securities": "Securities"
+        },
+        "message": "Your Message (Optional)",
+        "submit": "Request My Confidential Call",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "What is the typical minimum investment level you work with?",
+          "answer": "We specialize in advising on substantial investments to ensure we can deliver significant value. Please contact us to discuss your specific investment capacity and goals."
+        },
+        "q2": {
+          "question": "Who are your typical clients?",
+          "answer": "We work with a discerning clientele of international high-net-worth individuals, family offices, and corporations looking to strategically deploy capital in the UAE market."
+        },
+        "q3": {
+          "question": "How is your firm compensated?",
+          "answer": "Our fee structure is transparent and typically consists of a retainer for advisory services and/or a success fee based on the transaction's value. This will be clearly outlined after our initial consultation."
+        }
+      }
+    }
+  },
+  "accountingServices": {
+    "hero": {
+      "title": "Expert Accounting for Your UAE Business",
+      "subtitle": "Stay compliant, optimize your finances, and gain complete peace of mind. We provide transparent, accurate, and reliable accounting and tax services so you can focus on what you do best—growing your business.",
+      "cta": "Get a Free Financial Health Check"
+    },
+    "services": {
+      "title": "Your Complete Financial Framework",
+      "description": "From daily bookkeeping to strategic tax planning, we cover every aspect of your company's financial health.",
+      "card1": {
+        "title": "Bookkeeping & Financial Reporting",
+        "description": "We manage your day-to-day transactions, maintain accurate ledgers, and prepare monthly or quarterly financial statements, giving you a clear view of your business performance at all times."
+      },
+      "card2": {
+        "title": "Corporate Tax & VAT Consulting",
+        "description": "We ensure your business is fully compliant with the UAE's Corporate Tax and VAT laws. Our services include registration, filing returns, and strategic advice to optimize your tax position legally."
+      },
+      "card3": {
+        "title": "Regulatory Compliance (AML & ESR)",
+        "description": "Navigating complex regulations is our expertise. We prepare and submit your Anti-Money Laundering (AML) and Economic Substance Regulations (ESR) reports, protecting you from penalties."
+      },
+      "card4": {
+        "title": "Payroll & Management Accounting",
+        "description": "We handle all aspects of payroll processing and provide management reports with key financial insights, helping you make smarter, data-driven business decisions."
+      }
+    },
+    "compliance": {
+      "title": "Protect Your Business from Financial Risk",
+      "subtitle": "In the UAE, maintaining accurate financial records is a legal requirement enforced by the Federal Tax Authority (FTA). Professional accounting is your first line of defense.",
+      "fines": {
+        "title": "Avoid Costly Fines",
+        "description": "Ensure all your reports and tax filings are accurate and submitted on time to avoid significant financial penalties."
+      },
+      "license": {
+        "title": "Maintain Your License",
+        "description": "Proper bookkeeping is essential for renewing your trade license and maintaining good standing with the authorities."
+      },
+      "investor": {
+        "title": "Build Investor Confidence",
+        "description": "Audited and well-prepared financial statements are crucial for securing loans, attracting investors, and proving the stability of your business."
+      },
+      "compliance": {
+        "title": "Ensure Full Compliance",
+        "description": "We keep you up-to-date with the latest changes in UAE tax laws and regulations, so you are always compliant."
+      }
+    },
+    "process": {
+      "title": "Getting Started is Easy",
+      "step1": {
+        "title": "Step 1: Initial Consultation",
+        "description": "We begin with a free consultation to understand your business, current accounting needs, and specific challenges."
+      },
+      "step2": {
+        "title": "Step 2: Service & Tariff Selection",
+        "description": "Based on our discussion, we propose a tailored service package and a clear, fixed-fee tariff. No surprises."
+      },
+      "step3": {
+        "title": "Step 3: Agreement & Onboarding",
+        "description": "We sign a service agreement with a confidentiality clause and begin the process of securely onboarding your company's financial data."
+      },
+      "step4": {
+        "title": "Step 4: Ongoing Service & Support",
+        "description": "Your dedicated accountant begins managing your finances, providing regular reports and 24/7 support for all your questions."
+      }
+    },
+    "contact": {
+      "title": "Let's Organize Your Finances",
+      "description": "Take the first step towards financial peace of mind. Contact us today for a free, no-obligation quote and consultation.",
+      "form": {
+        "name": "Your Name",
+        "company": "Company Name",
+        "contact": "Your Email / Phone",
+        "services": "What services are you interested in?",
+        "serviceTypes": {
+          "bookkeeping": "Bookkeeping & Financial Reporting",
+          "tax": "Corporate Tax & VAT Consulting",
+          "compliance": "Regulatory Compliance (AML & ESR)",
+          "payroll": "Payroll & Management Accounting"
+        },
+        "message": "Your Message (Optional)",
+        "submit": "Request a Free Quote",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "Is professional accounting expensive for a small business?",
+          "answer": "Our services are scalable and designed to be cost-effective. We offer tailored packages that are often more affordable than hiring a full-time in-house accountant."
+        },
+        "q2": {
+          "question": "How do you ensure the security of my financial data?",
+          "answer": "We use industry-leading, secure cloud accounting software and adhere to strict data confidentiality protocols. Your financial information is always protected."
+        },
+        "q3": {
+          "question": "Can you help if my books are currently messy or behind?",
+          "answer": "Absolutely. We specialize in \"clean-up\" projects, organizing past records and bringing your bookkeeping up to date and in full compliance with UAE standards."
+        }
+      }
+    }
+  },
+  "employmentServices": {
+    "hero": {
+      "title": "Onboard Your UAE Team, Fast & Compliantly",
+      "subtitle": "From drafting compliant labor contracts to managing the complete work visa process, we handle all the HR administration. You focus on finding the right talent; we'll get them ready to work, legally and efficiently.",
+      "cta": "Get a Quote for Your New Hire"
+    },
+    "services": {
+      "title": "A Full-Suite Solution for Employee Onboarding",
+      "description": "We manage every legal and administrative step required to hire an employee in the UAE mainland or a free zone.",
+      "card1": {
+        "title": "Labour Contracts & Offer Letters",
+        "description": "We draft and review official offer letters and employment contracts that are fully compliant with UAE Labour Law, protecting both your business and your new employee."
+      },
+      "card2": {
+        "title": "Work Permit & Visa Processing",
+        "description": "We manage the entire application process with the Ministry of Human Resources (MOHRE) and Immigration, from securing the work permit and entry visa to the final residency stamping."
+      },
+      "card3": {
+        "title": "Emirates ID & Medical Screening",
+        "description": "We guide your new employees through the mandatory in-country processes, including medical tests and biometrics appointments, ensuring a smooth and quick completion for their Emirates ID."
+      },
+      "card4": {
+        "title": "Diploma Attestation & Legalization",
+        "description": "For roles requiring specific qualifications, we manage the complex process of getting educational diplomas and professional certificates attested and legalized for official use in the UAE."
+      }
+    },
+    "benefits": {
+      "title": "Protect Your Business, Empower Your Team",
+      "subtitle": "Proper employee onboarding is more than just paperwork; it's a critical business function that safeguards your company and builds a strong foundation for your team.",
+      "penalties": {
+        "title": "Avoid Legal Penalties",
+        "description": "Ensure 100% compliance with UAE Labour Law and regulations like the Wage Protection System (WPS) to avoid costly fines."
+      },
+      "time": {
+        "title": "Save Time and Resources",
+        "description": "Our streamlined process saves your internal team dozens of hours per employee, freeing them to focus on core business activities."
+      },
+      "experience": {
+        "title": "Enhance Employee Experience",
+        "description": "A smooth, fast, and professional onboarding process creates a positive first impression and helps with talent retention."
+      },
+      "requirements": {
+        "title": "Navigate Complex Requirements",
+        "description": "We handle the nuances of different free zones and mainland authorities, ensuring the correct procedures are always followed."
+      }
+    },
+    "process": {
+      "title": "From Candidate to Employee",
+      "step1": {
+        "title": "Step 1: Document Collection & Initial Application",
+        "description": "You provide us with the candidate's details; we prepare all necessary forms and submit the initial application for the work permit and entry visa."
+      },
+      "step2": {
+        "title": "Step 2: Employee Entry & In-Country Process",
+        "description": "Once the employee arrives in the UAE (or completes a local status change), we schedule their mandatory medical screening and biometrics appointment."
+      },
+      "step3": {
+        "title": "Step 3: Visa Stamping & Emirates ID",
+        "description": "After successful medicals, we submit the passport for the residency visa stamping and finalize the application for the Emirates ID card."
+      },
+      "step4": {
+        "title": "Step 4: Final Handover & Contract Finalization",
+        "description": "We deliver the stamped passport and Emirates ID to you and ensure the official labor contract is signed and filed with the relevant authorities."
+      }
+    },
+    "contact": {
+      "title": "Let's Welcome Your Next Employee",
+      "description": "Tell us about your hiring needs, and our specialists will provide a clear quote and a timeline for getting your new team member onboard.",
+      "form": {
+        "name": "Your Name",
+        "company": "Company Name",
+        "contact": "Your Email / Phone",
+        "employees": "Number of Employees to Onboard",
+        "message": "Your Message (Optional)",
+        "submit": "Request Onboarding Plan",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "How long does the entire employment visa process take?",
+          "answer": "Typically, the process takes between 7 to 15 working days from the submission of all correct documents. Timelines can vary slightly depending on the jurisdiction (mainland vs. free zone)."
+        },
+        "q2": {
+          "question": "What are the main costs involved?",
+          "answer": "The costs include government fees for the work permit, visa, Emirates ID, and medical tests, in addition to our professional service fee. We provide a fully transparent and itemized quote upfront."
+        },
+        "q3": {
+          "question": "Do you also handle visa renewals and cancellations?",
+          "answer": "Yes. We offer a full suite of PRO services, including managing timely renewals for existing employees and processing cancellations in full compliance with UAE Labour Law."
+        }
+      }
+    }
+  },
+  "trademarkRegistration": {
+    "hero": {
+      "title": "Protect Your Brand Identity in the UAE",
+      "subtitle": "Your brand is your most valuable asset. We provide complete, expert-led support to register your trademark with the UAE Ministry of Economy, securing your exclusive rights and protecting you from imitators.",
+      "cta": "Secure Your Brand Name Today"
+    },
+    "benefits": {
+      "title": "Turn Your Brand into a Defensible Asset",
+      "subtitle": "Registering your trademark is a critical strategic move to safeguard your market position and future growth.",
+      "rights": {
+        "title": "Secure Exclusive Legal Rights",
+        "description": "Gain the exclusive, legally enforceable right to use your brand name, logo, or slogan across the UAE."
+      },
+      "prevent": {
+        "title": "Prevent Imitators & Counterfeits",
+        "description": "Stop competitors from using a similar name or logo that could confuse your customers and damage your reputation."
+      },
+      "value": {
+        "title": "Build Tangible Brand Value",
+        "description": "A registered trademark is a valuable intangible asset that increases your company's valuation and can be licensed or sold."
+      },
+      "foundation": {
+        "title": "Establish a Foundation for Growth",
+        "description": "Official registration is often a prerequisite for franchising, securing investment, and expanding into new markets."
+      }
+    },
+    "process": {
+      "title": "From Application to Certificate: We Handle Everything",
+      "description": "The UAE trademark registration process involves several key stages. We manage every step on your behalf for maximum efficiency and success.",
+      "step1": {
+        "title": "Step 1: Comprehensive Search & Analysis",
+        "description": "Before filing, we conduct a thorough search of the official database to assess the availability of your proposed trademark and identify any potential conflicts."
+      },
+      "step2": {
+        "title": "Step 2: Application Filing & Submission",
+        "description": "We meticulously prepare and submit your application with all required documentation to the UAE Ministry of Economy, ensuring it meets their strict guidelines."
+      },
+      "step3": {
+        "title": "Step 3: Official Publication & Opposition Period",
+        "description": "Once approved, your trademark is published in the Official Gazette. We monitor the mandatory 30-day opposition period for any challenges from third parties."
+      },
+      "step4": {
+        "title": "Step 4: Registration & Certificate Issuance",
+        "description": "After the opposition period clears, we finalize the registration payment and secure your official Trademark Registration Certificate, valid for 10 years."
+      }
+    },
+    "facts": {
+      "title": "Navigating the Local Legal Framework",
+      "subtitle": "Understanding the specifics of UAE trademark law is crucial for successful registration.",
+      "national": {
+        "title": "National System",
+        "description": "The UAE is not a member of the Madrid International Trademark System. Protection is only granted through a direct national application."
+      },
+      "governing": {
+        "title": "Governing Body",
+        "description": "All trademark applications are filed with and examined by the UAE Ministry of Economy."
+      },
+      "protection": {
+        "title": "10-Year Protection",
+        "description": "A registered trademark in the UAE is protected for a period of 10 years and can be renewed indefinitely."
+      },
+      "territorial": {
+        "title": "Territorial Rights",
+        "description": "Registration provides legal protection and exclusive rights only within the seven emirates of the UAE."
+      }
+    },
+    "contact": {
+      "title": "Let's Begin Your Brand Protection Process",
+      "description": "Don't leave your brand exposed. Fill out the form to get a free consultation and quote for registering your trademark.",
+      "form": {
+        "name": "Your Name",
+        "company": "Company Name",
+        "contact": "Your Email / Phone",
+        "trademark": "Trademark Name / Logo to Register",
+        "message": "Your Message (Optional)",
+        "submit": "Request a Free Consultation",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "How long does the trademark registration process take?",
+          "answer": "The entire process, from filing the application to receiving the certificate, typically takes between 60 to 90 working days, provided there are no objections or oppositions."
+        },
+        "q2": {
+          "question": "What documents are required to file an application?",
+          "answer": "The basic requirements include a digital copy of the trademark (logo), your passport/ID, and a trade license if applying under a company name. We will provide a complete checklist."
+        },
+        "q3": {
+          "question": "Can an individual register a trademark?",
+          "answer": "Yes, a trademark application in the UAE can be filed in the name of an individual or a legal entity (company)."
+        }
+      }
+    }
+  },
+  "powerOfAttorney": {
+    "hero": {
+      "title": "Legally Authorize Your Documents in the UAE",
+      "subtitle": "Whether you need to delegate authority through a Power of Attorney or notarize official documents, we provide a fast, secure, and fully compliant service. Ensure your documents are legally recognized with the help of our experts.",
+      "cta": "Request Notarization Service"
+    },
+    "services": {
+      "title": "Comprehensive Solutions for Your Official Documents",
+      "description": "We handle the entire lifecycle of your legal documents, from creation to final, official validation.",
+      "column1": {
+        "title": "Power of Attorney (POA) Notarization",
+        "description": "We assist in drafting and notarizing General or Special Powers of Attorney at the Dubai Notary Public or other Emirates' courts, giving your appointed agent the legal authority to act on your behalf."
+      },
+      "column2": {
+        "title": "Notarization of Personal & Corporate Documents",
+        "description": "We manage the notarization of a wide range of documents, including affidavits, declarations, and shareholder resolutions, ensuring they are legally valid within the UAE."
+      },
+      "column3": {
+        "title": "Consulate & Ministry Attestation",
+        "description": "For documents that need to be used internationally, we handle the multi-step attestation process, including certification from the Ministry of Foreign Affairs (MOFA) and relevant consulates."
+      }
+    },
+    "scenarios": {
+      "title": "Delegate with Confidence and Legal Security",
+      "subtitle": "A Power of Attorney is an essential legal tool for managing your personal and business affairs, especially when you cannot be present.",
+      "business": {
+        "title": "Managing Business Operations",
+        "description": "Appoint a manager to handle banking, sign contracts, and manage daily operations while you are abroad."
+      },
+      "realEstate": {
+        "title": "Real Estate Transactions",
+        "description": "Authorize an agent to buy, sell, or manage property on your behalf without requiring your physical presence."
+      },
+      "company": {
+        "title": "Setting Up a Company",
+        "description": "Delegate the entire company formation process, from signing MOAs to dealing with government authorities."
+      },
+      "personal": {
+        "title": "Personal and Family Matters",
+        "description": "Empower a trusted individual to manage personal assets, vehicles, or specific legal matters."
+      }
+    },
+    "process": {
+      "title": "A Simple Path to Official Recognition",
+      "description": "We streamline the entire process to ensure your documents are notarized correctly and quickly.",
+      "step1": {
+        "title": "Step 1: Document Drafting & Review",
+        "description": "We consult with you to understand your needs and draft the Power of Attorney or other legal documents in both Arabic and English, as required by the UAE courts."
+      },
+      "step2": {
+        "title": "Step 2: Appointment & Verification",
+        "description": "We schedule an appointment with the Notary Public and ensure you have all the required identification documents (Emirates ID, Passport) ready for verification."
+      },
+      "step3": {
+        "title": "Step 3: In-Person or Online Notarization",
+        "description": "We guide you through the signing process in front of the Notary Public. For eligible services, we can also facilitate the online notarization process."
+      },
+      "step4": {
+        "title": "Step 4: Stamping & Digital Copy",
+        "description": "Once signed and verified, the document is officially stamped by the notary. You receive a legally valid, digitally-signed PDF with a QR code for instant verification."
+      }
+    },
+    "contact": {
+      "title": "Get Your Documents Officially Certified",
+      "description": "Contact us to discuss your requirements. Our legal experts are ready to assist you with all your notarization and attestation needs.",
+      "form": {
+        "name": "Your Name",
+        "contact": "Your Email / Phone",
+        "service": "Service Required",
+        "serviceTypes": {
+          "poa": "Power of Attorney",
+          "notarization": "Document Notarization",
+          "attestation": "Attestation"
+        },
+        "message": "Briefly describe your needs",
+        "submit": "Get a Free Quote",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "Can a Power of Attorney be notarized online?",
+          "answer": "Yes, the UAE has a digital system that allows certain types of Powers of Attorney to be notarized online via a video call with the Notary Public. We can advise if your case is eligible."
+        },
+        "q2": {
+          "question": "Does the person granting the POA need to be in the UAE?",
+          "answer": "For notarization at a UAE court, the person granting the POA (the Principal) must be physically present in the UAE or available for a verified video call for online notarization."
+        },
+        "q3": {
+          "question": "What is the difference between notarization and attestation?",
+          "answer": "Notarization validates a document for use within the UAE. Attestation is a multi-step process of legalizing a document for use in a foreign country, or legalizing a foreign document for use in the UAE."
+        }
+      }
+    }
+  },
+  "legalSupport": {
+    "hero": {
+      "title": "Proactive Legal Support for Your UAE Business",
+      "subtitle": "We don't just solve legal problems—we prevent them. Our expert team provides comprehensive legal support to ensure your business operates smoothly and securely within the UAE's complex regulatory landscape.",
+      "cta": "Schedule a Legal Strategy Call"
+    },
+    "services": {
+      "title": "A Full Spectrum of Corporate Legal Expertise",
+      "description": "We provide tailored legal solutions to protect your interests and support your growth at every stage.",
+      "card1": {
+        "title": "Corporate & Commercial Law",
+        "description": "We advise on proper corporate structuring, governance, shareholder agreements, and M&A transactions. Our goal is to create a solid legal foundation for your business operations."
+      },
+      "card2": {
+        "title": "Contract Drafting & Review",
+        "description": "We draft and review robust commercial agreements—from client and supplier contracts to partnership and employment agreements—to protect your interests and minimize disputes."
+      },
+      "card3": {
+        "title": "Regulatory Compliance & Licensing",
+        "description": "We ensure you stay compliant with all relevant regulations, including AML/KYC, ESR, and data protection laws. We also assist in securing and renewing necessary business licenses and permits."
+      },
+      "card4": {
+        "title": "Legal Support for Real Estate Developers",
+        "description": "We offer specialized legal support for developers, including assistance with RERA compliance, contractor agreements, escrow account setup, and obtaining all necessary construction permits."
+      }
+    },
+    "benefits": {
+      "title": "Navigate the Market with Confidence and Security",
+      "subtitle": "A strong legal framework is the backbone of any successful business in the UAE.",
+      "risks": {
+        "title": "Mitigate Financial & Legal Risks",
+        "description": "Proactively identify and address potential legal issues before they become costly disputes or result in fines."
+      },
+      "compliance": {
+        "title": "Ensure Full Compliance",
+        "description": "The UAE's legal landscape is constantly evolving. We keep you informed and compliant with all new laws and regulations."
+      },
+      "assets": {
+        "title": "Protect Your Assets",
+        "description": "Safeguard your business, intellectual property, and financial interests with legally sound structures and agreements."
+      },
+      "growth": {
+        "title": "Enable Business Growth",
+        "description": "A solid legal foundation allows you to confidently enter into new partnerships, secure investments, and expand your operations."
+      }
+    },
+    "approach": {
+      "title": "Your Dedicated Legal Partner",
+      "description": "We integrate seamlessly with your business to provide continuous, strategic legal guidance.",
+      "step1": {
+        "title": "Step 1: Legal Health Check & Discovery",
+        "description": "We start with a deep dive into your business operations, existing contracts, and compliance status to identify strengths and potential areas of risk."
+      },
+      "step2": {
+        "title": "Step 2: Strategy & Implementation",
+        "description": "We develop a tailored legal strategy and implement it by drafting necessary documents, structuring agreements, and establishing robust compliance frameworks."
+      },
+      "step3": {
+        "title": "Step 3: Ongoing Retainer & Support",
+        "description": "We act as your on-demand legal counsel, providing continuous monitoring, advice on day-to-day matters, and support for new business initiatives."
+      }
+    },
+    "contact": {
+      "title": "Discuss Your Legal Needs with an Expert",
+      "description": "Protect your business with expert legal advice. Contact us for a confidential consultation to assess your company's legal health.",
+      "form": {
+        "name": "Your Name",
+        "company": "Company Name",
+        "contact": "Your Email / Phone",
+        "message": "Briefly describe your legal needs",
+        "submit": "Request a Confidential Consultation",
+        "sending": "Sending...",
+        "success": "Thank you! We will contact you within 24 hours.",
+        "error": "An error occurred. Please try again later."
+      },
+      "faq": {
+        "q1": {
+          "question": "Do I need an in-house lawyer or can I use your service?",
+          "answer": "Our outsourced legal support provides the expertise of a full legal team at a fraction of the cost of hiring a full-time in-house counsel, offering a flexible and cost-effective solution for SMEs and growing businesses."
+        },
+        "q2": {
+          "question": "What kind of businesses do you work with?",
+          "answer": "We support a diverse range of clients, from startups and SMEs to established corporations and real estate developers, across various industries in both mainland and free zone jurisdictions."
+        },
+        "q3": {
+          "question": "How do we get started?",
+          "answer": "The first step is a confidential consultation where we discuss your business and your immediate legal concerns. This allows us to understand your needs and propose the most effective way forward."
+        }
+      }
+    }
   },
   "broker": {
     "dashboardTitle": "Broker Dashboard",

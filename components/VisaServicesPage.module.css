@@ -1,0 +1,632 @@
+.page {
+  width: 100%;
+}
+
+/* Block 1: Hero Section */
+.hero {
+  width: 100%;
+  min-height: 500px;
+  background: linear-gradient(135deg, rgba(230, 161, 101, 0.1) 0%, rgba(230, 161, 101, 0.05) 100%),
+              url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&h=1080&fit=crop') center/cover;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 120px 0;
+}
+
+.heroOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 30%, rgba(0, 0, 0, 0.2) 70%, rgba(0, 0, 0, 0.6) 100%),
+    rgba(0, 0, 0, 0.4);
+}
+
+.heroContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.heroContent {
+  max-width: 700px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.heroContent.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.heroTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 55px;
+  font-weight: 400;
+  color: #ffffff;
+  margin: 0 0 25px 0;
+  line-height: 1.2;
+}
+
+.heroSubtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  color: #ffffff;
+  margin: 0 0 40px 0;
+  line-height: 1.6;
+}
+
+.heroCTA {
+  display: inline-block;
+  padding: 16px 40px;
+  background: #e6a165;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.heroCTA:hover {
+  background: #d49050;
+  transform: translateY(-2px);
+}
+
+/* Block 2: Explore Your Visa Options */
+.optionsBlock {
+  width: 100%;
+  background: #ffffff;
+  padding: 86px 0;
+}
+
+.optionsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.optionsContent {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.optionsContent.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.optionsTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 41px;
+  font-weight: 400;
+  color: #e6a165;
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.optionsDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  color: #666666;
+  text-align: center;
+  margin: 0 0 60px 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 34px;
+}
+
+.optionCard {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 34px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.optionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.optionIcon {
+  width: 55px;
+  height: 55px;
+  color: #e6a165;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.optionCardTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 19px;
+  font-weight: 500;
+  color: #333333;
+  margin: 0 0 8px 0;
+}
+
+.optionCardIdeal {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e6a165;
+  margin: 0 0 12px 0;
+}
+
+.optionCardDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #666666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Block 3: The Benefits of UAE Residency */
+.benefitsBlock {
+  width: 100%;
+  background: #f9f9f9;
+  padding: 86px 0;
+}
+
+.benefitsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.benefitsContent {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.benefitsContent.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.benefitsTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 41px;
+  font-weight: 400;
+  color: #e6a165;
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.benefitsSubtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  color: #666666;
+  text-align: center;
+  margin: 0 0 50px 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.benefitsList {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 12px;
+}
+
+.benefitIcon {
+  width: 32px;
+  height: 32px;
+  color: #e6a165;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.benefitContent {
+  flex: 1;
+}
+
+.benefitTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  color: #333333;
+  margin: 0 0 8px 0;
+}
+
+.benefitDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #666666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Block 4: Our Streamlined 4-Step Process */
+.stepsBlock {
+  width: 100%;
+  background: #ffffff;
+  padding: 86px 0;
+}
+
+.stepsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.stepsContent {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.stepsContent.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stepsTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 41px;
+  font-weight: 400;
+  color: #e6a165;
+  text-align: center;
+  margin: 0 0 60px 0;
+}
+
+.stepsTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  position: relative;
+  padding-left: 40px;
+}
+
+.stepsTimeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #e6a165, rgba(230, 161, 101, 0.3));
+}
+
+.stepItem {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+}
+
+.stepNumber {
+  position: absolute;
+  left: -40px;
+  width: 34px;
+  height: 34px;
+  background: #e6a165;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  z-index: 2;
+  border: 4px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(230, 161, 101, 0.3);
+}
+
+.stepContent {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.stepTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 19px;
+  font-weight: 500;
+  color: #333333;
+  margin: 0 0 10px 0;
+}
+
+.stepDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #666666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Block 5: Start Your UAE Journey Today */
+.contactBlock {
+  width: 100%;
+  background: #f9f9f9;
+  padding: 86px 0;
+}
+
+.contactContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.contactContent {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.contactContent.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.contactTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 41px;
+  font-weight: 400;
+  color: #e6a165;
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.contactDescription {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  color: #666666;
+  text-align: center;
+  margin: 0 0 50px 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.contactLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+}
+
+.contactFormColumn {
+  /* Form styles */
+}
+
+.contactForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  /* Form group styles */
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #333333;
+  background: #ffffff;
+  transition: border-color 0.3s ease;
+}
+
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: #e6a165;
+}
+
+.formSelect {
+  cursor: pointer;
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.formSubmit {
+  padding: 16px 40px;
+  background: #e6a165;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.formSubmit:hover:not(:disabled) {
+  background: #d49050;
+  transform: translateY(-2px);
+}
+
+.formSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formMessage {
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+}
+
+.formSuccess {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.formError {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.contactFaqColumn {
+  /* FAQ styles */
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faqItem {
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.faqQuestion {
+  width: 100%;
+  padding: 20px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  transition: background 0.3s ease;
+}
+
+.faqQuestion:hover {
+  background: #f9f9f9;
+}
+
+.faqQuestionText {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #333333;
+  flex: 1;
+}
+
+.faqIcon {
+  color: #e6a165;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.faqQuestion.open .faqIcon {
+  transform: rotate(180deg);
+}
+
+.faqAnswer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 20px;
+}
+
+.faqAnswer.open {
+  max-height: 500px;
+  padding: 0 20px 20px 20px;
+}
+
+.faqAnswer p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #666666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .hero {
+    min-height: 400px;
+    padding: 80px 0;
+  }
+
+  .heroTitle {
+    font-size: 42px;
+  }
+
+  .heroSubtitle {
+    font-size: 16px;
+  }
+
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .contactLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .heroContainer,
+  .optionsContainer,
+  .benefitsContainer,
+  .stepsContainer,
+  .contactContainer {
+    padding: 0 20px;
+  }
+
+  .heroTitle {
+    font-size: 32px;
+  }
+
+  .optionsTitle,
+  .benefitsTitle,
+  .stepsTitle,
+  .contactTitle {
+    font-size: 32px;
+  }
+}
+

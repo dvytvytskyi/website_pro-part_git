@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { getAreaById, Area as ApiArea } from '@/lib/api';
+import { getAreaById, Area as ApiArea, clearAreasCache } from '@/lib/api';
 import styles from './AreaDetail.module.css';
 
 interface AreaDetailData {
@@ -42,6 +42,7 @@ export default function AreaDetail({ slug }: AreaDetailProps) {
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
 
   // Прибираємо автоматичне прокручування при завантаженні сторінки
   useEffect(() => {
@@ -71,6 +72,9 @@ export default function AreaDetail({ slug }: AreaDetailProps) {
       setError(null);
       
       try {
+        // Clear cache to ensure we get fresh data after migration
+        clearAreasCache();
+        
         // Load area data
         const apiArea = await getAreaById(slug);
         
@@ -78,6 +82,31 @@ export default function AreaDetail({ slug }: AreaDetailProps) {
           setError('Area not found');
           setLoading(false);
           return;
+        }
+
+        // After migration: images are now clean string[] with Cloudinary URLs
+        // Just validate and use directly - no complex processing needed
+        let processedImages: string[] = [];
+        if (apiArea.images && Array.isArray(apiArea.images) && apiArea.images.length > 0) {
+          processedImages = apiArea.images
+            .filter((imageUrl: any) => {
+              // After migration: should be simple strings with full URLs
+              if (typeof imageUrl === 'string' && imageUrl.trim().length > 0) {
+                const trimmed = imageUrl.trim();
+                // Validate it's a proper URL
+                return trimmed.startsWith('http://') || trimmed.startsWith('https://');
+              }
+              return false;
+            })
+            .map((imageUrl: string) => imageUrl.trim());
+        }
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`📸 Loaded ${processedImages.length} images for area "${apiArea.nameEn}"`, {
+            total: apiArea.images?.length || 0,
+            valid: processedImages.length,
+            sample: processedImages.slice(0, 2),
+          });
         }
 
         // Convert API area to component format
@@ -89,15 +118,19 @@ export default function AreaDetail({ slug }: AreaDetailProps) {
           nameAr: apiArea.nameAr,
           description: apiArea.description || undefined,
           infrastructure: apiArea.infrastructure || undefined,
-          images: apiArea.images || undefined,
+          images: processedImages.length > 0 ? processedImages : undefined,
           projectsCount: apiArea.projectsCount,
         };
 
         setArea(areaData);
         setCurrentSlide(0);
+        setFailedImages(new Set()); // Reset failed images when loading new area
 
         if (process.env.NODE_ENV === 'development') {
-          console.log(`Loaded area ${apiArea.nameEn}`);
+          console.log(`Loaded area ${apiArea.nameEn}`, {
+            originalImagesCount: apiArea.images?.length || 0,
+            processedImagesCount: processedImages.length,
+          });
         }
       } catch (err: any) {
         console.error('Failed to fetch area:', err);
@@ -189,22 +222,51 @@ export default function AreaDetail({ slug }: AreaDetailProps) {
                   className={styles.sliderTrack}
                   style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                 >
-                  {area.images.slice(0, 8).map((image, index) => (
-                    <div
-                      key={index}
-                      className={styles.slide}
-                      onClick={() => setSelectedImage(image)}
-                    >
-                      <Image
-                        src={image}
-                        alt={`${getAreaName()} - Image ${index + 1}`}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        sizes="100vw"
-                        unoptimized
-                      />
-                    </div>
-                  ))}
+                  {area.images.slice(0, 8).map((image, index) => {
+                    const isFailed = failedImages.has(index);
+                    const placeholderUrl = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&h=800&fit=crop';
+                    const imageUrl = isFailed ? placeholderUrl : image;
+                    
+                    // After migration: URLs are clean Cloudinary URLs - simple validation
+                    const isValidUrl = imageUrl && 
+                      typeof imageUrl === 'string' &&
+                      (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) &&
+                      imageUrl.length > 10;
+                    
+                    return (
+                      <div
+                        key={index}
+                        className={styles.slide}
+                        onClick={() => setSelectedImage(isValidUrl ? imageUrl : placeholderUrl)}
+                      >
+                        {/* Use regular img tag for external URLs to avoid Next.js Image optimization issues */}
+                        <img
+                          src={isValidUrl ? imageUrl : placeholderUrl}
+                          alt={`${getAreaName()} - Image ${index + 1}`}
+                          style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover',
+                            display: 'block'
+                          }}
+                          onError={(e) => {
+                            if (!failedImages.has(index)) {
+                              setFailedImages(prev => new Set(prev).add(index));
+                              const target = e.target as HTMLImageElement;
+                              if (target.src !== placeholderUrl) {
+                                target.src = placeholderUrl;
+                              }
+                              console.warn(`⚠️ Failed to load image ${index + 1} for area "${getAreaName()}":`, {
+                                attemptedUrl: imageUrl?.substring(0, 100),
+                                isValid: isValidUrl,
+                              });
+                            }
+                          }}
+                          loading="lazy"
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               
@@ -293,6 +355,11 @@ export default function AreaDetail({ slug }: AreaDetailProps) {
                 fill
                 style={{ objectFit: 'contain' }}
                 sizes="90vw"
+                unoptimized
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&h=800&fit=crop';
+                }}
               />
             </div>
           </div>

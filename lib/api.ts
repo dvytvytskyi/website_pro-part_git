@@ -208,8 +208,12 @@ apiClient.interceptors.request.use(
       console.error('API_SECRET:', API_SECRET ? 'present' : 'missing');
     }
     
+    // Set API headers - try both cases to ensure compatibility
     config.headers['X-Api-Key'] = API_KEY;
     config.headers['X-Api-Secret'] = API_SECRET;
+    // Also set lowercase versions for backend compatibility
+    config.headers['x-api-key'] = API_KEY;
+    config.headers['x-api-secret'] = API_SECRET;
     
     // Add JWT token if available (for authenticated users)
     if (typeof window !== 'undefined') {
@@ -585,7 +589,9 @@ export async function getProperties(filters?: PropertyFilters, useCache: boolean
     if (filters?.propertyType) params.append('propertyType', filters.propertyType);
     if (filters?.developerId) params.append('developerId', filters.developerId);
     if (filters?.cityId) params.append('cityId', filters.cityId);
-    if (filters?.areaId) params.append('areaId', filters.areaId);
+    if (filters?.areaId) {
+      params.append('areaId', filters.areaId);
+    }
     if (filters?.bedrooms) params.append('bedrooms', filters.bedrooms);
     if (filters?.sizeFrom) params.append('sizeFrom', filters.sizeFrom.toString());
     if (filters?.sizeTo) params.append('sizeTo', filters.sizeTo.toString());
@@ -1922,7 +1928,9 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
       }
       
       // Count areas with different image field types
-      const areasWithImages = areas.filter((a: any) => a.images && Array.isArray(a.images) && a.images.length > 0).length;
+      const areasWithImages = areas.filter((a: any) => {
+        return Array.isArray(a.images) && a.images.length > 0;
+      }).length;
       const areasWithImageUrl = areas.filter((a: any) => a.imageUrl && typeof a.imageUrl === 'string').length;
       const areasWithImage = areas.filter((a: any) => a.image && typeof a.image === 'string').length;
       const areasWithPhoto = areas.filter((a: any) => a.photo && typeof a.photo === 'string').length;
@@ -1976,64 +1984,63 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
         return null;
       };
       
+      
       // Check multiple possible fields for images
-      if (area.images && Array.isArray(area.images) && area.images.length > 0) {
-        // Log BEFORE processing for first few areas
-        if (process.env.NODE_ENV === 'development' && index < 3) {
-          console.log(`🔍 Area "${area.nameEn}" BEFORE processing images:`, {
-            imagesArray: area.images,
-            imagesLength: area.images.length,
-            firstItem: area.images[0],
-            firstItemType: typeof area.images[0],
-            firstItemStringified: JSON.stringify(area.images[0], null, 2),
-          });
-        }
-        
-        // Extract URLs from array - can be string[] or object[]
+      // After backend fix: images is now always string[] (never null)
+      // Format: [] (empty array) or ["https://res.cloudinary.com/.../areas/area-name-0.jpg", ...]
+      // NOTE: Some URLs may be wrapped in extra quotes or have JSON artifacts like "\"{https://..." or "...jpg}\""
+      if (Array.isArray(area.images) && area.images.length > 0) {
+        // After migration: images are clean string[] with Cloudinary URLs
+        // But some may have JSON encoding artifacts that need cleaning
         const extractedUrls: string[] = [];
-        for (let i = 0; i < area.images.length; i++) {
-          const item = area.images[i];
-          
-          // Log item structure for debugging (only for first item of first 3 areas)
-          if (process.env.NODE_ENV === 'development' && index < 3 && i === 0) {
-            console.log(`🔍 Area "${area.nameEn}" images[${i}] structure:`, {
-              item: item,
-              itemType: typeof item,
-              itemIsObject: typeof item === 'object' && item !== null,
-              itemIsNull: item === null,
-              itemIsUndefined: item === undefined,
-              itemKeys: typeof item === 'object' && item !== null ? Object.keys(item) : 'N/A',
-              itemStringified: JSON.stringify(item, null, 2),
-            });
-          }
-          
-          const url = extractUrl(item);
-          if (url) {
-            extractedUrls.push(url);
-            if (process.env.NODE_ENV === 'development' && index < 3 && extractedUrls.length === 1) {
-              console.log(`✅ Extracted URL from area "${area.nameEn}":`, url.substring(0, 100));
+        for (const item of area.images) {
+          // Should be simple strings with full Cloudinary URLs
+          if (typeof item === 'string' && item.trim().length > 0) {
+            let cleaned = item.trim();
+            
+            // Clean JSON artifacts: remove escaped quotes, braces, etc.
+            // Examples: "\"{https://..." -> "https://..." or "\"https://...\"" -> "https://..." or "...jpg}\"" -> "...jpg"
+            cleaned = cleaned
+              .replace(/^\\?"\{?/g, '') // Remove leading \", {, or \{
+              .replace(/\}?\\?"$/g, '') // Remove trailing }, \", or }\"
+              .replace(/^\\"/g, '') // Remove leading \"
+              .replace(/\\"$/g, '') // Remove trailing \"
+              .trim();
+            
+            // Try to extract URL if it's still wrapped
+            if (!cleaned.startsWith('http://') && !cleaned.startsWith('https://')) {
+              // Try to extract URL from malformed string
+              const urlMatch = cleaned.match(/https?:\/\/[^\s"{}]+/);
+              if (urlMatch) {
+                cleaned = urlMatch[0];
+              }
             }
-          } else {
-            // Log why extraction failed (only for first item of first 3 areas)
-            if (process.env.NODE_ENV === 'development' && index < 3 && i === 0) {
-              console.warn(`⚠️ Could not extract URL from area "${area.nameEn}" images[${i}]:`, {
-                item: item,
-                itemType: typeof item,
-                itemIsNull: item === null,
-                itemIsUndefined: item === undefined,
-                itemKeys: typeof item === 'object' && item !== null ? Object.keys(item) : 'N/A',
-                itemStringified: JSON.stringify(item, null, 2),
-                extractUrlResult: extractUrl(item),
+            
+            // Validate it's a proper URL
+            if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
+              extractedUrls.push(cleaned);
+            } else {
+              // Log unexpected format for debugging
+              console.warn(`⚠️ API: Area "${area.nameEn}" has non-URL image value after cleaning:`, {
+                original: item.substring(0, 100),
+                cleaned: cleaned.substring(0, 100),
               });
             }
+          } else if (item) {
+            // Log unexpected type (should not happen after migration)
+            console.warn(`⚠️ API: Area "${area.nameEn}" has non-string image item:`, {
+              type: typeof item,
+              value: typeof item === 'object' ? JSON.stringify(item).substring(0, 100) : String(item).substring(0, 100),
+            });
           }
         }
         
-        if (process.env.NODE_ENV === 'development' && index < 3) {
-          console.log(`📊 Area "${area.nameEn}" AFTER extraction:`, {
-            originalCount: area.images.length,
-            extractedCount: extractedUrls.length,
-            extractedUrls: extractedUrls,
+        if (extractedUrls.length === 0 && area.images.length > 0) {
+          // This should not happen after migration, but log it if it does
+          console.warn(`⚠️ API: No valid URLs extracted from ${area.images.length} images for area "${area.nameEn}"`, {
+            firstImage: area.images[0],
+            firstImageType: typeof area.images[0],
+            firstImageValue: typeof area.images[0] === 'string' ? area.images[0].substring(0, 150) : JSON.stringify(area.images[0]).substring(0, 150),
           });
         }
         
@@ -2077,7 +2084,7 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
         }
       }
       
-      // Process image URLs - keep reely/alnair URLs as is, normalize others
+      // Process image URLs - after migration, URLs are already clean Cloudinary URLs
       if (imageUrls.length > 0) {
         const processedUrls: string[] = [];
         
@@ -2088,7 +2095,8 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
           
           const trimmedUrl = url.trim();
           
-          // If it's already a full URL (reely, alnair, etc.), use it as is
+          // After migration: URLs should already be full Cloudinary URLs
+          // Just validate and filter out placeholders
           if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://')) {
             // Check if it's a placeholder
             const isPlaceholder = trimmedUrl.includes('unsplash.com') ||
@@ -2102,7 +2110,7 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
               processedUrls.push(trimmedUrl);
             }
           } else {
-            // If it's not a full URL, use normalizeImageUrl for Cloudinary/public_id
+            // Fallback: if it's not a full URL, try to normalize (for backward compatibility)
             const normalized = normalizeImageUrl(trimmedUrl, {
               width: 800,
               height: 600,
@@ -2118,36 +2126,13 @@ export async function getAreas(cityId?: string, useCache: boolean = true): Promi
         
         if (processedUrls.length > 0) {
           area.images = processedUrls;
-          
-          // Debug logging for first few areas
-          if (process.env.NODE_ENV === 'development' && index < 5) {
-            console.log(`🖼️ Area "${area.nameEn}" (${area.id}) image processing:`, {
-              foundIn: foundInField,
-              originalCount: imageUrls.length,
-              processedCount: processedUrls.length,
-              firstImage: processedUrls[0]?.substring(0, 120),
-              isReely: processedUrls[0]?.includes('reely') || processedUrls[0]?.includes('alnair'),
-              isCloudinary: processedUrls[0]?.includes('cloudinary.com'),
-            });
-          }
         } else {
           // All URLs were filtered out (placeholders or invalid)
           area.images = [];
-          
-          if (process.env.NODE_ENV === 'development' && index < 5) {
-            console.warn(`⚠️ Area "${area.nameEn}" all images were filtered out (placeholders or invalid):`, {
-              foundIn: foundInField,
-              originalUrls: imageUrls,
-            });
-          }
         }
       } else {
         // No images found - set empty array
         area.images = [];
-        
-        if (process.env.NODE_ENV === 'development' && index < 5) {
-          console.warn(`⚠️ Area "${area.nameEn}" (${area.id}) has no images in any field`);
-        }
       }
       
       return area;

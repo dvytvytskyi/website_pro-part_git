@@ -66,7 +66,7 @@ const convertFiltersToApi = (filters: Filters, page: number): ApiPropertyFilters
   }
 
   // Area filter (multiselect - convert to comma-separated string for first area, or use first one)
-  if (filters.location.length > 0) {
+  if (filters.location && filters.location.length > 0) {
     // API supports only one areaId, so we'll use the first selected
     apiFilters.areaId = filters.location[0];
     // But for client-side filtering, we need all selected areas
@@ -142,11 +142,48 @@ const urlParamsToFilters = (searchParams: URLSearchParams): Filters => {
   const typeParam = searchParams.get('type');
   const type: 'new' | 'secondary' = typeParam === 'secondary' ? 'secondary' : 'new';
   
+  // Handle location: support both 'location' (comma-separated) and 'areaId' (single ID from Hero)
+  // Also support 'areald' as fallback (typo in URL)
+  let location: string[] = [];
+  const locationParam = searchParams.get('location');
+  const areaIdParam = searchParams.get('areaId') || searchParams.get('areald'); // Support typo fallback
+  
+  // Priority: location param first, then areaId
+  if (locationParam) {
+    // Multiple locations from filters (or single location)
+    location = locationParam.split(',').filter(Boolean);
+  } else if (areaIdParam) {
+    // Single areaId from Hero
+    location = [areaIdParam];
+  }
+  
+  // Handle bedrooms: support both 'bedrooms' (comma-separated numbers) and single value from Hero ('1', '2', '3', '4', '5+')
+  let bedrooms: number[] = [];
+  const bedroomsParam = searchParams.get('bedrooms');
+  
+  if (bedroomsParam) {
+    // Check if it's comma-separated (from filters) or single value (from Hero)
+    if (bedroomsParam.includes(',')) {
+      // Multiple bedrooms from filters
+      bedrooms = bedroomsParam.split(',').map(Number).filter(n => !isNaN(n));
+    } else {
+      // Single bedroom value from Hero - handle '5+' as 6
+      if (bedroomsParam === '5+') {
+        bedrooms = [6];
+      } else {
+        const num = parseInt(bedroomsParam, 10);
+        if (!isNaN(num)) {
+          bedrooms = [num];
+        }
+      }
+    }
+  }
+  
   return {
     type,
     search: searchParams.get('search') || '',
-    location: searchParams.get('location')?.split(',').filter(Boolean) || [],
-    bedrooms: searchParams.get('bedrooms')?.split(',').map(Number).filter(n => !isNaN(n)) || [],
+    location,
+    bedrooms,
     sizeFrom: searchParams.get('sizeFrom') || '',
     sizeTo: searchParams.get('sizeTo') || '',
     priceFrom: searchParams.get('priceFrom') || '',
@@ -182,11 +219,26 @@ export default function PropertiesList() {
   useEffect(() => {
     const urlFilters = urlParamsToFilters(searchParams);
     setFilters(prevFilters => {
-      // Only update if filters actually changed
-      if (JSON.stringify(prevFilters) !== JSON.stringify(urlFilters)) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('🔄 Syncing filters from URL:', urlFilters);
-        }
+      // Always update if URL params changed (more reliable comparison)
+      const prevLocation = prevFilters.location.join(',');
+      const newLocation = urlFilters.location.join(',');
+      const prevBedrooms = prevFilters.bedrooms.join(',');
+      const newBedrooms = urlFilters.bedrooms.join(',');
+      
+      const hasChanged = 
+        prevLocation !== newLocation ||
+        prevBedrooms !== newBedrooms ||
+        prevFilters.type !== urlFilters.type ||
+        prevFilters.search !== urlFilters.search ||
+        prevFilters.sort !== urlFilters.sort ||
+        prevFilters.developerId !== urlFilters.developerId ||
+        prevFilters.cityId !== urlFilters.cityId ||
+        prevFilters.sizeFrom !== urlFilters.sizeFrom ||
+        prevFilters.sizeTo !== urlFilters.sizeTo ||
+        prevFilters.priceFrom !== urlFilters.priceFrom ||
+        prevFilters.priceTo !== urlFilters.priceTo;
+      
+      if (hasChanged) {
         return urlFilters;
       }
       return prevFilters;
@@ -243,14 +295,6 @@ export default function PropertiesList() {
         delete apiFilters.search;
       }
       
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Loading properties (server-side pagination):', {
-          propertyType: apiFilters.propertyType,
-          page: apiFilters.page,
-          limit: apiFilters.limit,
-          currentPage,
-        });
-      }
       
       // Request only the current page from API (36 items)
       // Use cache by default, but allow bypassing it via URL parameter ?refresh=true
@@ -349,7 +393,7 @@ export default function PropertiesList() {
     setLoading(true);
     setError(null);
     loadProperties();
-  }, [loadProperties]);
+  }, [loadProperties, searchParams]);
 
   // Restore scroll position and page when returning from property detail page
   useEffect(() => {

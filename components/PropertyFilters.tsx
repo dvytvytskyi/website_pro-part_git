@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { getPublicData, getAreas } from '@/lib/api';
+import { getPublicData, getAreas, getDevelopers } from '@/lib/api';
 import styles from './PropertyFilters.module.css';
 
 interface Filters {
@@ -101,11 +101,33 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
             return a.nameEn.localeCompare(b.nameEn);
           });
         
-        // Load developers from public data
-        const publicData = await getPublicData();
+        // Load developers using dedicated function (has fallback to publicData)
+        let developersData: Developer[] = [];
+        try {
+          developersData = await getDevelopers();
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`✅ PropertyFilters: Loaded ${developersData.length} developers from getDevelopers()`);
+          }
+        } catch (devError) {
+          console.error('Error loading developers:', devError);
+          // Fallback: try to get from publicData
+          try {
+            const publicData = await getPublicData();
+            developersData = (publicData.developers || []).map((d: any) => ({
+              id: d.id,
+              name: d.name,
+              logo: d.logo,
+            }));
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`✅ PropertyFilters: Fallback - Loaded ${developersData.length} developers from getPublicData()`);
+            }
+          } catch (fallbackError) {
+            console.error('Error loading developers from fallback:', fallbackError);
+          }
+        }
         
         // Sort developers alphabetically by name
-        const sortedDevelopers = [...(publicData.developers || [])].sort((a, b) => 
+        const sortedDevelopers = [...developersData].sort((a, b) => 
           a.name.localeCompare(b.name)
         );
         
@@ -119,7 +141,7 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
             nameEn: a.nameEn,
             projectsCount: a.projectsCount?.total || 0
           })));
-          console.log(`✅ PropertyFilters: Loaded ${sortedDevelopers.length} developers`);
+          console.log(`✅ PropertyFilters: Final developers count: ${sortedDevelopers.length}`);
           console.log(`✅ PropertyFilters: Sample developers:`, sortedDevelopers.slice(0, 5).map(d => ({
             id: d.id,
             name: d.name

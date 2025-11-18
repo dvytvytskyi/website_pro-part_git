@@ -24,12 +24,18 @@ export default function LazySection({
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sectionRef.current || shouldLoad) return;
+    console.log('🔍 LazySection: Setting up IntersectionObserver');
+    if (!sectionRef.current || shouldLoad) {
+      console.log('🔍 LazySection: Skipping observer setup', { hasRef: !!sectionRef.current, shouldLoad });
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          console.log('🔍 LazySection: IntersectionObserver triggered', { isIntersecting: entry.isIntersecting });
           if (entry.isIntersecting) {
+            console.log('✅ LazySection: Element is visible, loading children');
             setShouldLoad(true);
             setIsVisible(true);
             observer.unobserve(entry.target);
@@ -43,6 +49,7 @@ export default function LazySection({
     );
 
     observer.observe(sectionRef.current);
+    console.log('🔍 LazySection: Observer attached to element');
 
     return () => {
       if (sectionRef.current) {
@@ -51,6 +58,8 @@ export default function LazySection({
       observer.disconnect();
     };
   }, [shouldLoad, threshold, rootMargin]);
+
+  console.log('🔍 LazySection: Rendering', { shouldLoad, isVisible });
 
   return (
     <div ref={sectionRef}>

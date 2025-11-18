@@ -49,8 +49,8 @@ export default function HomePage() {
       </LazySection>
       <LazySection 
         fallback={<div style={{ minHeight: '400px', padding: '40px 0' }} />}
-        threshold={0.1}
-        rootMargin="100px"
+        threshold={0.01}
+        rootMargin="500px"
       >
         <Areas />
       </LazySection>

@@ -2,6 +2,8 @@
   background: #ffffff;
   border-radius: 12px;
   padding: 0px 0px 0px 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .title {
@@ -216,10 +218,121 @@
 @media (max-width: 768px) {
   .formContainer {
     padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .formRow {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 18px;
+    margin: 0 0 6px 0;
+  }
+
+  .description {
+    font-size: 13px;
+    margin: 0 0 20px 0;
+  }
+
+  .agentSection {
+    margin-bottom: 20px;
+    padding: 0;
+  }
+
+  .agentAvatar {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+  }
+
+  .agentName {
+    font-size: 15px;
+  }
+
+  .agentRole {
+    font-size: 13px;
+  }
+
+  .form {
+    gap: 14px;
+  }
+
+  .formField {
+    gap: 6px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .input {
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .textarea {
+    min-height: 90px;
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .submitButton {
+    font-size: 15px;
+    padding: 13px 20px;
+    margin-top: 4px;
+  }
+
+  .termsMessage {
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  .error {
+    padding: 10px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .errorMessage {
+    font-size: 11px;
+    margin-top: -2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formContainer {
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+
+  .form {
+    gap: 12px;
+  }
+
+  .input {
+    padding: 11px 12px;
+    font-size: 14px;
+  }
+
+  .textarea {
+    padding: 11px 12px;
+    min-height: 80px;
+  }
+
+  .submitButton {
+    padding: 12px 18px;
+    font-size: 14px;
   }
 }
 
