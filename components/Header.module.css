@@ -269,6 +269,19 @@
   position: relative;
 }
 
+/* Never show hamburger when it has hamburgerOpen class */
+.hamburger.hamburgerOpen {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
 .hamburger span {
   width: 24px;
   height: 2px;
@@ -283,23 +296,22 @@
   background-color: var(--accent-color, #e6a165);
 }
 
-.hamburger.hamburgerOpen span:nth-child(1) {
-  transform: rotate(45deg) translate(7px, 7px);
-}
-
-.hamburger.hamburgerOpen span:nth-child(2) {
-  opacity: 0;
-  width: 0;
-}
-
-.hamburger.hamburgerOpen span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -7px);
-}
-
-/* Ensure hamburger is always visible and on top when menu is open */
+/* Completely hide hamburger when menu is open - use close button instead */
 .hamburger.hamburgerOpen {
-  z-index: 1003; /* Above mobile menu close button */
-  position: relative;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+.hamburger.hamburgerOpen span {
+  display: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Mobile menu backdrop */

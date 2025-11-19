@@ -61,7 +61,7 @@
 
 .content {
   position: relative;
-  z-index: 4;
+  z-index: 10;
   text-align: center;
   color: #ffffff;
   padding: 0 20px;
@@ -72,6 +72,7 @@
   align-items: center;
   justify-content: center;
   gap: 32px;
+  overflow: visible;
 }
 
 .title {
@@ -107,6 +108,8 @@
   padding: 8px;
   max-width: 800px;
   width: 100%;
+  position: relative;
+  z-index: 1000;
 }
 
 .searchInputWrapper {
@@ -114,6 +117,8 @@
   position: relative;
   display: flex;
   align-items: center;
+  z-index: 99999;
+  overflow: visible;
 }
 
 .searchIcon {
@@ -191,6 +196,7 @@
 
 .dropdownWrapper {
   position: relative;
+  z-index: 99999;
 }
 
 .bedroomsSelect {
@@ -248,19 +254,19 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   padding: 8px;
-  z-index: 1000;
+  z-index: 99999;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.2s ease;
-  max-height: 300px;
+  max-height: 255px;
   overflow-y: auto;
+  isolation: isolate;
 }
 
-.searchInputWrapper .dropdownMenu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
+.dropdownMenu.dropdownMenuUp {
+  top: auto;
+  bottom: calc(100% + 8px);
 }
+
 
 @keyframes fadeIn {
   from {
@@ -329,6 +335,17 @@
   border-color: rgba(230, 161, 101, 0.5);
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+/* Малі ноутбуки (MacBook Pro та подібні) */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .title {
+    font-size: 52px;
+  }
+
+  .subtitle {
+    font-size: 17px;
+  }
 }
 
 @media (max-width: 768px) {

@@ -14,7 +14,7 @@ interface StatItem {
 const stats: StatItem[] = [
   { value: 8, titleKey: 'yearsExperience.title', descriptionKey: 'yearsExperience.description' },
   { value: 500, titleKey: 'propertiesSold.title', descriptionKey: 'propertiesSold.description' },
-  { value: 1200, titleKey: 'happyClients.title', descriptionKey: 'happyClients.description' },
+  { value: 300, titleKey: 'happyClients.title', descriptionKey: 'happyClients.description' },
   { value: 98, suffix: '%', titleKey: 'clientSatisfaction.title', descriptionKey: 'clientSatisfaction.description' },
 ];
 

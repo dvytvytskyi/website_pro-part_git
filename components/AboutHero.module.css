@@ -115,6 +115,41 @@
 }
 
 /* Responsive */
+/* Малі ноутбуки (MacBook Pro та подібні) */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .title {
+    font-size: 48px;
+  }
+
+  .statNumber {
+    font-size: 42px;
+  }
+
+  .milestonesTitle {
+    font-size: 44px;
+  }
+
+  .partnersTitle {
+    font-size: 48px;
+  }
+
+  .leadershipTitle {
+    font-size: 44px;
+  }
+
+  .leadershipSubtitle {
+    font-size: 30px;
+  }
+
+  .officeTitle {
+    font-size: 44px;
+  }
+
+  .faqTitle {
+    font-size: 44px;
+  }
+}
+
 @media (max-width: 968px) {
   .topSection {
     flex-direction: column;
@@ -251,122 +286,96 @@
   transition-delay: 0.15s;
 }
 
-.milestonesGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
-}
-
-.milestoneCard {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 20px;
-  padding: 40px;
-  transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateY(30px);
+.milestonesTimeline {
   position: relative;
-  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-left: 60px;
 }
 
-.milestoneCard::before {
-  content: '';
+.timelineLine {
   position: absolute;
+  left: 20px;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #e6a165 0%, rgba(230, 161, 101, 0.3) 100%);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, #e6a165 0%, rgba(230, 161, 101, 0.3) 100%);
 }
 
-.milestonesSection.visible .milestoneCard {
+.milestoneItem {
+  position: relative;
+  margin-bottom: 60px;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.milestonesSection.visible .milestoneItem {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
-.milestonesSection.visible .milestoneCard:nth-child(1) {
+.milestonesSection.visible .milestoneItem:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.milestonesSection.visible .milestoneItem:nth-child(3) {
   transition-delay: 0.2s;
 }
 
-.milestonesSection.visible .milestoneCard:nth-child(2) {
+.milestonesSection.visible .milestoneItem:nth-child(4) {
   transition-delay: 0.3s;
 }
 
-.milestonesSection.visible .milestoneCard:nth-child(3) {
+.milestonesSection.visible .milestoneItem:nth-child(5) {
   transition-delay: 0.4s;
 }
 
-.milestonesSection.visible .milestoneCard:nth-child(4) {
-  transition-delay: 0.5s;
+.milestoneItem:last-child {
+  margin-bottom: 0;
 }
 
-.milestoneCard:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  border-color: rgba(230, 161, 101, 0.3);
+.milestoneDot {
+  position: absolute;
+  left: -50px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e6a165;
+  border: 4px solid #ffffff;
+  box-shadow: 0 0 0 2px #e6a165;
+  z-index: 2;
 }
 
-.milestoneCard:hover::before {
-  transform: scaleX(1);
-}
-
-.milestoneCardHeader {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.milestoneIcon {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(230, 161, 101, 0.1) 0%, rgba(230, 161, 101, 0.05) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #e6a165;
-  flex-shrink: 0;
+.milestoneContent {
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
 
-.milestoneCard:hover .milestoneIcon {
-  background: linear-gradient(135deg, #e6a165 0%, rgba(230, 161, 101, 0.8) 100%);
-  color: #ffffff;
-  transform: scale(1.1);
+.milestoneItem:hover .milestoneContent {
+  border-color: rgba(230, 161, 101, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .milestoneYear {
   font-family: 'Poppins', sans-serif;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 600;
   color: #e6a165;
+  margin-bottom: 12px;
   line-height: 1;
 }
 
-.milestoneCardContent {
-  flex: 1;
-}
-
-.milestoneShortTitle {
+.milestoneTitle {
   font-family: 'Poppins', sans-serif;
-  font-size: 12px;
+  font-size: 24px;
   font-weight: 500;
-  color: #666666;
+  color: #111;
   margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.milestoneBoldTitle {
-  font-family: 'Poppins', sans-serif;
-  font-size: 28px;
-  font-weight: 500;
-  color: #e6a165;
-  margin-bottom: 16px;
   line-height: 1.3;
 }
 
@@ -376,16 +385,6 @@
   font-weight: 300;
   color: #666666;
   line-height: 1.7;
-}
-
-@media (max-width: 1200px) {
-  .milestonesGrid {
-    gap: 30px;
-  }
-
-  .milestoneCard {
-    padding: 32px;
-  }
 }
 
 @media (max-width: 968px) {
@@ -409,26 +408,31 @@
     font-size: 16px;
   }
 
-  .milestonesGrid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+  .milestonesTimeline {
+    padding-left: 50px;
   }
 
-  .milestoneCard {
-    padding: 28px;
+  .timelineLine {
+    left: 15px;
   }
 
-  .milestoneIcon {
-    width: 56px;
-    height: 56px;
+  .milestoneDot {
+    left: -40px;
+    width: 14px;
+    height: 14px;
+    border-width: 3px;
+  }
+
+  .milestoneContent {
+    padding: 24px 30px;
   }
 
   .milestoneYear {
-    font-size: 20px;
+    font-size: 18px;
   }
 
-  .milestoneBoldTitle {
-    font-size: 24px;
+  .milestoneTitle {
+    font-size: 22px;
   }
 }
 
@@ -441,21 +445,35 @@
     font-size: 32px;
   }
 
-  .milestoneCard {
-    padding: 24px;
+  .milestonesTimeline {
+    padding-left: 40px;
   }
 
-  .milestoneIcon {
-    width: 48px;
-    height: 48px;
+  .timelineLine {
+    left: 12px;
+  }
+
+  .milestoneDot {
+    left: -32px;
+    width: 12px;
+    height: 12px;
+    border-width: 3px;
+  }
+
+  .milestoneItem {
+    margin-bottom: 40px;
+  }
+
+  .milestoneContent {
+    padding: 20px 24px;
   }
 
   .milestoneYear {
-    font-size: 18px;
+    font-size: 16px;
   }
 
-  .milestoneBoldTitle {
-    font-size: 22px;
+  .milestoneTitle {
+    font-size: 20px;
   }
 
   .milestoneDescription {
@@ -1103,7 +1121,8 @@
 .formField {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  width: 100%;
 }
 
 .formField label {
@@ -1120,11 +1139,24 @@
   font-size: 14px;
   font-weight: 400;
   color: #000000;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   background: #ffffff;
   transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formField select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px 8px;
+  padding-right: 40px;
 }
 
 .formField input:focus,
@@ -1137,6 +1169,7 @@
 .formField textarea {
   resize: vertical;
   min-height: 100px;
+  padding: 14px 16px;
 }
 
 .phoneInputWrapper {
@@ -1157,6 +1190,8 @@
 
 .phoneInputWrapper input {
   padding-left: 32px;
+  padding-right: 16px;
+  width: 100%;
 }
 
 .submitButton {
@@ -1176,6 +1211,53 @@
 .submitButton:hover {
   background: #e6a165;
   border-color: #e6a165;
+}
+
+.successMessage {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+}
+
+.successMessage svg {
+  width: 48px;
+  height: 48px;
+  background: rgba(74, 222, 128, 0.1);
+  border-radius: 50%;
+  padding: 12px;
+}
+
+.successMessage p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+  line-height: 1.5;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 968px) {
@@ -1202,12 +1284,65 @@
 }
 
 @media (max-width: 768px) {
+  .officeSection {
+    padding: 40px 0;
+  }
+
+  .officeContainer {
+    padding: 0 16px;
+  }
+
   .officeTitle {
     font-size: 28px;
   }
 
   .formTitle {
     font-size: 20px;
+  }
+
+  .officeForm {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .formField {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .formField input,
+  .formField select,
+  .formField textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .formField input[type="date"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  .phoneInputWrapper {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .phoneInputWrapper input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .submitButton {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 

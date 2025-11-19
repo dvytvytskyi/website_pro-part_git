@@ -31,10 +31,37 @@ export default function NewsList() {
       setLoading(true);
       setError(null);
       try {
-        const result = await getNews(1, 12);
+        console.log('🔄 Loading news...');
+        // Спочатку завантажуємо першу сторінку, щоб дізнатися загальну кількість
+        const firstPage = await getNews(1, 100);
+        console.log('📰 First page result:', {
+          newsCount: firstPage.news.length,
+          total: firstPage.total,
+          page: firstPage.page,
+          limit: firstPage.limit,
+        });
+        
+        let allNews = [...firstPage.news];
+        
+        // Якщо є більше новин, завантажуємо всі інші сторінки
+        if (firstPage.total > firstPage.news.length) {
+          const totalPages = Math.ceil(firstPage.total / 100);
+          console.log(`📄 Loading ${totalPages - 1} additional pages...`);
+          const remainingPages = [];
+          
+          for (let page = 2; page <= totalPages; page++) {
+            remainingPages.push(getNews(page, 100));
+          }
+          
+          const remainingResults = await Promise.all(remainingPages);
+          remainingResults.forEach(result => {
+            allNews = [...allNews, ...result.news];
+          });
+          console.log(`✅ Loaded total ${allNews.length} news articles`);
+        }
         
         // Convert API format to component format
-        const convertedNews: NewsItem[] = result.news.map((item: ApiNewsItem) => ({
+        const convertedNews: NewsItem[] = allNews.map((item: ApiNewsItem) => ({
           id: item.id,
           title: item.title,
           titleRu: item.titleRu,
@@ -45,9 +72,10 @@ export default function NewsList() {
           slug: item.slug,
         }));
         
+        console.log(`✅ Converted ${convertedNews.length} news items`);
         setNews(convertedNews);
       } catch (err) {
-        console.error('Failed to fetch news:', err);
+        console.error('❌ Failed to fetch news:', err);
         setError('Failed to load news. Please try again later.');
         setNews([]);
       } finally {

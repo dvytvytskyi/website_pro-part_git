@@ -311,14 +311,10 @@ export default function Areas() {
               imageUrl = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&h=600&fit=crop';
             }
             
-            // Generate slug from nameEn
-            const slug = (apiArea.nameEn || '')
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-              .replace(/[^a-z0-9-]/g, '');
-            
+            // Use the real API area ID instead of generating a slug
+            // This ensures the link matches what getAreaById expects
             return {
-              id: slug || apiArea.id,
+              id: apiArea.id,
               name: apiArea.nameEn || '',
               nameRu: apiArea.nameRu || apiArea.nameEn || '',
               projectsCount: apiArea.projectsCount?.total || 0,

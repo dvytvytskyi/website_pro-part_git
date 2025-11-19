@@ -117,6 +117,40 @@ function createMarkerElement(priceAED: number): HTMLDivElement {
   return el;
 }
 
+// Create office marker element
+function createOfficeMarkerElement(): HTMLDivElement {
+  const el = document.createElement('div');
+  el.className = 'custom-marker custom-marker-office';
+  
+  el.style.cssText = `
+    background: #0055aa;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid #ffffff;
+    transform-origin: center center;
+    z-index: 15;
+  `;
+  
+  el.textContent = 'Office';
+  
+  return el;
+}
+
 // Universal click handler for both desktop and mobile
 function addMarkerClickHandler(
   el: HTMLDivElement,
@@ -204,6 +238,7 @@ export default function MapboxMap({ accessToken, properties = [] }: MapboxMapPro
   const drawRef = useRef<MapboxDraw | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const markersMapRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
+  const officeMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const previousSelectedPropertyRef = useRef<Property | null>(null);
   const [mapStyle, setMapStyle] = useState<'map' | 'satellite'>('map');
@@ -295,6 +330,32 @@ export default function MapboxMap({ accessToken, properties = [] }: MapboxMapPro
         if (attribution) {
           (attribution as HTMLElement).style.display = 'none';
         }
+
+        // Add office marker
+        const officeCoordinates: [number, number] = [55.1503, 25.0745]; // Jumeirah Bay X3, Cluster X, JLT
+        const officeEl = createOfficeMarkerElement();
+        
+        // Add click handler for office marker
+        officeEl.addEventListener('click', () => {
+          if (map.current) {
+            map.current.flyTo({
+              center: officeCoordinates,
+              zoom: 16,
+              duration: 1000,
+              essential: true
+            });
+          }
+        });
+        
+        const officeMarker = new mapboxgl.Marker({
+          element: officeEl,
+          anchor: 'center',
+          offset: [0, 0]
+        });
+        
+        officeMarker.setLngLat(officeCoordinates);
+        officeMarker.addTo(map.current!);
+        officeMarkerRef.current = officeMarker;
 
         // Check URL for polygon parameter
         const polygonParam = searchParams.get('polygon');
@@ -507,6 +568,12 @@ export default function MapboxMap({ accessToken, properties = [] }: MapboxMapPro
 
     // Cleanup
     return () => {
+      // Remove office marker
+      if (officeMarkerRef.current) {
+        officeMarkerRef.current.remove();
+        officeMarkerRef.current = null;
+      }
+      
       // Remove all markers
       markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
@@ -838,6 +905,37 @@ export default function MapboxMap({ accessToken, properties = [] }: MapboxMapPro
             (attribution as HTMLElement).style.display = 'none';
           }
           
+          // Remove existing office marker
+          if (officeMarkerRef.current) {
+            officeMarkerRef.current.remove();
+            officeMarkerRef.current = null;
+          }
+          
+          // Re-add office marker
+          const officeCoordinates: [number, number] = [55.1503, 25.0745]; // Jumeirah Bay X3, Cluster X, JLT
+          const officeEl = createOfficeMarkerElement();
+          
+          officeEl.addEventListener('click', () => {
+            if (map.current) {
+              map.current.flyTo({
+                center: officeCoordinates,
+                zoom: 16,
+                duration: 1000,
+                essential: true
+              });
+            }
+          });
+          
+          const officeMarker = new mapboxgl.Marker({
+            element: officeEl,
+            anchor: 'center',
+            offset: [0, 0]
+          });
+          
+          officeMarker.setLngLat(officeCoordinates);
+          officeMarker.addTo(map.current);
+          officeMarkerRef.current = officeMarker;
+          
           // Reload markers after style change
           if (properties.length > 0) {
             // Remove existing markers
@@ -922,7 +1020,7 @@ export default function MapboxMap({ accessToken, properties = [] }: MapboxMapPro
       <div style={{
         position: 'absolute',
         bottom: '20px',
-        right: '20px',
+        left: '20px',
         display: 'flex',
         gap: '12px',
         zIndex: 1000,

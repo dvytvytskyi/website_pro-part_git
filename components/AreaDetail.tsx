@@ -205,12 +205,6 @@ export default function AreaDetail({ slug }: AreaDetailProps) {
         {/* Заголовок */}
         <div className={styles.header}>
           <h1 className={styles.title}>{getAreaName()}</h1>
-          {area.projectsCount && (
-            <div className={styles.projectsCount}>
-              <span className={styles.countNumber}>{area.projectsCount.total}</span>
-              <span className={styles.countLabel}>{t('projects')}</span>
-            </div>
-          )}
         </div>
 
         {/* Галерея зображень - слайд-шоу */}

@@ -15,7 +15,7 @@ import PropertyFilters from './PropertyFilters';
 interface Filters {
   type: 'new' | 'secondary';
   search: string;
-  location: string[];
+  location: string; // areaId (single selection)
   bedrooms: number[];
   sizeFrom: string;
   sizeTo: string;
@@ -65,12 +65,9 @@ const convertFiltersToApi = (filters: Filters, page: number): ApiPropertyFilters
     apiFilters.cityId = filters.cityId;
   }
 
-  // Area filter (multiselect - convert to comma-separated string for first area, or use first one)
-  if (filters.location && filters.location.length > 0) {
-    // API supports only one areaId, so we'll use the first selected
-    apiFilters.areaId = filters.location[0];
-    // But for client-side filtering, we need all selected areas
-    apiFilters.areaIds = filters.location;
+  // Area filter (single selection)
+  if (filters.location) {
+    apiFilters.areaId = filters.location;
   }
 
   // Bedrooms filter (multiselect - convert to comma-separated string)
@@ -116,7 +113,7 @@ const filtersToUrlParams = (filters: Filters, page?: number): URLSearchParams =>
   
   if (filters.type !== 'new') params.set('type', filters.type);
   if (filters.search) params.set('search', filters.search);
-  if (filters.location.length > 0) params.set('location', filters.location.join(','));
+  if (filters.location) params.set('location', filters.location);
   if (filters.bedrooms.length > 0) params.set('bedrooms', filters.bedrooms.join(','));
   if (filters.sizeFrom) params.set('sizeFrom', filters.sizeFrom);
   if (filters.sizeTo) params.set('sizeTo', filters.sizeTo);
@@ -142,19 +139,19 @@ const urlParamsToFilters = (searchParams: URLSearchParams): Filters => {
   const typeParam = searchParams.get('type');
   const type: 'new' | 'secondary' = typeParam === 'secondary' ? 'secondary' : 'new';
   
-  // Handle location: support both 'location' (comma-separated) and 'areaId' (single ID from Hero)
+  // Handle location: support both 'location' (single ID) and 'areaId' (single ID from Hero)
   // Also support 'areald' as fallback (typo in URL)
-  let location: string[] = [];
+  let location: string = '';
   const locationParam = searchParams.get('location');
   const areaIdParam = searchParams.get('areaId') || searchParams.get('areald'); // Support typo fallback
   
   // Priority: location param first, then areaId
   if (locationParam) {
-    // Multiple locations from filters (or single location)
-    location = locationParam.split(',').filter(Boolean);
+    // Single location from filters (take first if comma-separated for backward compatibility)
+    location = locationParam.split(',')[0].trim();
   } else if (areaIdParam) {
     // Single areaId from Hero
-    location = [areaIdParam];
+    location = areaIdParam;
   }
   
   // Handle bedrooms: support both 'bedrooms' (comma-separated numbers) and single value from Hero ('1', '2', '3', '4', '5+')
@@ -220,8 +217,8 @@ export default function PropertiesList() {
     const urlFilters = urlParamsToFilters(searchParams);
     setFilters(prevFilters => {
       // Always update if URL params changed (more reliable comparison)
-      const prevLocation = prevFilters.location.join(',');
-      const newLocation = urlFilters.location.join(',');
+      const prevLocation = prevFilters.location;
+      const newLocation = urlFilters.location;
       const prevBedrooms = prevFilters.bedrooms.join(',');
       const newBedrooms = urlFilters.bedrooms.join(',');
       
@@ -432,7 +429,7 @@ export default function PropertiesList() {
     const defaultFilters: Filters = {
       type: 'new',
       search: '',
-      location: [],
+      location: '',
       bedrooms: [],
       sizeFrom: '',
       sizeTo: '',
@@ -449,7 +446,7 @@ export default function PropertiesList() {
   const getActiveFiltersCount = (): number => {
     let count = 0;
     if (filters.search) count++;
-    if (filters.location.length > 0) count++;
+    if (filters.location) count++;
     if (filters.bedrooms.length > 0) count++;
     if (filters.sizeFrom || filters.sizeTo) count++;
     if (filters.priceFrom || filters.priceTo) count++;

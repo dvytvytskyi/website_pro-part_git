@@ -15,8 +15,8 @@ export default function Footer() {
     const segments = pathname.split('/');
     const pathWithoutLocale = segments.slice(2).join('/') || '';
     const newPath = pathWithoutLocale ? `/${newLocale}/${pathWithoutLocale}` : `/${newLocale}`;
-    router.push(newPath);
-    router.refresh();
+    // Use window.location for dynamic routes to ensure proper navigation
+    window.location.href = newPath;
   };
 
   const getLocalizedPath = (path: string) => {
@@ -82,8 +82,17 @@ export default function Footer() {
             <h3 className={styles.sectionTitle}>Contact Us</h3>
             <div className={styles.contactInfo}>
               <p className={styles.contactAddress}>
-                Al Shafar Tower 1<br />
-                Dubai, UAE
+                <a 
+                  href="https://maps.app.goo.gl/xQcNPxXyGUAXf56o9?g_st=ipc" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.contactLink}
+                  style={{ textDecoration: 'none' }}
+                >
+                  Jumeirah Bay X3<br />
+                  office 802<br />
+                  Dubai, UAE
+                </a>
               </p>
               <a href="mailto:info@pro-part.online" className={styles.contactLink}>
                 info@pro-part.online

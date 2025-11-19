@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
+import { submitFormToSheets } from '@/lib/googleSheets';
 import styles from './ConsultingHero.module.css';
 
 export default function ConsultingHero() {
@@ -512,26 +513,33 @@ export default function ConsultingHero() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus('sending');
-
-    try {
-      // TODO: Replace with actual API endpoint
-      // For now, just simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setFormStatus('success');
-      setFormData({ name: '', contact: '', message: '' });
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setFormStatus('idle');
-      }, 5000);
-    } catch (error) {
-      setFormStatus('error');
-      setTimeout(() => {
-        setFormStatus('idle');
-      }, 5000);
-    }
+    
+    // Save form data before resetting
+    const formDataToSubmit = {
+      name: formData.name,
+      contact: formData.contact,
+      message: formData.message,
+    };
+    
+    // Show success message immediately
+    setFormStatus('success');
+    setFormData({ name: '', contact: '', message: '' });
+    
+    // Reset success message after 5 seconds
+    setTimeout(() => {
+      setFormStatus('idle');
+    }, 5000);
+    
+    // Submit to Google Sheets in the background (don't wait for it)
+    submitFormToSheets({
+      formType: 'consulting-contact',
+      name: formDataToSubmit.name,
+      email: formDataToSubmit.contact.includes('@') ? formDataToSubmit.contact : '',
+      phone: formDataToSubmit.contact.includes('@') ? '' : formDataToSubmit.contact,
+      message: formDataToSubmit.message,
+    }).catch((error) => {
+      console.error('Error submitting form to Google Sheets:', error);
+    });
   };
 
   const getProcessStepIcon = (step: number) => {

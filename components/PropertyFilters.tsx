@@ -8,7 +8,7 @@ import styles from './PropertyFilters.module.css';
 interface Filters {
   type: 'new' | 'secondary';
   search: string;
-  location: string[]; // areaId[]
+  location: string; // areaId (single selection)
   bedrooms: number[];
   sizeFrom: string;
   sizeTo: string;
@@ -52,6 +52,35 @@ const sortOptions = [
   { value: 'newest', label: 'Newest First', labelRu: 'Сначала новые' },
 ];
 
+// Top 25 main Dubai areas to show in location filter
+const MAIN_DUBAI_AREAS = [
+  'Business Bay',
+  'Downtown Dubai',
+  'Palm Jumeirah',
+  'Dubai Marina',
+  'Dubai Hills',
+  'Jumeirah Village Circle (JVC)',
+  'Jumeirah Village Triangle (JVT)',
+  'Arjan',
+  'Al Furjan',
+  'Dubai Harbour',
+  'Dubai Creek Harbour',
+  'Mohammed Bin Rashid City (MBR)',
+  'Dubai Silicon Oasis',
+  'Dubai Sports City',
+  'International City',
+  'Dubai Investment Park',
+  'Dubai Science Park',
+  'Dubai Industrial City',
+  'Tilal Al Ghaf',
+  'City of Arabia',
+  'Dubai Production City',
+  'Dubai Studio City',
+  'Dubai Media City',
+  'Dubai Internet City',
+  'Dubai Knowledge Park',
+];
+
 export default function PropertyFilters({ filters, onFilterChange, isModal = false }: PropertyFiltersProps) {
   const t = useTranslations('filters');
   const locale = useLocale();
@@ -90,15 +119,26 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
         // This ensures we get areas with project counts and can filter by projectsCount > 0
         const areasData = await getAreas(undefined, true);
         
-        // Filter areas to only show those with projects (projectsCount > 0)
-        const areasWithProjects = areasData
+        // Filter areas to only show main 25 Dubai areas
+        const mainAreas = areasData
           .filter(area => {
-            const projectsCount = area.projectsCount?.total || 0;
-            return projectsCount > 0;
+            const areaName = area.nameEn?.trim();
+            if (!areaName) return false;
+            
+            // Check if area name matches any of the main areas (case-insensitive)
+            return MAIN_DUBAI_AREAS.some(
+              (mainArea) => mainArea.toLowerCase() === areaName.toLowerCase()
+            );
           })
           .sort((a, b) => {
-            // Sort by nameEn (alphabetically, always use English for consistent sorting)
-            return a.nameEn.localeCompare(b.nameEn);
+            // Sort according to MAIN_DUBAI_AREAS order
+            const aIndex = MAIN_DUBAI_AREAS.findIndex(
+              (mainArea) => mainArea.toLowerCase() === a.nameEn.toLowerCase()
+            );
+            const bIndex = MAIN_DUBAI_AREAS.findIndex(
+              (mainArea) => mainArea.toLowerCase() === b.nameEn.toLowerCase()
+            );
+            return aIndex - bIndex;
           });
         
         // Load developers using dedicated function (has fallback to publicData)
@@ -131,12 +171,12 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
           a.name.localeCompare(b.name)
         );
         
-        setAreas(areasWithProjects);
+        setAreas(mainAreas);
         setDevelopers(sortedDevelopers);
         
         if (process.env.NODE_ENV === 'development') {
-          console.log(`✅ PropertyFilters: Loaded ${areasWithProjects.length} areas with projects (filtered from ${areasData.length} total)`);
-          console.log(`✅ PropertyFilters: Sample areas:`, areasWithProjects.slice(0, 5).map(a => ({
+          console.log(`✅ PropertyFilters: Loaded ${mainAreas.length} main areas (filtered from ${areasData.length} total)`);
+          console.log(`✅ PropertyFilters: Sample areas:`, mainAreas.slice(0, 5).map(a => ({
             id: a.id,
             nameEn: a.nameEn,
             projectsCount: a.projectsCount?.total || 0
@@ -279,11 +319,10 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
     onFilterChange(newFilters);
   };
 
-  const handleLocationToggle = (areaId: string) => {
-    const newLocations = localFilters.location.includes(areaId)
-      ? localFilters.location.filter((l) => l !== areaId)
-      : [...localFilters.location, areaId];
-    handleChange('location', newLocations);
+  const handleLocationSelect = (areaId: string) => {
+    // Single selection: if same area clicked, clear selection; otherwise select new area
+    handleChange('location', localFilters.location === areaId ? '' : areaId);
+    setIsLocationOpen(false);
   };
 
   const handleDeveloperToggle = (developerId: string) => {
@@ -298,12 +337,9 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
   };
 
   const getLocationLabel = () => {
-    if (localFilters.location.length === 0) return t('location.placeholder');
-    if (localFilters.location.length === 1) {
-      const area = areas.find((a) => a.id === localFilters.location[0]);
-      return locale === 'ru' ? area?.nameRu || area?.nameEn : area?.nameEn || '';
-    }
-    return `${localFilters.location.length} ${t('location.selected')}`;
+    if (!localFilters.location) return t('location.placeholder');
+    const area = areas.find((a) => a.id === localFilters.location);
+    return locale === 'ru' ? area?.nameRu || area?.nameEn : area?.nameEn || '';
   };
 
   const getDeveloperLabel = () => {
@@ -400,63 +436,23 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
               ) : areas.length === 0 ? (
                 <div className={styles.dropdownItem}>No areas available</div>
               ) : (
-                areas.map((area) => (
-                  <label key={area.id} className={styles.checkboxItem}>
-                    <input
-                      type="checkbox"
-                      checked={localFilters.location.includes(area.id)}
-                      onChange={() => handleLocationToggle(area.id)}
-                    />
-                    <span>{locale === 'ru' ? area.nameRu : area.nameEn}</span>
-                  </label>
-                ))
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Developer Dropdown */}
-        <div 
-          className={`${styles.dropdownWrapper} ${styles.locationDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
-          ref={developerRef}
-          data-dropdown-open={isDeveloperOpen ? 'true' : 'false'}
-        >
-          <button
-            className={styles.dropdownButton}
-            onClick={() => handleDropdownToggle('developer', developerRef, isDeveloperOpen, setIsDeveloperOpen)}
-          >
-            <span>{getDeveloperLabel()}</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isDeveloperOpen ? styles.rotated : ''}>
-              <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          {isDeveloperOpen && (
-            <div className={`${styles.dropdownMenu} ${dropdownDirections.developer ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
-              {loadingData ? (
-                <div className={styles.dropdownItem}>Loading...</div>
-              ) : developers.length === 0 ? (
-                <div className={styles.dropdownItem}>No developers available</div>
-              ) : (
                 <>
                   <button
-                    className={`${styles.dropdownItem} ${!localFilters.developerId ? styles.active : ''}`}
+                    className={`${styles.dropdownItem} ${!localFilters.location ? styles.active : ''}`}
                     onClick={() => {
-                      handleDeveloperToggle('');
-                      setIsDeveloperOpen(false);
+                      handleChange('location', '');
+                      setIsLocationOpen(false);
                     }}
                   >
-                    {t('developer.all') || 'All Developers'}
+                    {t('location.all') || 'All Areas'}
                   </button>
-                  {developers.map((developer) => (
+                  {areas.map((area) => (
                     <button
-                      key={developer.id}
-                      className={`${styles.dropdownItem} ${localFilters.developerId === developer.id ? styles.active : ''}`}
-                      onClick={() => {
-                        handleDeveloperToggle(developer.id);
-                        setIsDeveloperOpen(false);
-                      }}
+                      key={area.id}
+                      className={`${styles.dropdownItem} ${localFilters.location === area.id ? styles.active : ''}`}
+                      onClick={() => handleLocationSelect(area.id)}
                     >
-                      {developer.name}
+                      {locale === 'ru' ? area.nameRu : area.nameEn}
                     </button>
                   ))}
                 </>
@@ -464,6 +460,58 @@ export default function PropertyFilters({ filters, onFilterChange, isModal = fal
             </div>
           )}
         </div>
+
+        {/* Developer Dropdown - Temporarily hidden */}
+        {false && (
+          <div 
+            className={`${styles.dropdownWrapper} ${styles.locationDropdown} ${isModal ? styles.dropdownWrapperModal : ''}`} 
+            ref={developerRef}
+            data-dropdown-open={isDeveloperOpen ? 'true' : 'false'}
+          >
+            <button
+              className={styles.dropdownButton}
+              onClick={() => handleDropdownToggle('developer', developerRef, isDeveloperOpen, setIsDeveloperOpen)}
+            >
+              <span>{getDeveloperLabel()}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className={isDeveloperOpen ? styles.rotated : ''}>
+                <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            {isDeveloperOpen && (
+              <div className={`${styles.dropdownMenu} ${dropdownDirections.developer ? styles.dropdownMenuUp : styles.dropdownMenuDown} ${isModal ? styles.dropdownMenuModal : ''}`}>
+                {loadingData ? (
+                  <div className={styles.dropdownItem}>Loading...</div>
+                ) : developers.length === 0 ? (
+                  <div className={styles.dropdownItem}>No developers available</div>
+                ) : (
+                  <>
+                    <button
+                      className={`${styles.dropdownItem} ${!localFilters.developerId ? styles.active : ''}`}
+                      onClick={() => {
+                        handleDeveloperToggle('');
+                        setIsDeveloperOpen(false);
+                      }}
+                    >
+                      {t('developer.all') || 'All Developers'}
+                    </button>
+                    {developers.map((developer) => (
+                      <button
+                        key={developer.id}
+                        className={`${styles.dropdownItem} ${localFilters.developerId === developer.id ? styles.active : ''}`}
+                        onClick={() => {
+                          handleDeveloperToggle(developer.id);
+                          setIsDeveloperOpen(false);
+                        }}
+                      >
+                        {developer.name}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Bedrooms Dropdown */}
         <div 

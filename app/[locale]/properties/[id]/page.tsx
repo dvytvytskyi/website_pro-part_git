@@ -4,6 +4,9 @@ import Footer from '@/components/Footer';
 import PropertyDetail from '@/components/PropertyDetail';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 
+// Force dynamic rendering to handle locale changes properly
+export const dynamic = 'force-dynamic';
+
 interface PropertyDetailPageProps {
   params: {
     locale: string;

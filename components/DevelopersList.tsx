@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { getDevelopers, Developer as ApiDeveloper } from '@/lib/api';
+import { getDevelopers, Developer as ApiDeveloper, normalizeImageUrls, normalizeImageUrl } from '@/lib/api';
 import styles from './DevelopersList.module.css';
 
 interface Developer {
@@ -25,6 +25,8 @@ export default function DevelopersList() {
   const [selectedDeveloper, setSelectedDeveloper] = useState<Developer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [failedLogos, setFailedLogos] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const loadDevelopers = async () => {
@@ -49,28 +51,83 @@ export default function DevelopersList() {
             ? (dev.description.description || dev.description.title || null)
             : null;
           
+          // Ensure images is properly formatted and normalized
+          let images: string[] | null = null;
+          if (dev.images) {
+            let rawImages: string[] = [];
+            if (Array.isArray(dev.images)) {
+              rawImages = dev.images.filter(img => img && typeof img === 'string' && img.trim().length > 0);
+            } else if (typeof dev.images === 'string' && dev.images.trim().length > 0) {
+              rawImages = [dev.images];
+            }
+            
+            // Normalize image URLs for proper display
+            if (rawImages.length > 0) {
+              images = normalizeImageUrls(rawImages, {
+                width: 800,
+                height: 600,
+                quality: 'auto',
+                format: 'auto'
+              });
+              // Filter out empty or invalid URLs
+              images = images.filter(img => img && img.trim().length > 0 && (img.startsWith('http://') || img.startsWith('https://')));
+              if (images.length === 0) {
+                images = null;
+              } else if (process.env.NODE_ENV === 'development') {
+                console.log(`📸 Normalized images for ${dev.name}:`, images);
+              }
+            }
+          }
+          
+          // Normalize logo URL
+          let normalizedLogo: string | null = null;
+          if (dev.logo) {
+            normalizedLogo = normalizeImageUrl(dev.logo, {
+              width: 240,
+              height: 240,
+              quality: 'auto',
+              format: 'auto'
+            });
+            // Check if logo URL is valid
+            if (!normalizedLogo || normalizedLogo.trim().length === 0 || (!normalizedLogo.startsWith('http://') && !normalizedLogo.startsWith('https://'))) {
+              normalizedLogo = null;
+            }
+          }
+          
           return {
             id: dev.id,
             name: dev.name,
-            logo: dev.logo,
+            logo: normalizedLogo,
             description: descriptionText,
-            images: dev.images,
+            images: images,
             projectsCount: dev.projectsCount?.total || 0,
             createdAt: dev.createdAt,
           };
         });
         
-        console.log('✅ Converted developers:', convertedDevelopers.length);
-        setDevelopers(convertedDevelopers);
+        // Filter out developers without valid logos
+        const developersWithLogos = convertedDevelopers.filter(d => d.logo && d.logo.trim().length > 0);
         
-        if (convertedDevelopers.length > 0) {
-          setSelectedDeveloper(convertedDevelopers[0]);
+        console.log('✅ Converted developers:', convertedDevelopers.length);
+        console.log(`✅ Developers with logos: ${developersWithLogos.length}`);
+        setDevelopers(developersWithLogos);
+        
+        if (developersWithLogos.length > 0) {
+          setSelectedDeveloper(developersWithLogos[0]);
+          // Log first developer's images for debugging
+          if (developersWithLogos[0].images) {
+            console.log('📸 First developer images:', {
+              name: developersWithLogos[0].name,
+              imagesCount: developersWithLogos[0].images.length,
+              images: developersWithLogos[0].images
+            });
+          }
         }
         
         if (process.env.NODE_ENV === 'development') {
-          const developersWithImages = convertedDevelopers.filter(d => d.images && d.images.length > 0).length;
-          const developersWithLogo = convertedDevelopers.filter(d => d.logo).length;
-          console.log(`✅ Loaded ${convertedDevelopers.length} developers, ${developersWithImages} with images, ${developersWithLogo} with logo`);
+          const developersWithImages = developersWithLogos.filter(d => d.images && Array.isArray(d.images) && d.images.length > 0).length;
+          const developersWithLogo = developersWithLogos.filter(d => d.logo).length;
+          console.log(`✅ Loaded ${developersWithLogos.length} developers (filtered), ${developersWithImages} with images, ${developersWithLogo} with logo`);
         }
       } catch (err: any) {
         console.error('❌ Failed to fetch developers:', err);
@@ -113,6 +170,28 @@ export default function DevelopersList() {
 
   const handleDeveloperSelect = (developer: Developer) => {
     setSelectedDeveloper(developer);
+  };
+
+  const handleImageError = (imageUrl: string, event?: any) => {
+    console.error('❌ Failed to load image:', imageUrl);
+    setFailedImages(prev => new Set(prev).add(imageUrl));
+  };
+
+  const handleLogoError = (logoUrl: string, event?: any) => {
+    console.error('❌ Failed to load logo:', logoUrl);
+    setFailedLogos(prev => new Set(prev).add(logoUrl));
+    // Remove developer from list if logo failed to load
+    setDevelopers(prev => {
+      const filtered = prev.filter(dev => dev.logo !== logoUrl);
+      // If selected developer's logo failed, select first available developer
+      setSelectedDeveloper(current => {
+        if (current && current.logo === logoUrl) {
+          return filtered.length > 0 ? filtered[0] : null;
+        }
+        return current;
+      });
+      return filtered;
+    });
   };
 
   const getLocalizedPath = (path: string) => {
@@ -176,7 +255,7 @@ export default function DevelopersList() {
                 onClick={() => handleDeveloperSelect(developer)}
               >
                 <div className={styles.logoWrapper}>
-                  {developer.logo ? (
+                  {developer.logo && !failedLogos.has(developer.logo) ? (
                     <div className={styles.logoContainer}>
                       <Image
                         src={developer.logo}
@@ -184,13 +263,20 @@ export default function DevelopersList() {
                         fill
                         className={styles.logo}
                         sizes="120px"
+                        unoptimized
+                        onError={() => handleLogoError(developer.logo!)}
                       />
                     </div>
                   ) : (
                     <div className={styles.logoPlaceholder}>
-                      <span className={styles.logoPlaceholderText}>
-                        {developer.name.charAt(0).toUpperCase()}
-                      </span>
+                      <Image
+                        src="/logo color.png"
+                        alt="ProPart"
+                        width={120}
+                        height={120}
+                        className={styles.logoPlaceholderImage}
+                        unoptimized
+                      />
                     </div>
                   )}
                 </div>
@@ -208,7 +294,7 @@ export default function DevelopersList() {
             {selectedDeveloper ? (
               <>
                 <div className={styles.detailsHeader}>
-                  {selectedDeveloper.logo ? (
+                  {selectedDeveloper.logo && !failedLogos.has(selectedDeveloper.logo) ? (
                     <div className={styles.detailsLogoContainer}>
                       <Image
                         src={selectedDeveloper.logo}
@@ -216,13 +302,20 @@ export default function DevelopersList() {
                         width={120}
                         height={120}
                         className={styles.detailsLogo}
+                        unoptimized
+                        onError={() => handleLogoError(selectedDeveloper.logo!)}
                       />
                     </div>
                   ) : (
                     <div className={styles.detailsLogoPlaceholder}>
-                      <span className={styles.detailsLogoPlaceholderText}>
-                        {selectedDeveloper.name.charAt(0).toUpperCase()}
-                      </span>
+                      <Image
+                        src="/logo color.png"
+                        alt="ProPart"
+                        width={120}
+                        height={120}
+                        className={styles.logoPlaceholderImage}
+                        unoptimized
+                      />
                     </div>
                   )}
                   <h2 className={styles.detailsName}>{selectedDeveloper.name}</h2>
@@ -238,17 +331,44 @@ export default function DevelopersList() {
                   <div className={styles.images}>
                     <h3 className={styles.imagesTitle}>{t('images')}</h3>
                     <div className={styles.imagesGrid}>
-                      {selectedDeveloper.images.map((image, index) => (
-                        <div key={index} className={styles.imageItem}>
-                          <Image
-                            src={image}
-                            alt={`${selectedDeveloper.name} - Image ${index + 1}`}
-                            fill
-                            style={{ objectFit: 'cover' }}
-                            sizes="(max-width: 1200px) 50vw, 33vw"
-                          />
-                        </div>
-                      ))}
+                      {selectedDeveloper.images.map((image, index) => {
+                        const imageFailed = failedImages.has(image);
+                        const isValidUrl = image && image.trim().length > 0 && (image.startsWith('http://') || image.startsWith('https://'));
+                        
+                        if (!isValidUrl || imageFailed) {
+                          return (
+                            <div key={index} className={styles.imageItem}>
+                              <div className={styles.imagePlaceholder}>
+                                <span className={styles.imagePlaceholderText}>
+                                  {selectedDeveloper.name.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
+                        
+                        return (
+                          <div key={index} className={styles.imageItem}>
+                            <Image
+                              src={image}
+                              alt={`${selectedDeveloper.name} - Image ${index + 1}`}
+                              fill
+                              style={{ objectFit: 'cover' }}
+                              sizes="(max-width: 1200px) 50vw, 33vw"
+                              unoptimized
+                              onError={(e) => {
+                                console.error(`❌ Image failed to load: ${image}`, e);
+                                handleImageError(image, e);
+                              }}
+                              onLoad={() => {
+                                if (process.env.NODE_ENV === 'development') {
+                                  console.log(`✅ Image loaded: ${image}`);
+                                }
+                              }}
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

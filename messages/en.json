@@ -216,7 +216,7 @@
     "stat2Number": "12+",
     "stat2Label": "YEARS OF EXPERIENCE",
     "stat3Number": "98%",
-    "stat3Label": "CLIENTS SATISFACTION",
+    "stat3Label": "CLIENT SATISFACTION",
     "stat4Number": "04",
     "stat4Label": "AWARDS ACHIEVEMENTS",
     "milestonesTitle": "Our Historical Milestones",
@@ -274,7 +274,8 @@
       "emailPlaceholder": "Enter your email",
       "messageLabel": "Additional Notes",
       "messagePlaceholder": "Any additional information...",
-      "submitButton": "Book Meeting"
+      "submitButton": "Book Meeting",
+      "success": "Thank you! We will contact you within 24 hours."
     },
     "leadersTitle": "About The Leadership Team",
     "leaders": {
@@ -293,6 +294,17 @@
       "gulnoza": {
         "name": "Gulnoza",
         "description": "3.5+ years of experience in the Dubai real estate market, with a strong focus on client relations and strategic partnerships. Successfully worked with high-net-worth individuals, international investors, and key business partners to facilitate property transactions, provide tailored investment solutions, and build long-term trust-based relationships."
+      },
+      "olexandr": {
+        "name": "Alexander Logachov",
+        "role": "CEO and Managing Director of ProPart Real Estate",
+        "tag": "CEO and Founder",
+        "bio": "Experienced leader in real estate, investments, and management. Under his leadership, ProPart Real Estate has expanded to international markets and works with clients, offering real estate solutions with a focus on service quality and long-term results.",
+        "experienceTitle": "Alexander Logachov's Experience",
+        "experienceDescription": "Over 15 years in real estate. Alexander specializes in project development, investments, and client relations. Works with residential, commercial, and luxury real estate in Dubai and other countries.",
+        "experience1": "Over 15 years of experience in real estate",
+        "experience2": "Successfully expanded the company to international markets",
+        "experience3": "Known for quality real estate solutions and high level of service"
       }
     },
     "faqTitle": "Frequently Asked Questions",
@@ -338,12 +350,12 @@
     }
   },
   "projectImage": {
-    "title": "Golf Edge by Emaar",
-    "description": "Golf Edge, located in Emaar South, is a luxurious residential project that offers a peaceful retreat amidst picturesque surroundings. Nestled among green hills, lush fairways, and golf courses, the homes at Golf Edge seamlessly blend in with the serene environment, creating an exclusive sanctuary for its residents.",
+    "title": "Ghaf Woods by Majid Al Futtaim",
+    "description": "A masterfully planned community by Majid Al Futtaim, Ghaf Woods introduces Dubai's first forest-inspired lifestyle. Designed to harmonize urban living with lush nature, it features sustainable residences, shaded walkways, and wellness-driven spaces—offering residents a peaceful escape without leaving the city.",
     "features": {
-      "bedrooms": "2 Bedrooms",
-      "bathrooms": "2 Bathrooms",
-      "park": "Park & Garden"
+      "bedrooms": "1, 2 & 3 BR",
+      "bathrooms": "Luxury Apartments & Duplexes",
+      "park": "60/40 Payment Plan"
     },
     "readMore": "Read More",
     "contactUs": "Contact Us",
@@ -1430,5 +1442,115 @@
     "externalLinks": "External Links",
     "courseNotFound": "Course not found",
     "logout": "Log Out"
+  },
+  "ghafWoods": {
+    "hero": {
+      "title": "Ghaf Woods by Majid Al Futtaim",
+      "subtitle": "Dubai's First Forest-Inspired Community",
+      "cta": "Register your interest",
+      "features": {
+        "bedrooms": "1, 2 & 3 BR",
+        "apartments": "Luxury Apartments & Duplexes",
+        "badge": "Limited Launch Offer",
+        "paymentPlan": "Payment Plan",
+        "startingPrice": "Starting Price",
+        "uponRequest": "Upon Request"
+      }
+    },
+    "about": {
+      "label": "About Ghaf Woods Dubai",
+      "title": "Where Urban Comfort Meets Natural Calm",
+      "description": "A masterfully planned community by Majid Al Futtaim, Ghaf Woods introduces Dubai's first forest-inspired lifestyle. Designed to harmonize urban living with lush nature, it features sustainable residences, shaded walkways, and wellness-driven spaces—offering residents a peaceful escape without leaving the city."
+    },
+    "features": {
+      "title1": "Sustainable Lifestyle & Wellness Living",
+      "description1": "Ghaf Woods is more than a place to live — it's a lifestyle surrounded by nature and balance. With shaded walkways, fitness zones, forest trails, retail spaces, and leisure areas, every detail is crafted for comfort, wellness, and community living in Dubai.",
+      "title2": "Ghaf Woods - Smart Investment, Serene Living",
+      "description2": "Invest in Ghaf Woods Dubai — a serene and sustainable community by Majid Al Futtaim. Blending premium design, eco-smart planning, and long-term value, it stands among Dubai's most promising destinations for both investors and residents."
+    },
+    "gallery": {
+      "label": "Gallery",
+      "title": "Discover Ghaf Woods",
+      "description": "Explore the beauty and serenity of Dubai's first forest-inspired community through our gallery.",
+      "imageAlt": "Ghaf Woods Dubai - Image"
+    },
+    "amenities": {
+      "title": "Experience Wellness-Inspired Living Every Day",
+      "description": "Surrounded by trees and open air, Ghaf Woods transforms daily life into an immersive experience. With forest-edge pools, cycling paths, wellness centers, and farm-to-table dining, it's a community designed for health, comfort, and connection.",
+      "items": {
+        "pools": "Forest-Edge Family & Leisure Pools",
+        "trails": "3.5 KM Mountain Biking & Jogging Trails",
+        "retail": "Retail, Dining & Community Plazas",
+        "wellness": "Nature-Inspired Fitness & Wellness Facilities",
+        "walkways": "Shaded Walkways, Green Promenades & Family Play Areas",
+        "center": "Forest Experience Centre"
+      }
+    },
+    "payment": {
+      "label": "Ghaf Woods Payment Plan",
+      "title": "Simple & Flexible 60/40 Payment Plan",
+      "description": "Owning your dream home at Ghaf Woods is made simple with a flexible 60/40 payment plan. Secure your residence in Dubai's first forest-inspired community with just 10% at booking, easy installments during construction, and 40% on handover.",
+      "downloadPlan": "Download Payment Plan",
+      "downloadBrochure": "Download Brochure",
+      "downPayment": {
+        "percent": "10%",
+        "title": "Down Payment",
+        "description": "Secure your home at Ghaf Woods Dubai with just a 10% down payment."
+      },
+      "construction": {
+        "percent": "50%",
+        "title": "During Construction",
+        "description": "Pay conveniently with flexible installments throughout the construction phase."
+      },
+      "handover": {
+        "percent": "40%",
+        "title": "On Handover",
+        "description": "Settle the remaining balance upon completion and handover of your new home."
+      }
+    },
+    "contact": {
+      "label": "Contact Us",
+      "title": "Get a Free Consultation from Sales Team",
+      "success": "Thank you! We will contact you within 24 hours.",
+      "form": {
+        "header": "Submit Your Inquiry",
+        "name": "Enter your full name",
+        "email": "Enter your email address",
+        "phone": "Enter your phone number with country code",
+        "country": "Enter your country of residence",
+        "message": "Tell us how we can assist you with your property needs",
+        "submit": "Submit Inquiry"
+      }
+    },
+    "modal": {
+      "register": {
+        "title": "Register Your Interest",
+        "description": "Please provide your contact details and we will get back to you shortly.",
+        "name": "Enter your full name",
+        "phone": "Enter your phone number",
+        "submit": "Submit"
+      },
+      "paymentPlan": {
+        "title": "Download Payment Plan",
+        "description": "Please provide your contact details and we will get back to you shortly.",
+        "name": "Enter your full name",
+        "phone": "Enter your phone number",
+        "submit": "Submit"
+      },
+      "brochure": {
+        "title": "Download Brochure",
+        "description": "Please provide your contact details and we will get back to you shortly.",
+        "name": "Enter your full name",
+        "phone": "Enter your phone number",
+        "submit": "Submit"
+      },
+      "submit": {
+        "title": "Submit Your Inquiry",
+        "description": "Please provide your contact details and we will get back to you shortly.",
+        "name": "Enter your full name",
+        "phone": "Enter your phone number",
+        "submit": "Submit"
+      }
+    }
   }
 }

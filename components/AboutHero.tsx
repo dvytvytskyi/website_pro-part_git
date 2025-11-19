@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
+import { submitFormToSheets } from '@/lib/googleSheets';
 import styles from './AboutHero.module.css';
 
 
@@ -12,7 +13,6 @@ export default function AboutHero() {
   const [stat1Value, setStat1Value] = useState(0);
   const [stat2Value, setStat2Value] = useState(0);
   const [stat3Value, setStat3Value] = useState(0);
-  const [stat4Value, setStat4Value] = useState(0);
   const statsRef = useRef<HTMLDivElement>(null);
   const milestonesRef = useRef<HTMLDivElement>(null);
   const topSectionRef = useRef<HTMLDivElement>(null);
@@ -134,12 +134,10 @@ export default function AboutHero() {
     const stat1Num = parseStat(t('stat1Number'));
     const stat2Num = parseStat(t('stat2Number'));
     const stat3Num = parseStat(t('stat3Number'));
-    const stat4Num = parseStat(t('stat4Number'));
 
     animateValue(setStat1Value, 0, stat1Num, 2000);
     animateValue(setStat2Value, 0, stat2Num, 2000);
     animateValue(setStat3Value, 0, stat3Num, 2000);
-    animateValue(setStat4Value, 0, stat4Num, 2000);
   }, [isVisible, t]);
 
   const formatStat = (value: number, original: string): string => {
@@ -170,9 +168,11 @@ export default function AboutHero() {
           <p className={styles.description}>
             {t('heroDescription')}
           </p>
-          <p className={styles.subDescription}>
-            {t('heroSubDescription')}
-          </p>
+          {t('heroSubDescription') && (
+            <p className={styles.subDescription}>
+              {t('heroSubDescription')}
+            </p>
+          )}
         </div>
       </div>
 
@@ -190,10 +190,6 @@ export default function AboutHero() {
           <div className={styles.statNumber}>{formatStat(stat3Value, t('stat3Number'))}</div>
           <div className={styles.statLabel}>{t('stat3Label')}</div>
         </div>
-        <div className={styles.statItem}>
-          <div className={styles.statNumber}>{formatStat(stat4Value, t('stat4Number'))}</div>
-          <div className={styles.statLabel}>{t('stat4Label')}</div>
-        </div>
       </div>
 
       {/* Milestones Section */}
@@ -207,73 +203,41 @@ export default function AboutHero() {
             <p className={styles.milestonesDescription}>{t('milestonesDescription')}</p>
           </div>
           
-          <div className={styles.milestonesGrid}>
-            <div className={styles.milestoneCard}>
-              <div className={styles.milestoneCardHeader}>
-                <div className={styles.milestoneIcon}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                    <path d="M2 17l10 5 10-5"></path>
-                    <path d="M2 12l10 5 10-5"></path>
-                  </svg>
-                </div>
+          <div className={styles.milestonesTimeline}>
+            <div className={styles.timelineLine}></div>
+            
+            <div className={styles.milestoneItem}>
+              <div className={styles.milestoneDot}></div>
+              <div className={styles.milestoneContent}>
                 <div className={styles.milestoneYear}>{t('milestone2022.year')}</div>
-              </div>
-              <div className={styles.milestoneCardContent}>
-                <div className={styles.milestoneShortTitle}>{t('milestone2022.shortTitle')}</div>
-                <div className={styles.milestoneBoldTitle}>{t('milestone2022.boldTitle')}</div>
+                <div className={styles.milestoneTitle}>{t('milestone2022.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2022.description')}</div>
               </div>
             </div>
 
-            <div className={styles.milestoneCard}>
-              <div className={styles.milestoneCardHeader}>
-                <div className={styles.milestoneIcon}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
-                </div>
+            <div className={styles.milestoneItem}>
+              <div className={styles.milestoneDot}></div>
+              <div className={styles.milestoneContent}>
                 <div className={styles.milestoneYear}>{t('milestone2023.year')}</div>
-              </div>
-              <div className={styles.milestoneCardContent}>
-                <div className={styles.milestoneShortTitle}>{t('milestone2023.shortTitle')}</div>
-                <div className={styles.milestoneBoldTitle}>{t('milestone2023.boldTitle')}</div>
+                <div className={styles.milestoneTitle}>{t('milestone2023.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2023.description')}</div>
               </div>
             </div>
 
-            <div className={styles.milestoneCard}>
-              <div className={styles.milestoneCardHeader}>
-                <div className={styles.milestoneIcon}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                </div>
+            <div className={styles.milestoneItem}>
+              <div className={styles.milestoneDot}></div>
+              <div className={styles.milestoneContent}>
                 <div className={styles.milestoneYear}>{t('milestone2024.year')}</div>
-              </div>
-              <div className={styles.milestoneCardContent}>
-                <div className={styles.milestoneShortTitle}>{t('milestone2024.shortTitle')}</div>
-                <div className={styles.milestoneBoldTitle}>{t('milestone2024.boldTitle')}</div>
+                <div className={styles.milestoneTitle}>{t('milestone2024.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2024.description')}</div>
               </div>
             </div>
 
-            <div className={styles.milestoneCard}>
-              <div className={styles.milestoneCardHeader}>
-                <div className={styles.milestoneIcon}>
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                  </svg>
-                </div>
+            <div className={styles.milestoneItem}>
+              <div className={styles.milestoneDot}></div>
+              <div className={styles.milestoneContent}>
                 <div className={styles.milestoneYear}>{t('milestone2025.year')}</div>
-              </div>
-              <div className={styles.milestoneCardContent}>
-                <div className={styles.milestoneShortTitle}>{t('milestone2025.shortTitle')}</div>
-                <div className={styles.milestoneBoldTitle}>{t('milestone2025.boldTitle')}</div>
+                <div className={styles.milestoneTitle}>{t('milestone2025.boldTitle')}</div>
                 <div className={styles.milestoneDescription}>{t('milestone2025.description')}</div>
               </div>
             </div>
@@ -310,9 +274,6 @@ export default function AboutHero() {
         </div>
       </div>
 
-      {/* Team Section */}
-      <TeamSection t={t} />
-
       {/* Office Section */}
       <OfficeSection t={t} />
 
@@ -326,104 +287,13 @@ export default function AboutHero() {
 }
 
 
-export function TeamSection({ t }: { t: any }) {
-  return (
-    <div className={styles.teamSection}>
-      <div className={styles.teamContainer}>
-        <div className={styles.teamHeader}>
-          <h2 className={styles.teamTitle}>{t('teamTitle')}</h2>
-          <p className={styles.teamDescription}>{t('teamDescription')}</p>
-        </div>
-        <div className={styles.teamGrid}>
-          <div className={styles.teamMember}>
-            <div className={styles.teamPhotoWrapper}>
-              <div className={styles.teamPhoto}>
-                <Image
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=800&fit=crop"
-                  alt={t('teamMembers.daniil')}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                  loading="lazy"
-                />
-              </div>
-              <div className={styles.teamOverlay}></div>
-            </div>
-            <div className={styles.teamInfo}>
-              <div className={styles.teamName}>{t('teamMembers.daniil')}</div>
-              <div className={styles.teamRole}>{t('teamMembers.daniilRole')}</div>
-            </div>
-          </div>
-          <div className={styles.teamMember}>
-            <div className={styles.teamPhotoWrapper}>
-              <div className={styles.teamPhoto}>
-                <Image
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop"
-                  alt={t('teamMembers.angelina')}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                  loading="lazy"
-                />
-              </div>
-              <div className={styles.teamOverlay}></div>
-            </div>
-            <div className={styles.teamInfo}>
-              <div className={styles.teamName}>{t('teamMembers.angelina')}</div>
-              <div className={styles.teamRole}>{t('teamMembers.angelinaRole')}</div>
-            </div>
-          </div>
-          <div className={styles.teamMember}>
-            <div className={styles.teamPhotoWrapper}>
-              <div className={styles.teamPhoto}>
-                <Image
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=800&fit=crop"
-                  alt={t('teamMembers.kamila')}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                  loading="lazy"
-                />
-              </div>
-              <div className={styles.teamOverlay}></div>
-            </div>
-            <div className={styles.teamInfo}>
-              <div className={styles.teamName}>{t('teamMembers.kamila')}</div>
-              <div className={styles.teamRole}>{t('teamMembers.kamilaRole')}</div>
-            </div>
-          </div>
-          <div className={styles.teamMember}>
-            <div className={styles.teamPhotoWrapper}>
-              <div className={styles.teamPhoto}>
-                <Image
-                  src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&fit=crop"
-                  alt={t('teamMembers.ekaterina')}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                  loading="lazy"
-                />
-              </div>
-              <div className={styles.teamOverlay}></div>
-            </div>
-            <div className={styles.teamInfo}>
-              <div className={styles.teamName}>{t('teamMembers.ekaterina')}</div>
-              <div className={styles.teamRole}>{t('teamMembers.ekaterinaRole')}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function OfficeSection({ t }: { t: any }) {
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
-  const [selectedSpecialist, setSelectedSpecialist] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -458,7 +328,7 @@ export function OfficeSection({ t }: { t: any }) {
               const map = new mapboxgl.Map({
                 container: mapContainerRef.current!,
                 style: 'mapbox://styles/abiespana/cmcxiep98004r01quhxspf3w9',
-                center: [55.2708, 25.2048], // Dubai office coordinates
+                center: [55.1503, 25.0745], // Jumeirah Bay X3, Cluster X, JLT
                 zoom: 15,
                 interactive: true,
                 // Optimize Mapbox loading - обмежуємо область та zoom для зменшення кількості тайлів
@@ -473,11 +343,31 @@ export function OfficeSection({ t }: { t: any }) {
               map.on('load', () => {
                 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-                // Add office marker
+                // Add office marker with custom style
+                const officeCoordinates: [number, number] = [55.1503, 25.0745]; // Jumeirah Bay X3, Cluster X, JLT
+                const el = document.createElement('div');
+                el.className = 'office-marker';
+                el.style.cssText = `
+                  background: #0055aa;
+                  color: #ffffff;
+                  padding: 6px 10px;
+                  border-radius: 6px;
+                  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                  font-size: 12px;
+                  font-weight: 600;
+                  line-height: 1.2;
+                  white-space: nowrap;
+                  cursor: pointer;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                  border: 2px solid #ffffff;
+                `;
+                el.textContent = 'Office';
+                
                 const marker = new mapboxgl.Marker({
-                  color: '#e6a165',
+                  element: el,
+                  anchor: 'center',
                 })
-                  .setLngLat([55.2708, 25.2048])
+                  .setLngLat(officeCoordinates)
                   .addTo(map);
 
                 markerRef.current = marker;
@@ -513,10 +403,47 @@ export function OfficeSection({ t }: { t: any }) {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log({ selectedDate, selectedTime, selectedSpecialist, name, phone, message });
+    
+    // Show success message immediately
+    setShowSuccess(true);
+    
+    // Reset form
+    const formDataToSubmit = {
+      name,
+      phone,
+      email: '',
+      message,
+      date: selectedDate,
+      time: selectedTime,
+    };
+    
+    setSelectedDate('');
+    setSelectedTime('');
+    setName('');
+    setPhone('');
+    setMessage('');
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 5000);
+    
+    // Submit to Google Sheets in the background (don't wait for it)
+    submitFormToSheets({
+      formType: 'schedule-meeting',
+      name: formDataToSubmit.name,
+      phone: formDataToSubmit.phone,
+      email: formDataToSubmit.email,
+      message: formDataToSubmit.message,
+      additionalData: {
+        date: formDataToSubmit.date,
+        time: formDataToSubmit.time,
+      },
+    }).catch((error) => {
+      console.error('Error submitting form to Google Sheets:', error);
+    });
   };
 
   // Generate time slots (9 AM to 6 PM, every hour)
@@ -524,14 +451,6 @@ export function OfficeSection({ t }: { t: any }) {
   for (let hour = 9; hour <= 18; hour++) {
     timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
   }
-
-  // Get specialists list (can be from API or static)
-  const specialists = [
-    t('leaders.artem.name'),
-    t('leaders.nikita.name'),
-    t('leaders.antony.name'),
-    t('leaders.gulnoza.name'),
-  ];
 
   return (
     <div className={styles.officeSection}>
@@ -543,7 +462,15 @@ export function OfficeSection({ t }: { t: any }) {
           <div className={styles.officeFormContainer}>
             <h2 className={styles.officeTitle}>{t('officeTitle')}</h2>
             <p className={styles.officeDescription}>{t('officeDescription')}</p>
-            <form className={styles.officeForm} onSubmit={handleSubmit}>
+            {showSuccess ? (
+              <div className={styles.successMessage}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 6L9 17L4 12" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <p>{t('officeForm.success')}</p>
+              </div>
+            ) : (
+              <form className={styles.officeForm} onSubmit={handleSubmit}>
               <h3 className={styles.formTitle}>{t('officeForm.title')}</h3>
               
               <div className={styles.formRow}>
@@ -572,21 +499,6 @@ export function OfficeSection({ t }: { t: any }) {
                     ))}
                   </select>
                 </div>
-              </div>
-
-              <div className={styles.formField}>
-                <label>{t('officeForm.specialistLabel')}</label>
-                <select
-                  value={selectedSpecialist}
-                  onChange={(e) => setSelectedSpecialist(e.target.value)}
-                >
-                  <option value="">{t('officeForm.specialistPlaceholder')}</option>
-                  {specialists.map((specialist) => (
-                    <option key={specialist} value={specialist}>
-                      {specialist}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className={styles.formRow}>
@@ -629,6 +541,7 @@ export function OfficeSection({ t }: { t: any }) {
                 {t('officeForm.submitButton')}
               </button>
             </form>
+            )}
           </div>
         </div>
       </div>
@@ -722,7 +635,7 @@ export function LeadershipSection({ t }: { t: any }) {
               <div className={styles.leadershipPhoto}>
                 <Image
                   src="https://res.cloudinary.com/dgv0rxd60/image/upload/v1763019357/photo_2025-03-22_22-48-51_fm2kpr.jpg"
-                  alt="Olexandr Logachev"
+                  alt={t('leaders.olexandr.name')}
                   fill
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 900px) 100vw, 40vw"
@@ -730,18 +643,18 @@ export function LeadershipSection({ t }: { t: any }) {
                 />
               </div>
               <div className={styles.leadershipTag}>
-                <span>CEO & Founder</span>
+                <span>{t('leaders.olexandr.tag')}</span>
               </div>
             </div>
           </div>
           
           <div className={styles.leadershipInfoColumn}>
             <div className={styles.leadershipProfile}>
-              <h3 className={styles.leadershipName}>Olexandr Logachev</h3>
-              <p className={styles.leadershipRole}>CEO & Managing Director at ProPart Real Estate</p>
+              <h3 className={styles.leadershipName}>{t('leaders.olexandr.name')}</h3>
+              <p className={styles.leadershipRole}>{t('leaders.olexandr.role')}</p>
               
               <p className={styles.leadershipBio}>
-                A visionary leader with a proven track record in strategic real estate development, investment, and management. Under his leadership, ProPart Real Estate has expanded its presence across key international markets, delivering innovative property solutions with a strong focus on client satisfaction, operational excellence, and long-term value creation.
+                {t('leaders.olexandr.bio')}
               </p>
               
               <div className={styles.leadershipSocial}>
@@ -764,28 +677,28 @@ export function LeadershipSection({ t }: { t: any }) {
             </div>
             
             <div className={styles.leadershipExperience}>
-              <h4 className={styles.experienceTitle}>Olexandr Logachev Experience</h4>
+              <h4 className={styles.experienceTitle}>{t('leaders.olexandr.experienceTitle')}</h4>
               <p className={styles.experienceDescription}>
-                With over 15 years of experience in the real estate industry, Olexandr has built a reputation for excellence in property development, strategic investments, and client relations. His expertise spans across residential, commercial, and luxury property markets in Dubai and beyond.
+                {t('leaders.olexandr.experienceDescription')}
               </p>
               <ul className={styles.experienceList}>
                 <li>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
-                  <span>Over 15 years of experience in the real estate industry</span>
+                  <span>{t('leaders.olexandr.experience1')}</span>
                 </li>
                 <li>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
-                  <span>Successfully led expansion into key international markets</span>
+                  <span>{t('leaders.olexandr.experience2')}</span>
                 </li>
                 <li>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
-                  <span>Recognized for innovative property solutions and client satisfaction excellence</span>
+                  <span>{t('leaders.olexandr.experience3')}</span>
                 </li>
               </ul>
             </div>

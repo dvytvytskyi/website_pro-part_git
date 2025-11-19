@@ -109,6 +109,7 @@ WorkingDirectory=${APP_DIR}
 Environment=NODE_ENV=production
 Environment=PORT=${PORT}
 Environment=NEXT_PUBLIC_API_URL=https://admin.pro-part.online/api
+Environment=GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/AKfycbz2IYI0VYkkRb0vHassxdL9lvw8HxWFCaK_vWChgHtDDsbChOeypbBlL4xuGX3zOolq3A/exec
 ExecStart=${NPM_PATH} start
 Restart=always
 RestartSec=10

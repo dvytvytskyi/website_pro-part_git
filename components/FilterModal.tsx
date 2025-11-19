@@ -8,7 +8,7 @@ import styles from './FilterModal.module.css';
 interface Filters {
   type: 'new' | 'secondary';
   search: string;
-  location: string[];
+  location: string; // areaId (single selection)
   bedrooms: number[];
   sizeFrom: string;
   sizeTo: string;
@@ -87,7 +87,7 @@ export default function FilterModal({ isOpen, onClose, filters, onApply, onReset
   const getActiveFiltersCount = (): number => {
     let count = 0;
     if (tempFilters.search) count++;
-    if (tempFilters.location.length > 0) count++;
+    if (tempFilters.location) count++;
     if (tempFilters.bedrooms.length > 0) count++;
     if (tempFilters.sizeFrom || tempFilters.sizeTo) count++;
     if (tempFilters.priceFrom || tempFilters.priceTo) count++;

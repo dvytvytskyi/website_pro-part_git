@@ -74,7 +74,7 @@ export default function AboutUs() {
                 href={getLocalizedPath('/properties')}
                 className={`${styles.ctaButton} ${styles.secondaryButton} ${isVisible ? styles.fadeIn : ''}`}
               >
-                View Properties
+                {t('viewProperties')}
               </Link>
             </div>
 

@@ -26,6 +26,10 @@ export default function Hero() {
   const [loading, setLoading] = useState(true);
   const areaDropdownRef = useRef<HTMLDivElement>(null);
   const bedroomsDropdownRef = useRef<HTMLDivElement>(null);
+  const areaButtonRef = useRef<HTMLButtonElement>(null);
+  const bedroomsButtonRef = useRef<HTMLButtonElement>(null);
+  const [areaDropdownDirection, setAreaDropdownDirection] = useState<'down' | 'up'>('down');
+  const [bedroomsDropdownDirection, setBedroomsDropdownDirection] = useState<'down' | 'up'>('down');
 
   const bedroomsOptions = ['1', '2', '3', '4', '5+'];
 
@@ -127,6 +131,40 @@ export default function Hero() {
   };
 
   useEffect(() => {
+    const calculateDropdownDirection = (buttonRef: React.RefObject<HTMLButtonElement>, dropdownRef: React.RefObject<HTMLDivElement>) => {
+      if (!buttonRef.current || !dropdownRef.current) return 'down';
+      
+      // На ПК (екрани >= 1024px) завжди відкриваємо вгору
+      if (window.innerWidth >= 1024) {
+        return 'up';
+      }
+      
+      // На менших екранах (планшети та мобільні) перевіряємо доступний простір
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const spaceBelow = viewportHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
+      
+      // Якщо менше 200px внизу, але більше 200px вгорі - показуємо вгору
+      if (spaceBelow < 200 && spaceAbove > 200) {
+        return 'up';
+      }
+      
+      return 'down';
+    };
+
+    if (isAreaDropdownOpen && areaButtonRef.current && areaDropdownRef.current) {
+      const direction = calculateDropdownDirection(areaButtonRef, areaDropdownRef);
+      setAreaDropdownDirection(direction);
+    }
+
+    if (isBedroomsDropdownOpen && bedroomsButtonRef.current && bedroomsDropdownRef.current) {
+      const direction = calculateDropdownDirection(bedroomsButtonRef, bedroomsDropdownRef);
+      setBedroomsDropdownDirection(direction);
+    }
+  }, [isAreaDropdownOpen, isBedroomsDropdownOpen]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (areaDropdownRef.current && !areaDropdownRef.current.contains(event.target as Node)) {
         setIsAreaDropdownOpen(false);
@@ -190,6 +228,7 @@ export default function Hero() {
               />
             </svg>
             <button
+              ref={areaButtonRef}
               type="button"
               onClick={() => setIsAreaDropdownOpen(!isAreaDropdownOpen)}
               className={styles.areaSelect}
@@ -216,7 +255,9 @@ export default function Hero() {
             </button>
             
             {isAreaDropdownOpen && (
-              <div className={styles.dropdownMenu}>
+              <div 
+                className={`${styles.dropdownMenu} ${areaDropdownDirection === 'up' ? styles.dropdownMenuUp : ''}`}
+              >
                 {loading ? (
                   <div className={styles.dropdownItem}>Loading...</div>
                 ) : areas.length === 0 ? (
@@ -239,6 +280,7 @@ export default function Hero() {
           
           <div className={styles.dropdownWrapper} ref={bedroomsDropdownRef}>
             <button
+              ref={bedroomsButtonRef}
               type="button"
               onClick={() => setIsBedroomsDropdownOpen(!isBedroomsDropdownOpen)}
               className={styles.bedroomsSelect}
@@ -265,7 +307,9 @@ export default function Hero() {
             </button>
             
             {isBedroomsDropdownOpen && (
-              <div className={styles.dropdownMenu}>
+              <div 
+                className={`${styles.dropdownMenu} ${bedroomsDropdownDirection === 'up' ? styles.dropdownMenuUp : ''}`}
+              >
                 {bedroomsOptions.map((option) => (
                   <button
                     key={option}

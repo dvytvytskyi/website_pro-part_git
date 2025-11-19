@@ -322,6 +322,54 @@
   transform: translateY(0);
 }
 
+.successMessage {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+}
+
+.successMessage svg {
+  width: 48px;
+  height: 48px;
+  background: rgba(74, 222, 128, 0.2);
+  border-radius: 50%;
+  padding: 12px;
+}
+
+.successMessage p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.5;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .formNote {
   font-family: 'Poppins', sans-serif;
   font-size: 11px;
@@ -331,6 +379,13 @@
   margin: 0;
   margin-top: -8px;
   text-align: center;
+}
+
+/* Малі ноутбуки (MacBook Pro та подібні) */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .projectTitle {
+    font-size: 42px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -400,8 +455,10 @@
 
   .contactForm {
     max-width: 100%;
+    width: 100%;
     padding: 28px 24px;
     gap: 16px;
+    box-sizing: border-box;
   }
 
   .formTitle {
@@ -417,6 +474,9 @@
   .formInput {
     padding: 12px 16px;
     font-size: 14px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .phonePrefix {
@@ -424,14 +484,26 @@
     font-size: 14px;
   }
 
+  .phoneInputWrapper {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
   .phoneInputWrapper .formInput {
     padding-left: 28px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .submitButton {
     padding: 14px 24px;
     font-size: 14px;
     margin-top: 4px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .formNote {
@@ -481,7 +553,7 @@
 
   .content {
     gap: 28px;
-    padding: 16px 0;
+    padding: 48px 0;
   }
 
   .projectTitle {
@@ -539,8 +611,10 @@
   .contactForm {
     padding: 20px 16px;
     max-width: 100%;
+    width: 100%;
     gap: 14px;
     border-radius: 10px;
+    box-sizing: border-box;
   }
 
   .formTitle {
@@ -559,6 +633,9 @@
     padding: 11px 14px;
     font-size: 13px;
     border-radius: 6px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .phonePrefix {
@@ -566,8 +643,17 @@
     font-size: 13px;
   }
 
+  .phoneInputWrapper {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
   .phoneInputWrapper .formInput {
     padding-left: 26px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .submitButton {
@@ -575,6 +661,9 @@
     font-size: 13px;
     margin-top: 2px;
     border-radius: 6px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .formNote {
@@ -660,6 +749,9 @@
   .contactForm {
     padding: 18px 14px;
     gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .formTitle {
@@ -673,11 +765,29 @@
   .formInput {
     padding: 10px 12px;
     font-size: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .phoneInputWrapper {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .phoneInputWrapper .formInput {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .submitButton {
     padding: 11px 18px;
     font-size: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
 

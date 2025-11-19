@@ -126,17 +126,19 @@ export default function Header() {
           <a href="https://agent.pro-part.online/login" target="_blank" rel="noopener noreferrer" className={`${styles.glassButton} ${styles.register}`}>Agent Portal</a>
         </nav>
 
-        {/* Hamburger menu button for mobile */}
-        <button 
-          className={`${styles.hamburger} ${isMobileMenuOpen ? styles.hamburgerOpen : ''}`}
-          onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
-          aria-expanded={isMobileMenuOpen}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        {/* Hamburger menu button for mobile - hidden when menu is open */}
+        {!isMobileMenuOpen && (
+          <button 
+            className={styles.hamburger}
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        )}
       </div>
 
       {/* Mobile menu backdrop */}

@@ -69,7 +69,7 @@ export default function PropertyDetail({ propertyId }: PropertyDetailProps) {
     };
 
     fetchProperty();
-  }, [propertyId, t]);
+  }, [propertyId, locale, t]);
   
   // Reset hero image loading when image index changes
   // Note: If image was prefetched, it should load quickly from cache

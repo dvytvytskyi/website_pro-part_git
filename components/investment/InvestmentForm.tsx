@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { submitInvestment, submitInvestmentPublic, isAuthenticated } from '@/lib/api';
 import { aedToUsd } from '@/lib/utils';
 import { formatNumber } from '@/lib/utils';
+import { submitFormToSheets } from '@/lib/googleSheets';
 import styles from './InvestmentForm.module.css';
 
 interface InvestmentFormProps {
@@ -84,21 +85,51 @@ export default function InvestmentForm({
     setLoading(true);
     setError(null);
 
-    try {
-      const amountUSD = aedToUsd(data.amount);
-      const requestData = {
-        propertyId,
-        amount: amountUSD,
-        date: new Date(data.date).toISOString(),
-        notes: data.notes || undefined,
-        ...(authenticated ? {} : {
-          userEmail: data.userEmail!,
-          userPhone: data.userPhone!,
-          userFirstName: data.userFirstName!,
-          userLastName: data.userLastName!,
-        }),
-      };
+    // Save form data before resetting
+    const formDataToSubmit = { ...data };
+    const amountUSD = aedToUsd(data.amount);
+    const requestData = {
+      propertyId,
+      amount: amountUSD,
+      date: new Date(data.date).toISOString(),
+      notes: data.notes || undefined,
+      ...(authenticated ? {} : {
+        userEmail: data.userEmail!,
+        userPhone: data.userPhone!,
+        userFirstName: data.userFirstName!,
+        userLastName: data.userLastName!,
+      }),
+    };
 
+    // Show success message immediately
+    setSuccess(true);
+    setLoading(false);
+
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      setSuccess(false);
+    }, 5000);
+
+    // Submit to Google Sheets in the background (don't wait for it)
+    submitFormToSheets({
+      formType: 'investment-application',
+      name: authenticated ? undefined : `${formDataToSubmit.userFirstName || ''} ${formDataToSubmit.userLastName || ''}`.trim(),
+      email: authenticated ? undefined : formDataToSubmit.userEmail,
+      phone: authenticated ? undefined : formDataToSubmit.userPhone,
+      message: formDataToSubmit.notes,
+      additionalData: {
+        propertyId,
+        amountAED: formDataToSubmit.amount,
+        amountUSD,
+        date: formDataToSubmit.date,
+        authenticated,
+      },
+    }).catch((error) => {
+      console.error('Error submitting form to Google Sheets:', error);
+    });
+
+    // Submit to API in the background (don't wait for it)
+    try {
       if (process.env.NODE_ENV === 'development') {
         console.log('Submitting investment form:', {
           propertyId,
@@ -109,48 +140,17 @@ export default function InvestmentForm({
         });
       }
 
-      let result;
       if (authenticated) {
-        result = await submitInvestment(requestData);
+        submitInvestment(requestData).catch((err) => {
+          console.error('Error submitting investment to API:', err);
+        });
       } else {
-        result = await submitInvestmentPublic(requestData);
+        submitInvestmentPublic(requestData).catch((err) => {
+          console.error('Error submitting investment to API:', err);
+        });
       }
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Investment submitted successfully:', result);
-      }
-
-      setSuccess(true);
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        setSuccess(false);
-        // Optionally redirect or show success message
-      }, 3000);
     } catch (err: any) {
       console.error('Error submitting investment form:', err);
-      
-      // Extract error message
-      let errorMessage = t('submitError') || 'Failed to submit investment';
-      
-      if (err.message) {
-        errorMessage = err.message;
-      } else if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err.response?.data?.error) {
-        errorMessage = err.response.data.error;
-      } else if (err.response?.status === 403) {
-        errorMessage = 'Access denied. Please check your API credentials.';
-      } else if (err.response?.status === 401) {
-        errorMessage = 'Unauthorized. Please log in.';
-      } else if (err.response?.status === 400) {
-        errorMessage = 'Invalid data. Please check your input.';
-      } else if (err.response?.status >= 500) {
-        errorMessage = 'Server error. Please try again later.';
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -178,7 +178,7 @@ export default function InvestmentForm({
       <div className={styles.agentSection}>
         <div className={styles.agentAvatar}>
           <Image
-            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face"
+            src="https://res.cloudinary.com/dgv0rxd60/image/upload/v1763562627/photo_2025-11-19_11-23-28_zmuikk.jpg"
             alt={t('agentName') || 'Agent'}
             fill
             style={{ objectFit: 'cover' }}

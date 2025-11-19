@@ -1,18 +1,27 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { submitFormToSheets } from '@/lib/googleSheets';
 import styles from './ProjectImage.module.css';
 
 export default function ProjectImage() {
   const t = useTranslations('projectImage');
+  const locale = useLocale();
+  const router = useRouter();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
   });
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleReadMore = () => {
+    router.push(`/${locale}/ghaff-offer`);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -37,10 +46,31 @@ export default function ProjectImage() {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement form submission
-    console.log('Form submitted:', formData);
+    
+    // Save form data before resetting
+    const formDataToSubmit = { ...formData };
+    
+    // Show success message immediately
+    setShowSuccess(true);
+    
+    // Reset form
+    setFormData({ name: '', phone: '' });
+    
+    // Hide success message after 5 seconds
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 5000);
+    
+    // Submit to Google Sheets in the background (don't wait for it)
+    submitFormToSheets({
+      formType: 'project-image-contact',
+      name: formDataToSubmit.name,
+      phone: formDataToSubmit.phone,
+    }).catch((error) => {
+      console.error('Error submitting form to Google Sheets:', error);
+    });
   };
 
   return (
@@ -49,8 +79,8 @@ export default function ProjectImage() {
         className={`${styles.imageWrapper} ${isVisible ? styles.visible : ''}`}
       >
         <Image
-          src="/golf.jpg"
-          alt="Golf Edge by Emaar"
+          src="/ghaf-woods-hero.jpg"
+          alt="Ghaf Woods by Majid Al Futtaim"
           fill
           style={{ objectFit: 'cover' }}
           sizes="100vw"
@@ -104,41 +134,48 @@ export default function ProjectImage() {
             </div>
 
             <div className={styles.actions}>
-              <button className={styles.readMoreButton}>{t('readMore')}</button>
-              <button className={styles.contactButton}>{t('contactUs')}</button>
+              <button className={styles.readMoreButton} onClick={handleReadMore}>{t('readMore')}</button>
             </div>
           </div>
 
           <div className={`${styles.rightColumn} ${isVisible ? styles.visible : ''}`}>
-            <form className={styles.contactForm} onSubmit={handleSubmit}>
-              <h3 className={styles.formTitle}>{t('form.title')}</h3>
-              <p className={styles.formDescription}>{t('form.description')}</p>
-              
-              <input
-                type="text"
-                placeholder={t('form.name')}
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={styles.formInput}
-                required
-              />
-              <div className={styles.phoneInputWrapper}>
-                <span className={styles.phonePrefix}>+</span>
+            {showSuccess ? (
+              <div className={styles.successMessage}>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 6L9 17L4 12" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            ) : (
+              <form className={styles.contactForm} onSubmit={handleSubmit}>
+                <h3 className={styles.formTitle}>{t('form.title')}</h3>
+                <p className={styles.formDescription}>{t('form.description')}</p>
+                
                 <input
-                  type="tel"
-                  placeholder={t('form.phone')}
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  type="text"
+                  placeholder={t('form.name')}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className={styles.formInput}
                   required
                 />
-              </div>
-              <button type="submit" className={styles.submitButton}>
-                {t('form.send')}
-              </button>
-              
-              <p className={styles.formNote}>{t('form.note')}</p>
-            </form>
+                <div className={styles.phoneInputWrapper}>
+                  <span className={styles.phonePrefix}>+</span>
+                  <input
+                    type="tel"
+                    placeholder={t('form.phone')}
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className={styles.formInput}
+                    required
+                  />
+                </div>
+                <button type="submit" className={styles.submitButton}>
+                  {t('form.send')}
+                </button>
+                
+                <p className={styles.formNote}>{t('form.note')}</p>
+              </form>
+            )}
           </div>
         </div>
       </div>

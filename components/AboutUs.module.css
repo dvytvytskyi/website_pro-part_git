@@ -250,6 +250,13 @@
   }
 }
 
+/* Малі ноутбуки (MacBook Pro та подібні) */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .title {
+    font-size: 48px;
+  }
+}
+
 @media (max-width: 1200px) {
   .content {
     gap: 60px;

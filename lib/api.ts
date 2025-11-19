@@ -2580,12 +2580,40 @@ export async function getDevelopers(): Promise<Developer[]> {
         }
       }
       
+      // Normalize images - handle various formats (string, array, JSON string)
+      let normalizedImages: string[] | null = null;
+      if (dev.images) {
+        if (Array.isArray(dev.images)) {
+          // Already an array - filter out empty values
+          normalizedImages = dev.images.filter((img: any) => img && typeof img === 'string' && img.trim().length > 0);
+        } else if (typeof dev.images === 'string') {
+          // Try to parse as JSON
+          try {
+            const parsed = JSON.parse(dev.images);
+            if (Array.isArray(parsed)) {
+              normalizedImages = parsed.filter((img: any) => img && typeof img === 'string' && img.trim().length > 0);
+            } else if (parsed && typeof parsed === 'string') {
+              normalizedImages = [parsed];
+            }
+          } catch {
+            // Not JSON, treat as single URL string
+            if (dev.images.trim().length > 0) {
+              normalizedImages = [dev.images];
+            }
+          }
+        }
+        // If no valid images found, set to null
+        if (normalizedImages && normalizedImages.length === 0) {
+          normalizedImages = null;
+        }
+      }
+      
       return {
         id: dev.id,
         name: dev.name,
         logo: dev.logo,
         description,
-        images: dev.images || null,
+        images: normalizedImages,
         projectsCount: dev.projectsCount || {
           total: 0,
           offPlan: 0,
@@ -2595,18 +2623,32 @@ export async function getDevelopers(): Promise<Developer[]> {
       };
     });
     
+    // Filter out excluded developers
+    const excludedDeveloperNames = [
+      'A S I Real Estate Development',
+      'ASI Real Estate Development',
+      'ADE Properties'
+    ];
+    
+    const filteredDevelopers = processedDevelopers.filter(dev => {
+      const devName = dev.name?.trim() || '';
+      return !excludedDeveloperNames.some(excluded => 
+        devName.toLowerCase() === excluded.toLowerCase()
+      );
+    });
+    
     if (process.env.NODE_ENV === 'development') {
-      const developersWithImages = processedDevelopers.filter(d => d.images && Array.isArray(d.images) && d.images.length > 0).length;
-      const developersWithDescription = processedDevelopers.filter(d => d.description).length;
-      const developersWithLogo = processedDevelopers.filter(d => d.logo).length;
+      const developersWithImages = filteredDevelopers.filter(d => d.images && Array.isArray(d.images) && d.images.length > 0).length;
+      const developersWithDescription = filteredDevelopers.filter(d => d.description).length;
+      const developersWithLogo = filteredDevelopers.filter(d => d.logo).length;
       
-      console.log(`✅ Successfully loaded ${processedDevelopers.length} developers from /api/public/developers`);
-      console.log(`📸 Developers with images: ${developersWithImages}/${processedDevelopers.length}`);
-      console.log(`📝 Developers with description: ${developersWithDescription}/${processedDevelopers.length}`);
-      console.log(`🖼️ Developers with logo: ${developersWithLogo}/${processedDevelopers.length}`);
+      console.log(`✅ Successfully loaded ${filteredDevelopers.length} developers from /api/public/developers (filtered from ${processedDevelopers.length})`);
+      console.log(`📸 Developers with images: ${developersWithImages}/${filteredDevelopers.length}`);
+      console.log(`📝 Developers with description: ${developersWithDescription}/${filteredDevelopers.length}`);
+      console.log(`🖼️ Developers with logo: ${developersWithLogo}/${filteredDevelopers.length}`);
     }
     
-    return processedDevelopers;
+    return filteredDevelopers;
   } catch (error: any) {
     // If 404, fallback to /public/data
     if (error.response?.status === 404) {
@@ -2678,9 +2720,23 @@ export async function getDevelopers(): Promise<Developer[]> {
           };
         });
         
-        console.log(`✅ Fallback: Successfully loaded ${developersWithCounts.length} developers from /public/data`);
+        // Filter out excluded developers
+        const excludedDeveloperNames = [
+          'A S I Real Estate Development',
+          'ASI Real Estate Development',
+          'ADE Properties'
+        ];
         
-        return developersWithCounts;
+        const filteredDevelopers = developersWithCounts.filter(dev => {
+          const devName = dev.name?.trim() || '';
+          return !excludedDeveloperNames.some(excluded => 
+            devName.toLowerCase() === excluded.toLowerCase()
+          );
+        });
+        
+        console.log(`✅ Fallback: Successfully loaded ${filteredDevelopers.length} developers from /public/data (filtered from ${developersWithCounts.length})`);
+        
+        return filteredDevelopers;
       } catch (fallbackError: any) {
         console.error('❌ Error in fallback to /public/data:', fallbackError);
         console.error('Fallback error details:', {
@@ -2920,6 +2976,16 @@ export async function getNews(page: number = 1, limit: number = 12): Promise<Get
       ...item,
       publishedAt: item.publishedAt,
     }));
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📰 getNews final result:', {
+        newsCount: newsWithDates.length,
+        total,
+        page: currentPage,
+        limit: currentLimit,
+        firstItem: newsWithDates.length > 0 ? newsWithDates[0] : null,
+      });
+    }
 
     return {
       news: newsWithDates,

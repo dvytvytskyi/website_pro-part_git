@@ -47,11 +47,11 @@ tar -czf deploy.tar.gz \
 
 # Upload to server
 echo "📤 Uploading files to server..."
-sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no -o PreferredAuthentications=password deploy.tar.gz $SERVER_USER@$SERVER_IP:/tmp/
+sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no -o PreferredAuthentications=password -o PubkeyAuthentication=no -o PasswordAuthentication=yes deploy.tar.gz $SERVER_USER@$SERVER_IP:/tmp/
 
 # Run deployment commands on server
 echo "🔧 Setting up on server..."
-sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no -o PreferredAuthentications=password $SERVER_USER@$SERVER_IP << ENDSSH
+sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no -o PreferredAuthentications=password -o PubkeyAuthentication=no -o PasswordAuthentication=yes $SERVER_USER@$SERVER_IP << ENDSSH
 set -e
 
 DOMAIN="$DOMAIN"
@@ -83,8 +83,9 @@ export NEXT_PUBLIC_API_URL=https://admin.pro-part.online/api
 export NEXT_PUBLIC_API_KEY=fyr_8f968d115244e76d209a26f5177c5c998aca0e8dbce4a6e9071b2bc43b78f6d2
 export NEXT_PUBLIC_API_SECRET=5c8335f9c7e476cbe77454fd32532cc68f57baf86f7f96e6bafcf682f98b275bc579d73484cf5bada7f4cd7d071b122778b71f414fb96b741c5fe60394d1795f
 export NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoiYWJpZXNwYW5hIiwiYSI6ImNsb3N4NzllYzAyOWYybWw5ZzNpNXlqaHkifQ.UxlTvUuSq9L5jt0jRtRR-A
+export GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/AKfycbz2IYI0VYkkRb0vHassxdL9lvw8HxWFCaK_vWChgHtDDsbChOeypbBlL4xuGX3zOolq3A/exec
 # Build may show prerendering errors, but that's OK - pages will render dynamically
-NEXT_PUBLIC_API_URL=https://admin.pro-part.online/api NEXT_PUBLIC_API_KEY=fyr_8f968d115244e76d209a26f5177c5c998aca0e8dbce4a6e9071b2bc43b78f6d2 NEXT_PUBLIC_API_SECRET=5c8335f9c7e476cbe77454fd32532cc68f57baf86f7f96e6bafcf682f98b275bc579d73484cf5bada7f4cd7d071b122778b71f414fb96b741c5fe60394d1795f NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoiYWJpZXNwYW5hIiwiYSI6ImNsb3N4NzllYzAyOWYybWw5ZzNpNXlqaHkifQ.UxlTvUuSq9L5jt0jRtRR-A npm run build || echo "⚠️ Build completed with warnings (prerendering errors are OK)"
+NEXT_PUBLIC_API_URL=https://admin.pro-part.online/api NEXT_PUBLIC_API_KEY=fyr_8f968d115244e76d209a26f5177c5c998aca0e8dbce4a6e9071b2bc43b78f6d2 NEXT_PUBLIC_API_SECRET=5c8335f9c7e476cbe77454fd32532cc68f57baf86f7f96e6bafcf682f98b275bc579d73484cf5bada7f4cd7d071b122778b71f414fb96b741c5fe60394d1795f NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoiYWJpZXNwYW5hIiwiYSI6ImNsb3N4NzllYzAyOWYybWw5ZzNpNXlqaHkifQ.UxlTvUuSq9L5jt0jRtRR-A GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/AKfycbz2IYI0VYkkRb0vHassxdL9lvw8HxWFCaK_vWChgHtDDsbChOeypbBlL4xuGX3zOolq3A/exec npm run build || echo "⚠️ Build completed with warnings (prerendering errors are OK)"
 
 # Ensure prerender-manifest.json exists (required by Next.js)
 if [ ! -f ".next/prerender-manifest.json" ]; then
@@ -119,6 +120,7 @@ Environment=NEXT_PUBLIC_API_URL=https://admin.pro-part.online/api
 Environment=NEXT_PUBLIC_API_KEY=fyr_8f968d115244e76d209a26f5177c5c998aca0e8dbce4a6e9071b2bc43b78f6d2
 Environment=NEXT_PUBLIC_API_SECRET=5c8335f9c7e476cbe77454fd32532cc68f57baf86f7f96e6bafcf682f98b275bc579d73484cf5bada7f4cd7d071b122778b71f414fb96b741c5fe60394d1795f
 Environment=NEXT_PUBLIC_MAPBOX_TOKEN=pk.eyJ1IjoiYWJpZXNwYW5hIiwiYSI6ImNsb3N4NzllYzAyOWYybWw5ZzNpNXlqaHkifQ.UxlTvUuSq9L5jt0jRtRR-A
+Environment=GOOGLE_SHEETS_WEBHOOK_URL=https://script.google.com/macros/s/AKfycbz2IYI0VYkkRb0vHassxdL9lvw8HxWFCaK_vWChgHtDDsbChOeypbBlL4xuGX3zOolq3A/exec
 ExecStart=\${NPM_PATH} start
 Restart=always
 RestartSec=10
